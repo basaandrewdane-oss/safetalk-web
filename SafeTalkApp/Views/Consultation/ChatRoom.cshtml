@@ -1,0 +1,162 @@
+﻿@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+@using System.Security.Claims
+
+@{
+    var claimsPrincipal = User as ClaimsPrincipal;
+    var fullName = claimsPrincipal?.FindFirst(ClaimTypes.GivenName)?.Value;
+    var role = claimsPrincipal?.FindFirst(ClaimTypes.Role)?.Value;
+}
+<style>
+    /* Chat container layout */
+    .chat-container {
+        display: flex;
+        flex-direction: column;
+        height: 90vh;
+        max-width: 800px;
+        margin: 5px auto;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .chat-header {
+        padding: 10px;
+        font-weight: bold;
+    }
+
+    .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 15px;
+        background: #f5f5f5;
+    }
+
+    /* Message rows */
+    .message-row {
+        display: flex;
+        margin-bottom: 10px;
+    }
+
+        .message-row.own {
+            justify-content: flex-end;
+        }
+
+    /* Message bubble */
+    .message-bubble {
+        max-width: 70%;
+        padding: 10px 15px;
+        border-radius: 16px;
+        background-color: #e0e0e0;
+        position: relative;
+        word-wrap: break-word;
+    }
+
+    .message-row.own .message-bubble {
+        background-color: #b39ddb;
+        color: white;
+        border-bottom-right-radius: 0;
+    }
+
+    .message-row:not(.own) .message-bubble {
+        border-bottom-left-radius: 0;
+    }
+
+    /* Text inside bubble */
+    .message-name {
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-bottom: 2px;
+        opacity: 0.7;
+    }
+
+    .message-text {
+        font-size: 1rem;
+    }
+
+    /* Chat input area */
+    .chat-input {
+        padding: 10px;
+        background: white;
+        border-top: 1px solid #ccc;
+        margin: auto 0;
+    }
+</style>
+
+<main>
+    <div id="chatroom" class="chat-container z-depth-2" ng-controller="ChatRoomController">
+
+        <!-- Header -->
+        <div class="chat-header deep-purple lighten-3 white-text">
+            <h6 class="center-align">Chat Room</h6>
+            <div class="timer">
+                <strong>Time Remaining:</strong> {{timerDisplay}}
+            </div>
+            <div class="row" style="margin: 0px;">
+                <div class="col s6 m6 l6 left-align">
+                    <button class="btn amber lighten-2"
+                            ng-click="endAppointment()"
+                            ng-if="currentUserRole"
+                            style="border-radius: 30px;">
+                        End Appointment
+                    </button>
+                </div>
+                <div class="col s6 m6 l6 right-align">
+                    <button class="btn teal lighten-2" ng-click="startCall()" ng-disabled="callDisabled" ng-show="!showVideoUI">
+                        <i class="material-icons">
+                            videocam
+                        </i>
+                    </button>
+                </div>
+                <button class="btn red lighten-2" ng-click="endCall()" ng-show="showVideoUI">End Call</button>
+            </div>
+        </div>
+
+        <!-- Video Call UI -->
+        <div ng-show="showVideoUI" style="display: flex; justify-content: center; gap: 10px; padding: 10px;">
+            <video id="localVideo" autoplay muted playsinline style="width: 200px; border: 1px solid #ccc;"></video>
+            <video id="remoteVideo" autoplay playsinline style="width: 200px; border: 1px solid #ccc;"></video>
+        </div>
+
+        <!-- Messages -->
+        <div class="chat-messages" id="chatMessages">
+            <div ng-repeat="msg in messages" class="message-row" ng-class="{'own': msg.name === 'You'}">
+                <div class="message-bubble">
+                    <div class="message-name">{{ msg.name }}</div>
+                    <div class="message-text">{{ msg.message }}</div>
+                </div>
+            </div>
+            <div id="liveTranscript" style="font-style: italic; color: gray; margin-top: 10px;"></div>
+        </div>
+
+        <!-- Message Input -->
+        <div class="chat-input row no-margin">
+            <div class="input-field col s10">
+                <input type="text"
+                       ng-model="message"
+                       ng-disabled="chatDisabled"
+                       ng-keypress="$event.which === 13 && sendMessage()"
+                       placeholder="Type a message..." />
+            </div>
+            <div class="input-field col s2 center">
+                <button class="btn waves-effect waves-light teal-lighten-2" ng-disabled="chatDisabled" ng-click="sendMessage()">
+                    <i class="material-icons">send</i>
+                </button>
+            </div>
+        </div>
+        <audio id="ringtone" src="~/Content/Sounds/ringtone.mp3" loop></audio>
+    </div>
+</main>
+
+@section Scripts {
+    <script src="~/Scripts/jquery.signalR-2.4.3.min.js"></script>
+    <script src="/signalr/hubs"></script>
+    <script src="~/Scripts/Holy-Scripts/Controllers/ChatRoomController.js"></script>
+    <script>
+        window.appointmentID = @Model.appointmentID;
+        window.currentUser = '@Html.Raw(HttpUtility.JavaScriptStringEncode(fullName))';
+        window.appointmentStart = '@ViewBag.AppointmentStartTime';
+        window.appointmentEnd = '@ViewBag.AppointmentEndTime';
+        window.currentUserRole = '@Html.Raw(HttpUtility.JavaScriptStringEncode(role))';
+    </script>
+}

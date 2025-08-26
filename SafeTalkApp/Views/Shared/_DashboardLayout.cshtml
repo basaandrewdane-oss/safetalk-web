@@ -1,0 +1,180 @@
+﻿@using System.Security.Claims
+
+@{
+    var claimsPrincipal = User as ClaimsPrincipal;
+    var fullName = claimsPrincipal?.FindFirst(ClaimTypes.GivenName)?.Value;
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title - Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
+
+    <style>
+        body {
+            background-color: #FAFAFA; /* grey lighten-5 */
+            color: #212121; /* grey darken-4 */
+        }
+
+        nav {
+            background-color: #f06292 !important; /* primary */
+        }
+
+        .brand-logo {
+            color: white !important;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 70%;
+            font-size: 1.2rem;
+            margin-left: 0px;
+        }
+
+        .sidenav {
+            background-color: #ffffff; /* white base */
+        }
+
+            .sidenav a {
+                color: #212121 !important; /* primary text */
+            }
+
+                .sidenav a:hover {
+                    background-color: #F48FB1 !important; /* pink primary highlight */
+                    color: white !important;
+                }
+
+        .btn-primary {
+            background-color: #F48FB1 !important; /* primary */
+        }
+
+        .btn-secondary {
+            background-color: #4DB6AC !important; /* secondary */
+        }
+
+        .accent-text {
+            color: #B39DDB !important; /* accent */
+        }
+
+        .hover-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Hover content only covers image + card-content */
+        .hover-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            /* Set bottom offset to match the height of .card-action */
+            bottom: 53.8px; /* Adjust this based on your .card-action height */
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 10;
+            pointer-events: none;
+            overflow-y: auto;
+        }
+
+        .hover-card:hover .hover-content {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .hover-link {
+            display: inline-block;
+            margin-top: 10px;
+            color: #b39ddb;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body ng-app="SafeTalkApp">
+    <!-- Topbar -->
+    <div class="navbar-fixed">
+        <nav>
+            <div class="nav-wrapper">
+                <a href="#" data-target="mobile_sidenav" class="sidenav-trigger show-on-medium-and-up">
+                    <i class="material-icons white-text">menu</i>
+                </a>
+                <a href="@Url.Action("Index", "Dashboard")" class="brand-logo center">SafeTalk Dashboard</a>
+                <ul class="right hide-on-med-and-down">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li><a href="#" class="white-text">Welcome, @fullName!</a></li>
+                    }
+                    <li>
+                        <div ng-controller="AccountController">
+                            <a class="btn teal lighten-2 white-text"
+                               style="border-radius:30px;"
+                               ng-click="logout()">
+                                Logout
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Sidebar -->
+    <ul class="sidenav z-depth-1" id="mobile_sidenav">
+        <li><a href="#" class="teal-text text-lighten-2">Welcome, @fullName!</a></li>
+        <li><a href="@Url.Action("Index", "Dashboard")"><i class="material-icons accent-text">dashboard</i>Dashboard</a></li>
+
+        @if (User.IsInRole("Doctor"))
+        {
+            <li><a href="@Url.Action("Appointments", "Appointment")"><i class="material-icons teal-text">event</i>Appointments</a></li>
+            <li><a href="@Url.Action("Availability", "Doctor")"><i class="material-icons teal-text">access_time</i>Availability</a></li>
+            <li><a href="@Url.Action("Consultations", "Consultation")"><i class="material-icons accent-text">chat</i>Consultations</a></li>
+            <li><a href="@Url.Action("Resources", "Doctor")"><i class="material-icons teal-text">library_books</i>Resources</a></li>
+        }
+        else if (User.IsInRole("User"))
+        {
+            <li><a href="@Url.Action("Book", "Appointment")"><i class="material-icons teal-text">event_available</i>Book Consultation</a></li>
+            <li><a href="@Url.Action("Appointments", "Appointment")"><i class="material-icons teal-text">event</i>Appointments</a></li>
+            <li><a href="@Url.Action("Consultations", "Consultation")"><i class="material-icons accent-text">chat</i>Consultations</a></li>
+            <li><a href="@Url.Action("Doctors", "User")"><i class="material-icons teal-text">groups</i>Doctors</a></li>
+            <li><a href="@Url.Action("Resources", "User")"><i class="material-icons teal-text">library_books</i>Resources</a></li>
+        }
+        else if (User.IsInRole("Admin"))
+        {
+            <li><a href="@Url.Action("ManageUsers", "Admin")"><i class="material-icons teal-text">manage_accounts</i>Manage Users</a></li>
+            <li><a href="@Url.Action("PendingDoctors", "Admin")"><i class="material-icons teal-text">view_list</i>Pending Doctors</a></li>
+            <li><a href="@Url.Action("Index", "Resources")"><i class="material-icons teal-text">library_books</i>Resources</a></li>
+        }
+
+        <li><a href="@Url.Action("Profile", "Account")"><i class="material-icons teal-text">person</i>Profile</a></li>
+        <li ng-controller="AccountController" ng-click="logout()"><a href=""><i class="material-icons red-text">exit_to_app</i>Logout</a></li>
+    </ul>
+
+    <div>
+        @RenderBody()
+    </div>
+
+    <script src="~/Scripts/jquery-3.7.0.min.js"></script>
+    <script src="~/Scripts/angular.min.js"></script>
+    @Scripts.Render("~/bundles/safetalkapp")
+    @Scripts.Render("~/bundles/directives")
+    @RenderSection("Scripts", required: false)
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            M.Sidenav.init(document.querySelectorAll('.sidenav'));
+            M.Materialbox.init(document.querySelectorAll('.materialboxed'));
+            M.FormSelect.init(document.querySelectorAll('.select'));
+            M.Datepicker.init(document.querySelectorAll('.datepicker'));
+            //    M.Modal.init(document.querySelectorAll('.modal'));
+        });
+    </script>
+</body>
+</html>

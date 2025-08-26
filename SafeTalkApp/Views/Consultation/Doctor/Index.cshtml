@@ -1,0 +1,40 @@
+﻿@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<!-- Doctor Consultations Page -->
+<main>
+    <div class="container" ng-init="getDoctorConsultations()" ng-controller="ConsultationController">
+        <h4 class="pink-text text-lighten-2">Available Consultations</h4>
+        <div class="divider"></div>
+        <div ng-if="verifiedAppointments.length > 0">
+            <table class="display responsive nowrap" id="verifiedAppointmentsTable">
+                <thead>
+                    <tr>
+                        <th>Action</th>
+                        <th>Patient</th>
+                        <th>Date</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="consult in verifiedAppointments">
+                        <td ng-controller="ConsultationController">
+                            <div class="center">
+                                <button class="btn teal lighten-2 center-align" ng-click="goToConsultation(consult.appointmentID)">Join</button>
+                            </div>                        </td>
+                        <td>{{consult.patientName}}</td>
+                        <td>{{consult.date | dotNetDate | date: 'yyyy-MM-dd'}}</td>
+                        <td>{{consult.startTime | timespanToTime}}</td>
+                        <td>{{consult.endTime | timespanToTime}}</td>
+
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="center-align" ng-if="verifiedConsultations.length === 0">
+            <p class="grey-text">No consultations available at this time.</p>
+        </div>
+    </div>
+</main>

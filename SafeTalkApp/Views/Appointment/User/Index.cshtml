@@ -1,0 +1,95 @@
+﻿@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+<!-- For User Appointments -->
+<main>
+    <div class="container" ng-init="getPatientAppointments()" ng-controller="AppointmentsController">
+        <div>
+            <h4 class="purple-text text-darken-3">Appointments</h4>
+        </div>
+        <div class="divider"></div>
+        <div class="row">
+            <div class="input-field col s12">
+                <label>
+                    <input type="checkbox" ng-model="showCanceled" />
+                    <span>Show Canceled Appointments</span>
+                </label>
+            </div>
+        </div>
+        <table id="appointmentsTable" class="display responsive nowrap">
+            <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>Doctor</th>
+                    <th>Date</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="appt in filteredAppointments()">
+                    <td>
+                        <div class="center" ng-switch="appt.status">
+                            <button ng-switch-when="0" class="btn red" ng-click="cancelAppointment(appt.appointmentID)">Cancel</button>
+                            <div ng-controller="PaymentController">
+                                <!-- PayPal Button with SVG logo -->
+                                <button ng-switch-when="1" class="btn blue darken-3 white-text waves-effect waves-light" ng-click="payWithPayPal(appt)">
+                                    <img src="~/Content/Images/paypal-logo.svg" alt="PayPal" style="height: 15px; margin-right: 8px;">
+                                    Pay with PayPal
+                                </button>
+
+                                <!-- GCash Button with SVG logo -->
+                                <button ng-switch-when="1" class="btn grey lighten-4 blue-text text-darken-2 waves-effect" ng-click="openPaymentModal(appt)">
+                                    <img src="~/Content/Images/gcash-logo.png" alt="GCash" style="height: 15px; margin-right: 8px;">
+                                    Pay with GCash
+                                </button>
+                            </div>
+                            <button ng-switch-when="2" class="btn orange" disabled>Pending Verification</button>
+                            <div ng-switch-when="3">
+                                <a href="@Url.Action("Consultations", "Consultation")" class="btn purple">Proceed</a>
+                            </div>
+                            <button ng-switch-when="4" class="btn grey" ng-click="rebookAppointment(appt)">Rebook</button>
+                            <button ng-switch-when="5" class="btn grey" disabled>Canceled</button>
+                        </div>
+                    </td>
+                    <td>{{appt.doctorName}}</td>
+                    <td>{{appt.date | dotNetDate | date: 'yyyy-MM-dd'}}</td>
+                    <td>{{appt.startTime | timespanToTime}}</td>
+                    <td>{{appt.endTime | timespanToTime}}</td>
+                    <td ng-switch="appt.status">
+                        <span ng-switch-when="0" class="orange-text">Pending Approval</span>
+                        <span ng-switch-when="1" class="blue-text">Approved - Awaiting Payment</span>
+                        <span ng-switch-when="2" class="orange-text">Payment Submitted</span>
+                        <span ng-switch-when="3" class="green-text">Paid</span>
+                        <span ng-switch-when="4" class="red-text">Rejected</span>
+                        <span ng-switch-when="5" class="grey-text">Canceled</span>
+                        <span ng-switch-default class="grey-text">Unknown</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <!-- Payment Modal -->
+        <div id="paymentModal" class="modal" ng-controller="PaymentController">
+            <div class="modal-content">
+                <h3>Pay via GCash</h3>
+                <p>Send ₱{{selectedAppointment.fee | number:2}} to:</p>
+                <h6><strong>{{selectedAppointment.phoneNumber}}</strong></h6>
+
+                <div class="row file-field input-field">
+                    <div class="file-path-wrapper col s12 m8 l8">
+                        <input class="file-path validate" type="text" placeholder="Upload payment screenshot">
+                    </div>
+                    <div class="btn purple col s12 m4 l4">
+                        <span>Upload Proof of payment</span>
+                        <input type="file" file-model="paymentProof" required>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-close btn-flat">Cancel</button>
+                <button class="btn green" ng-click="submitPayment()">Submit</button>
+            </div>
+        </div>
+    </div>
+</main>

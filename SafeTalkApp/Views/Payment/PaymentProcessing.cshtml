@@ -1,0 +1,50 @@
+﻿@{
+    Layout = null;
+}
+<main>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Show loading first
+            Swal.fire({
+                title: 'Processing Payment',
+                text: 'Please wait while we confirm your transaction...',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // After a short delay, show result
+            setTimeout(function () {
+                @if (ViewBag.Success != null && (bool)ViewBag.Success)
+                {
+                    <text>
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Payment Confirmed!',
+                            html: 'Transaction ID: <b>@ViewBag.TransactionId</b><br/>Amount: @ViewBag.Amount @ViewBag.Currency',
+                            confirmButtonText: 'Go to Appointments'
+                        }).then(() => {
+                            window.location.href = '/Appointment/Appointments';
+                        });
+                    </text>
+                }
+                else
+                {
+                    <text>
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Payment Failed',
+                            text: '@ViewBag.ErrorMessage',
+                            confirmButtonText: 'Back to Appointments'
+                        }).then(() => {
+                            window.location.href = '/Appointment/Appointments';
+                        });
+                    </text>
+                }
+            }, 1500); // small delay for loader effect
+        });
+    </script>
+</main>

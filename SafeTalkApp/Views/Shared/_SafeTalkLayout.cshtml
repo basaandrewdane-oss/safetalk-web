@@ -1,0 +1,136 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        main {
+            min-height: 100vh;
+        }
+
+        .btn {
+            border-radius: 20px;
+        }
+
+        .btn-large {
+            border-radius: 30px;
+        }
+        /*label color */
+        .input-field label {
+            color: #616161;
+        }
+        /*underline color */
+        .input-field input[type=email], textarea.materialize-textarea {
+            border-bottom: 1px solid #616161 !important;
+        }
+            /*label focus color */
+            .input-field input[type=email]:focus + label, textarea.materialize-textarea:focus + label {
+                color: #4db6ac !important;
+            }
+            /*label underline focus color */
+            .input-field input[type=email]:focus, textarea.materialize-textarea:focus {
+                border-bottom: 1px solid #4db6ac !important;
+                box-shadow: 0 1px 0 0 #4db6ac !important;
+            }
+
+        a.right:hover {
+            color: #7e57c2 !important;
+        }
+    </style>
+</head>
+<body ng-app="SafeTalkApp">
+    <div class="navbar-fixed">
+        <nav class="pink lighten-2">
+            <div class="nav-wrapper container">
+                <a href="@Url.Action("Index", "SafeTalk")" class="brand-logo">SafeTalk</a>
+                <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons ">menu</i></a>
+                <ul class="right show-on-medium-and-down">
+                    <li><a href="@Url.Action("Login", "Account")" class="waves-effect waves-light btn teal lighten-2">Log In</a></li>
+                </ul>
+                <ul class="right hide-on-med-and-down">
+                    <li><a href="@Url.Action("Index", "SafeTalk")" class="">Home</a></li>
+                    <li><a href="@Url.Action("Doctors", "SafeTalk")" class="">Our Doctors</a></li>
+                    <li><a href="@Url.Action("Contact", "SafeTalk")" class="">Contact</a></li>
+                    <li><a href="@Url.Action("About", "SafeTalk")" class="">About Us</a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+
+    <ul class="sidenav" id="mobile-demo">
+        <li class="active"><a href="@Url.Action("Index", "SafeTalk")" class="">Home</a></li>
+        <li><a href="@Url.Action("Doctors", "SafeTalk")" class="">Our Doctors</a></li>
+        <li><a href="@Url.Action("Contact", "SafeTalk")" class="">Contact</a></li>
+        <li><a href="@Url.Action("About", "SafeTalk")" class="">About Us</a></li>
+    </ul>
+    <div>
+        @RenderBody()
+    </div>
+
+    <footer class="page-footer grey lighten-5 grey-text text-darken-4">
+        <div class="container">
+            <div class="row">
+                <div class="col l6 s12">
+                    <h5 class="">Give Us A Feedback</h5>
+                    <p class="">Send us an email.</p>
+                    <div class="row">
+                        <form class="col s12">
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="email" type="email" class="validate">
+                                    <label for="email">Email</label>
+                                    <span class="helper-text" data-error="Invalid email" data-success="Looks good!">Enter email address.</span>
+                                </div>
+                                <div class="input-field col s12">
+                                    <textarea id="textarea1" class="materialize-textarea"></textarea>
+                                    <label for="textarea1">Textarea</label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="col l4 offset-l2 s12">
+                    <h5 class="">Links</h5>
+                    <ul>
+                        <li><a class="grey-text text-darken-2" href="@Url.Action("Index", "SafeTalk")">Home</a></li>
+                        <li><a class="grey-text text-darken-2" href="@Url.Action("Doctors", "SafeTalk")">Our Doctors</a></li>
+                        <li><a class="grey-text text-darken-2" href="@Url.Action("Contact", "SafeTalk")">Contact</a></li>
+                        <li><a class="grey-text text-darken-2" href="@Url.Action("About", "SafeTalk")">About</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer-copyright deep-purple lighten-3">
+            <div class="container white-text">
+                © 2025 SafeTalk
+                <a class="right white-text" href="#!">More Links</a>
+            </div>
+        </div>
+    </footer>
+    <script src="~/Scripts/jquery-3.7.0.min.js"></script>
+    <script src="~/Scripts/angular.min.js"></script>
+    @Scripts.Render("~/bundles/safetalkapp")
+    <script>
+        // sidenav initialization
+        document.addEventListener('DOMContentLoaded', function () {
+            var elems = document.querySelectorAll('.sidenav');
+            var instances = M.Sidenav.init(elems);
+        });
+        // slider initialization
+        document.addEventListener('DOMContentLoaded', function () {
+            var elems = document.querySelectorAll('.slider');
+            var instances = M.Slider.init(elems);
+        });
+        // parallax initialization
+        document.addEventListener('DOMContentLoaded', function () {
+            var elems = document.querySelectorAll('.parallax');
+            var instances = M.Parallax.init(elems);
+        });
+    </script>
+</body>
+</html>

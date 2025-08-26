@@ -1,0 +1,79 @@
+﻿@{
+    Layout = "~/Views/Shared/_SafeTalkLayout.cshtml";
+}
+
+<main>
+    <div class="container">
+        <!-- Header -->
+        <div class="row">
+            <div class="col s12 center">
+                <!-- Primary (pink) for page title -->
+                <h3 class="pink-text text-lighten-2">Contact Us</h3>
+                <p class="grey-text text-darken-1">
+                    Have questions or need support? We’re here to help. Reach out to us anytime through the form below or our contact details.
+                </p>
+            </div>
+        </div>
+
+        <!-- Contact Info -->
+        <div class="row">
+            <div class="col s12 m4 center">
+                <!-- Secondary teal for icons -->
+                <i class="material-icons teal-text text-lighten-2 medium">email</i>
+                <h6 class="grey-text text-darken-4">Email</h6>
+                <p class="grey-text text-darken-2">support@safetalk.com</p>
+            </div>
+            <div class="col s12 m4 center">
+                <i class="material-icons teal-text text-lighten-2 medium">phone</i>
+                <h6 class="grey-text text-darken-4">Phone</h6>
+                <p class="grey-text text-darken-2">+63 912 345 6789</p>
+            </div>
+            <div class="col s12 m4 center">
+                <i class="material-icons teal-text text-lighten-2 medium">location_on</i>
+                <h6 class="grey-text text-darken-4">Address</h6>
+                <p class="grey-text text-darken-2">123 Wellness St., Quezon City, Philippines</p>
+            </div>
+        </div>
+
+        <!-- Social Links with Accent -->
+        <div class="row center" style="margin-top: 30px;">
+            <a href="#" class="deep-purple-text text-lighten-2">
+                <i class="material-icons medium">facebook</i>
+            </a>
+            <a href="#" class="pink-text text-lighten-2" style="margin: 0 20px;">
+                <i class="material-icons medium">share</i>
+            </a>
+            <a href="#" class="teal-text text-lighten-2">
+                <i class="material-icons medium">alternate_email</i>
+            </a>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="row" style="margin-top: 40px;">
+            <form class="col s12 m8 offset-m2 z-depth-1 card-panel grey lighten-5">
+                <div class="row">
+                    <div class="input-field col s12 m6">
+                        <input id="name" type="text" class="validate" required>
+                        <label for="name">Your Name</label>
+                    </div>
+                    <div class="input-field col s12 m6">
+                        <input id="email" type="email" class="validate" required>
+                        <label for="email">Your Email</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <textarea id="message" class="materialize-textarea" required></textarea>
+                        <label for="message">Your Message</label>
+                    </div>
+                </div>
+                <!-- Primary button -->
+                <div class="row center">
+                    <button type="submit" class="btn-large pink lighten-2 waves-effect waves-light">
+                        Send Message
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>

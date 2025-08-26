@@ -1,0 +1,14 @@
+﻿@{
+    Layout = "~/Views/Shared/_AccountLayout.cshtml";
+}
+
+
+<main>
+    <div class="container" style="margin-top: 50px; text-align: center;">
+        <div class="card" style="padding: 30px; box-shadow: 0 2px 6px rgba(0,0,0,0.15); border-radius: 12px;">
+            <h2 class="text-danger">❌ Verification Failed</h2>
+            <p>Sorry, we could not verify your email. The link may be invalid or expired.</p>
+            <a href="@Url.Action("Signup", "Account")" class="btn btn-secondary">Back to Sign Up</a>
+        </div>
+    </div>
+</main>

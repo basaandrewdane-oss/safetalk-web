@@ -1,0 +1,155 @@
+﻿@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+<style>
+    .btn-small {
+        border-radius: 30px;
+    }
+
+    .card {
+        border-radius: 30px;
+    }
+
+    .card-action.center.deep-purple.lighten-5 {
+        border-bottom-left-radius: 30px;
+        border-bottom-right-radius: 30px;
+    }
+</style>
+<!-- Dashboard Index -->
+<main class="grey lighten-5" style="min-height:100vh;">
+    <div class="container">
+        <div class="section">
+            <h5 class="center-align pink-text text-lighten-2">Welcome to SafeTalk Dashboard</h5>
+            <p class="center-align grey-text text-darken-2">
+                Here’s a quick overview of your activities and tools.
+            </p>
+
+            <div class="row">
+                @if (User.IsInRole("User") || User.IsInRole("Doctor"))
+                {
+                    <!-- Appointments Card -->
+                    <div class="col s12 m6 l6">
+                        <div class="card hoverable">
+                            <div class="card-content center">
+                                <i class="material-icons large teal-text text-lighten-2">event</i>
+                                <h6 class="grey-text text-darken-4">Appointments</h6>
+                                <p class="grey-text text-darken-2">Manage and view your upcoming appointments.</p>
+                            </div>
+                            <div class="card-action center deep-purple lighten-5">
+                                <a href="@Url.Action("Appointments", "Appointment")" class="btn-small deep-purple lighten-3">Go</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Messages Card -->
+                    <div class="col s12 m6 l6">
+                        <div class="card hoverable">
+                            <div class="card-content center">
+                                <i class="material-icons large teal-text text-lighten-2">chat</i>
+                                <h6 class="grey-text text-darken-4">Consultations</h6>
+                                <p class="grey-text text-darken-2">Read and send messages securely.</p>
+                            </div>
+                            <div class="card-action center deep-purple lighten-5">
+                                <a href="@Url.Action("Consultations", "Consultation")" class="btn-small deep-purple lighten-3">Go</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+
+                <!-- Resources Card -->
+                <div class="col s12 m6 l6">
+                    <div class="card hoverable">
+                        <div class="card-content center">
+                            <i class="material-icons large teal-text text-lighten-2">library_books</i>
+                            <h6 class="grey-text text-darken-4">Resources</h6>
+                            <p class="grey-text text-darken-2">Access mental health and wellness resources.</p>
+                        </div>
+                        <div class="card-action center deep-purple lighten-5">
+                            <a href="@Url.Action("Index", "Resources")"
+                               class="btn-small deep-purple lighten-3">Go</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conditional Cards -->
+                @if (User.IsInRole("Doctor"))
+                {
+                    <!-- Availability Card -->
+                    <div class="col s12 m6 l6">
+                        <div class="card hoverable">
+                            <div class="card-content center">
+                                <i class="material-icons large teal-text text-lighten-2">access_time</i>
+                                <h6 class="grey-text text-darken-4">Availability</h6>
+                                <p class="grey-text text-darken-2">Set your consultation schedule.</p>
+                            </div>
+                            <div class="card-action center deep-purple lighten-5">
+                                <a href="@Url.Action("Availability", "Doctor")" class="btn-small deep-purple lighten-3">Go</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else if (User.IsInRole("User"))
+                {
+                    <!-- Book Consultation Card -->
+                    <div class="col s12 m6 l6">
+                        <div class="card hoverable">
+                            <div class="card-content center">
+                                <i class="material-icons large teal-text text-lighten-2">event_available</i>
+                                <h6 class="grey-text text-darken-4">Book Consultation</h6>
+                                <p class="grey-text text-darken-2">Schedule a consultation with a doctor.</p>
+                            </div>
+                            <div class="card-action center deep-purple lighten-5">
+                                <a href="@Url.Action("Book", "Appointment")" class="btn-small deep-purple lighten-3">Go</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Doctors Card -->
+                    <div class="col s12 m6 l6">
+                        <div class="card hoverable">
+                            <div class="card-content center">
+                                <i class="material-icons large teal-text text-lighten-2">groups</i>
+                                <h6 class="grey-text text-darken-4">Doctors</h6>
+                                <p class="grey-text text-darken-2">View available professionals.</p>
+                            </div>
+                            <div class="card-action center deep-purple lighten-5">
+                                <a href="@Url.Action("Doctors", "User")" class="btn-small deep-purple lighten-3">Go</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else if (User.IsInRole("Admin"))
+                {
+                    <!-- Manage Users Card -->
+                    <div class="col s12 m6 l6">
+                        <div class="card hoverable">
+                            <div class="card-content center">
+                                <i class="material-icons large teal-text text-lighten-2">manage_accounts</i>
+                                <h6 class="grey-text text-darken-4">Manage Users</h6>
+                                <p class="grey-text text-darken-2">View and manage all platform users.</p>
+                            </div>
+                            <div class="card-action center deep-purple lighten-5">
+                                <a href="@Url.Action("ManageUsers", "Admin")" class="btn-small deep-purple lighten-3">Go</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pending Doctors Card -->
+                    <div class="col s12 m6 l6">
+                        <div class="card hoverable">
+                            <div class="card-content center">
+                                <i class="material-icons large teal-text text-lighten-2">view_list</i>
+                                <h6 class="grey-text text-darken-4">Pending Doctors</h6>
+                                <p class="grey-text text-darken-2">Review and approve pending doctor accounts.</p>
+                            </div>
+                            <div class="card-action center deep-purple lighten-5">
+                                <a href="@Url.Action("PendingDoctors", "Admin")" class="btn-small deep-purple lighten-3">Go</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</main>

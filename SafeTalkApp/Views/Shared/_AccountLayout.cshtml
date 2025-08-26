@@ -1,0 +1,100 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        /* ✅ Form validation colors */
+        input.ng-invalid.ng-touched,
+        form.ng-submitted input.ng-invalid,
+        .select-wrapper input.select-dropdown.ng-invalid.ng-touched,
+        form.ng-submitted .select-wrapper input.select-dropdown.ng-invalid {
+            border-bottom: 1px solid #E57373 !important; /* red lighten-2 */
+            box-shadow: 0 1px 0 0 #E57373 !important;
+        }
+
+        div .col .s12 .l6 {
+            margin-bottom: 4px;
+        }
+
+        .swal2-select {
+            width: 85%;
+        }
+
+        h3 {
+            margin: 10px 0 10px 0;
+            font-weight: bold;
+        }
+
+        .row {
+            margin: 0px;
+        }
+
+        .btn-large {
+            width: 100%;
+            border-radius: 30px;
+        }
+
+        main {
+            display: flex;
+            min-height: 100vh;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card {
+            border-radius: 30px;
+            padding: 20px;
+        }
+
+        /* ✅ Brand background */
+        body {
+            background-color: #FAFAFA; /* grey lighten-5 */
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-attachment: fixed;
+        }
+
+        /* ✅ Input focus (accent = deep purple) */
+        .input-field input[type=email]:focus + label,
+        .input-field input[type=password]:focus + label,
+        .input-field input[type=text]:focus + label,
+        .input-field input[type=number]:focus + label {
+            color: #9575CD !important; /* deep-purple lighten-2 */
+        }
+
+        .input-field input[type=email]:focus,
+        .input-field input[type=password]:focus,
+        .input-field input[type=text]:focus,
+        .input-field input[type=number]:focus {
+            border-bottom: 1px solid #9575CD !important;
+            box-shadow: 0 1px 0 0 #9575CD !important;
+        }
+    </style>
+</head>
+
+<body ng-app="SafeTalkApp">
+    <div>
+        @RenderBody()
+    </div>
+
+    <script src="~/Scripts/jquery-3.7.0.min.js"></script>
+    <script src="~/Scripts/angular.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    @Scripts.Render("~/bundles/safetalkapp")
+    @Scripts.Render("~/bundles/directives")
+    <script>
+        //datepicker init
+        document.addEventListener('DOMContentLoaded', function () {
+            var elems = document.querySelectorAll('.datepicker');
+            var instances = M.Datepicker.init(elems, {
+                yearRange: [1900, 2100]
+            });
+        });
+    </script>
+</body>
+</html>

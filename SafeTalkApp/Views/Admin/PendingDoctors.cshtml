@@ -1,0 +1,33 @@
+﻿@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+
+<main>
+    <div class="container" ng-init="getPendingDoctors()" ng-controller="AdminController">
+        <table id="pendingDoctors" class="display responsive nowrap">
+            <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>License Number</th>
+                    <th>Name</th>
+                    <th>Birth Date</th>
+                    <th>Specialization</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="doctor in pendingDoctors">
+                    <td>
+                        <div class="center">
+                            <a class="waves-effect waves-light btn" ng-click="verifyDoctor(doctor.userID)">verify</a>
+                        </div>
+                    </td>
+                    <td>{{doctor.licenseNumber}}</td>
+                    <td>{{doctor.fullName}}</td>
+                    <td>{{doctor.birthDate | dotNetDate | date: 'yyyy-MM-dd'}}</td>
+                    <td>{{doctor.specialization}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</main>

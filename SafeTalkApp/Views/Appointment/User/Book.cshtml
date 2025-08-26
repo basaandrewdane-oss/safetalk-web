@@ -1,0 +1,87 @@
+﻿@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<main class="grey lighten-5">
+    <div class="container" ng-controller="AppointmentsController">
+        <!-- Header -->
+        <h4 class="pink-text text-lighten-2">
+            Book Consultation
+        </h4>
+        <div class="divider teal lighten-3"></div>
+
+        <div class="row">
+            <form class="col s12 m12 l12" name="bookingForm" ng-submit="bookAppointment()" novalidate>
+
+                <!-- Doctor Section -->
+                <div class="row">
+                    <h5 class="pink-text text-lighten-2">Select Doctor</h5>
+                </div>
+                <div class="row" ng-init="getDoctors()">
+                    <div class="input-field col s12 m6 l6">
+                        <select id="doctors"
+                                name="doctors"
+                                ng-model="selectedDoctor"
+                                ng-options="d as (d.firstName + ' ' + d.lastName) for d in doctors"
+                                material-select
+                                watch-collection="doctors"
+                                form-name="bookingForm">
+                            <option value="" disabled selected>Choose your doctor</option>
+                        </select>
+                        <label for="doctors" class="grey-text text-darken-2">Doctors</label>
+                    </div>
+                    <div class="input-field col s12 m6 l6">
+                        <input type="text"
+                               id="specialization"
+                               name="specialization"
+                               ng-model="selectedDoctor.specialization"
+                               readonly>
+                        <label for="specialization" class="grey-text text-darken-2">Specialization</label>
+                    </div>
+                </div>
+
+                <!-- Schedule Section -->
+                <div class="row">
+                    <h5 class="pink-text text-lighten-2">Pick a Schedule</h5>
+                </div>
+                <div class="row" ng-if="doctorAvailability.length">
+                    <div class="col s12 m3 l3 card-panel white hoverable" ng-repeat="availability in doctorAvailability" style="padding: 30px; border-radius: 30px;">
+                        <h6 class="deep-purple-text text-lighten-3">{{availability.day}}</h6>
+                        <p class="grey-text">Fee: ₱{{availability.fee | number:2}}</p>
+                        <div ng-repeat="slot in availability.slots">
+                            <label>
+                                <input type="radio"
+                                       name="slot"
+                                       ng-click="selectSlot(slot, availability.dayID, availability.fee)" />
+                                <span class="grey-text text-darken-2">{{slot.Start}} - {{slot.End}}</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Date Picker -->
+                <div class="row" ng-if="selectedSlot">
+                    <div class="input-field col s12 m6">
+                        <input id="appointmentDate"
+                               type="text"
+                               class="datepicker"
+                               ng-model="selectedDate"
+                               placeholder="Choose a date"
+                               readonly>
+                        <label for="appointmentDate" class="active grey-text text-darken-2">Select Date</label>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="row center">
+                    <div class="col s12">
+                        <button class="btn waves-effect waves-light pink lighten-2" type="submit" name="action" style="border-radius:30px;">
+                            Submit
+                            <i class="material-icons right teal-text text-lighten-3">send</i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>

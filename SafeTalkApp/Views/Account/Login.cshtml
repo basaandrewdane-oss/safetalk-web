@@ -1,0 +1,72 @@
+﻿@{
+    Layout = "~/Views/Shared/_AccountLayout.cshtml";
+}
+
+<main class="grey lighten-5">
+    <div ng-controller="AccountController">
+        <div class="row">
+
+            <!-- Left side caption -->
+            <div class="col s12 l6 center-align" style="margin-top:100px;">
+                <h2 class="pink-text text-lighten-2">SafeTalk</h2> <!-- ✅ Primary -->
+                <h5 class="grey-text text-darken-2">
+                    A safe space for sexual health consultations and education.
+                </h5>
+                <p class="grey-text text-darken-1" style="margin-top:20px;">
+                    Connect with trusted health professionals, book confidential appointments,
+                    and access resources that empower you to make informed decisions.
+                </p>
+            </div>
+
+            <!-- Right side login card -->
+            <div class="col s12 l4 offset-l1">
+                <div class="card center z-depth-3" style="padding: 30px; border-radius: 30px;">
+                    <h3 class="deep-purple-text text-lighten-2">Welcome!</h3> <!-- ✅ Accent -->
+                    <div class="row">
+                        <form class="col s12" id="loginForm" name="loginForm" novalidate ng-submit="login()">
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="email" name="email" type="email" ng-model="email" required>
+                                    <label for="email">Email</label>
+                                    <span class="helper-text left-align red-text text-lighten-2"
+                                          ng-show="(loginForm.email.$touched || loginForm.$submitted) && loginForm.email.$error.required">
+                                        Enter email address
+                                    </span>
+                                    <span class="helper-text left-align red-text text-lighten-2"
+                                          ng-show="loginForm.email.$dirty && loginForm.email.$invalid">
+                                        Invalid email format
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="password" name="password" type="password" ng-model="password" required>
+                                    <label for="password">Password</label>
+                                    <span class="helper-text left-align red-text text-lighten-2"
+                                          ng-show="(loginForm.password.$touched || loginForm.$submitted) && loginForm.password.$error.required">
+                                        Enter password
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col s12">
+                                    <!-- ✅ Primary button -->
+                                    <button class="waves-effect waves-light btn-large pink lighten-2 white-text" type="submit">Log In</button>
+                                    <!-- ✅ Secondary cancel button -->
+                                    <a class="waves-effect btn-large teal lighten-2 white-text" style="margin-top:5px;">Cancel</a>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <p class="grey-text text-darken-2">
+                                    Don't have an account?
+                                    <a href="#" class="deep-purple-text text-lighten-2" ng-click="getRoles()">Sign Up</a> <!-- ✅ Accent -->
+                                </p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>

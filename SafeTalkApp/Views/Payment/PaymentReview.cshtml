@@ -1,0 +1,36 @@
+﻿@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+
+<div class="container">
+    <h4 class="purple-text text-darken-2 center-align">Review Your Payment</h4>
+    <div class="divider"></div>
+
+    <div class="row center-align">
+        <div class="col s12 m8 offset-m2">
+            <div class="card z-depth-3" style="border-radius: 20px;">
+                <div class="card-content">
+                    <p><strong>Doctor:</strong> @ViewBag.DoctorName</p>
+                    <p><strong>Appointment Date:</strong> @ViewBag.Date.ToShortDateString() @ViewBag.Time</p>
+                    <p><strong>Consultation Fee:</strong> PHP @ViewBag.Fee</p>
+                </div>
+
+                <div class="card-action">
+                    <form action="@Url.Action("CapturePayPalOrder", "Appointment")" method="post" class="center-align">
+                        <input type="hidden" name="token" value="@ViewBag.Token" />
+                        <input type="hidden" name="appointmentID" value="@ViewBag.AppointmentID" />
+
+                        <button type="submit" class="btn green waves-effect waves-light" style="margin-right: 10px;">
+                            ✅ Confirm & Pay
+                        </button>
+
+                        <a href="@Url.Action("Appointments", "Appointment")" class="btn red lighten-1 waves-effect waves-light">
+                            ❌ Cancel
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

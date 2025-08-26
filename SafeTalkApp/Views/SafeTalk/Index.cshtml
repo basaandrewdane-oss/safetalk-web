@@ -1,0 +1,77 @@
+﻿@{
+    Layout = "~/Views/Shared/_SafeTalkLayout.cshtml";
+}
+<style>
+    .slider .indicators .indicator-item.active {
+        background-color: #b39ddb;
+    }
+    .slider li img {
+        filter: brightness(70%);
+    }
+</style>
+
+<main>
+    <div class="slider grey lighten-5">
+        <ul class="slides">
+            <li>
+                <img src="~/Content/Images/firstSlide.jpeg"> <!-- random image -->
+                <div class="caption center-align">
+                    <h3>Your Health, Your SafeTalk</h3>
+                    <h5 class="light grey-text text-lighten-3">Because every question deserves a safe answer.</h5>
+                </div>
+            </li>
+            <li>
+                <img src="~/Content/Images/secondSlide.jpeg"> <!-- random image -->
+                <div class="caption left-align">
+                    <h3>Breaking the Stigma</h3>
+                    <h5 class="light grey-text text-lighten-3">Confidential. Compassionate. Connected.</h5>
+                </div>
+            </li>
+            <li>
+                <img src="~/Content/Images/thirdSlide.jpeg"> <!-- random image -->
+                <div class="caption right-align">
+                    <h3>Education Meets Empowerment</h3>
+                    <h5 class="light grey-text text-lighten-3">Empowering conversations. Healthier choices.</h5>
+                </div>
+            </li>
+            <li>
+                <img src="~/Content/Images/fourthSlide.jpg"> <!-- random image -->
+                <div class="caption center-align">
+                    <h3>Confident. Informed. Safe.</h3>
+                    <h5 class="light grey-text text-lighten-3">Your trusted space for sexual health and learning.</h5>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="grey lighten-5">
+        <div class="section container">
+            <div class="row"  style="display: flex;">
+                <div class="col s12 m6">
+                    <i class="medium material-icons teal-text text-lighten-2">calendar_month</i>
+                    <h5 class="grey-text text-darken-4">Book an appointment online</h5>
+                    <p class="grey-text text-darken-2">
+                        Schedule a confidential consultation with our licensed health professionals at your convenience.
+                        SafeTalk makes it easy to book appointments online, ensuring you get the guidance and support you need, when you need it.
+                    </p>
+                </div>
+                <div class="col s12 m6 center right-align" style="align-self: flex-end;">
+                    <a class="waves-effect waves-light btn-large teal lighten-2" style="width:80%;">
+                        Book now
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="parallax-container">
+        <div class="section">
+            <div class="container center">
+                <h3 class="white-text">Learn with Confidence</h3>
+                <h5 class="white-text">Explore trusted articles on sexual and reproductive health</h5>
+                <a class="waves-effect waves-light btn-large teal lighten-2" style="margin-top:100px;">View Resources</a>
+            </div>
+        </div>
+        <div class="parallax"><img src="~/Content/Images/parallax.jpg"></div>
+    </div>
+</main>
