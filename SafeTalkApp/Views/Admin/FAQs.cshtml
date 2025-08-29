@@ -1,0 +1,85 @@
+﻿@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+
+<div class="container" ng-controller="AdminController">
+    <h4 class="purple-text">Manage FAQs</h4>
+    <div class="divider"></div>
+
+    <!-- Add FAQ Button -->
+    <div class="right-align" style="margin:15px 0;">
+        <a class="btn purple modal-trigger" href="#addModal">
+            <i class="material-icons left">add</i>Add FAQ
+        </a>
+    </div>
+
+    <!-- FAQ List -->
+    <table class="striped highlight responsive-table">
+        <thead>
+            <tr>
+                <th>Question</th>
+                <th>Answer</th>
+                <th>Keywords</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="faq in faqs">
+                <td>{{faq.question}}</td>
+                <td>{{faq.answer}}</td>
+                <td>{{faq.keywords}}</td>
+                <td>
+                    <button class="btn-small blue" ng-click="startEditFaq(faq)">Edit</button>
+                    <button class="btn-small red" ng-click="deleteFaq(faq.Id)">Delete</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Add FAQ Modal -->
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <h5>Add New FAQ</h5>
+            <div class="input-field">
+                <input type="text" ng-model="newFaq.question" id="question">
+                <label for="question">Question</label>
+            </div>
+            <div class="input-field">
+                <textarea class="materialize-textarea" ng-model="newFaq.answer" id="answer"></textarea>
+                <label for="answer">Answer</label>
+            </div>
+            <div class="input-field">
+                <input type="text" ng-model="newFaq.keywords" id="keywords">
+                <label for="keywords">Keywords (comma separated)</label>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn green modal-close" ng-click="addFaq()">Save</button>
+            <button class="btn grey modal-close">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <h5>Edit FAQ</h5>
+            <div class="input-field">
+                <input type="text" ng-model="editFaq.question" id="edit-question">
+                <label class="active" for="edit-question">Question</label>
+            </div>
+            <div class="input-field">
+                <textarea class="materialize-textarea" ng-model="editFaq.answer" id="edit-answer"></textarea>
+                <label class="active" for="edit-answer">Answer</label>
+            </div>
+            <div class="input-field">
+                <input type="text" ng-model="editFaq.keywords" id="edit-keywords">
+                <label class="active" for="edit-keywords">Keywords</label>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-close btn green" ng-click="saveEdit()">Save</button>
+            <button class="modal-close btn grey">Cancel</button>
+        </div>
+    </div>
+</div>

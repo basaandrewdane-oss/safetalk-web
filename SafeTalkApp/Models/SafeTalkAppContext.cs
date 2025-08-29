@@ -20,6 +20,7 @@ namespace SafeTalkApp.Models
         public virtual DbSet<AppointmentsTblModel> appointments_tbl { get; set; }
         public virtual DbSet<ChatMessageTblModel> chat_message_tbl { get; set; }
         public virtual DbSet<DaysOfWeekTblModel> days_of_week_tbl { get; set; }
+        public virtual DbSet<FAQsTblModel> faqs_tbl { get; set; }
         public virtual DbSet<GenderTblModel> gender_tbl { get; set; }
         public virtual DbSet<PaymentTblModel> payment_tbl { get; set; }
         public virtual DbSet<ResourceTblModel> resource_tbl { get; set; }
@@ -34,6 +35,7 @@ namespace SafeTalkApp.Models
             modelBuilder.Configurations.Add(new AppointmentsTblMap());
             modelBuilder.Configurations.Add(new ChatMessageTblMap());
             modelBuilder.Configurations.Add(new DaysOfWeekTblMap());
+            modelBuilder.Configurations.Add(new FAQsTblMap());
             modelBuilder.Configurations.Add(new GenderTblMap());
             modelBuilder.Configurations.Add(new PaymentTblMap());
             modelBuilder.Configurations.Add(new ResourceTblMap());

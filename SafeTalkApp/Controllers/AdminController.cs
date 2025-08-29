@@ -10,6 +10,103 @@ namespace SafeTalkApp.Controllers
     public class AdminController : Controller
     {
         // GET: Admin
+        public ActionResult FAQs()
+        {
+            return View();
+        }
+
+        public JsonResult GetFaqs()
+        {
+            try
+            {
+                using (var db = new SafeTalkAppContext())
+                {
+                    var faqs = db.faqs_tbl.ToList();
+                    return Json(faqs, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (not implemented here)
+                return Json(new { success = false, message = "Error retrieving FAQs: " + ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        public JsonResult AddFaq(string question, string answer, string keywords)
+        {
+            try
+            {
+                using (var db = new SafeTalkAppContext())
+                {
+                    var newFaq = new FAQsTblModel
+                    {
+                        question = question,
+                        answer = answer,
+                        keywords = keywords,
+                        dateCreated = DateTime.Now,
+                        dateUpdated = DateTime.Now
+                    };
+                    db.faqs_tbl.Add(newFaq);
+                    db.SaveChanges();
+                    return Json(new { success = true, message = "FAQ added successfully." }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (not implemented here)
+                return Json(new { success = false, message = "Error adding FAQ: " + ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        public JsonResult UpdateFaq(int faqID, string question, string answer, string keywords)
+        {
+            try
+            {
+                using (var db = new SafeTalkAppContext())
+                {
+                    var faq = db.faqs_tbl.Find(faqID);
+                    if (faq != null)
+                    {
+                        faq.question = question;
+                        faq.answer = answer;
+                        faq.keywords = keywords;
+                        faq.dateUpdated = DateTime.Now;
+                        db.SaveChanges();
+                        return Json(new { success = true, message = "FAQ updated successfully." }, JsonRequestBehavior.AllowGet);
+                    }
+                    return Json(new { success = false, message = "FAQ not found." }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (not implemented here)
+                return Json(new { success = false, message = "Error updating FAQ: " + ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        public JsonResult DeleteFaq(int faqID)
+        {
+            try
+            {
+                using (var db = new SafeTalkAppContext())
+                {
+                    var faq = db.faqs_tbl.Find(faqID);
+                    if (faq != null)
+                    {
+                        db.faqs_tbl.Remove(faq);
+                        db.SaveChanges();
+                        return Json(new { success = true, message = "FAQ deleted successfully." }, JsonRequestBehavior.AllowGet);
+                    }
+                    return Json(new { success = false, message = "FAQ not found." }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (not implemented here)
+                return Json(new { success = false, message = "Error deleting FAQ: " + ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
         public ActionResult PendingDoctors()
         {
             return View();

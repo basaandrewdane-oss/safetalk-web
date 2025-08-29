@@ -250,6 +250,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\AppointmentController.cs" />
+    <Compile Include="Controllers\ChatBotController.cs" />
     <Compile Include="Controllers\ConsultationController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DoctorController.cs" />
@@ -269,6 +270,8 @@
     <Compile Include="Models\ChatMessageTblModel.cs" />
     <Compile Include="Models\DaysOfWeekTblMap.cs" />
     <Compile Include="Models\DaysOfWeekTblModel.cs" />
+    <Compile Include="Models\FAQsTblMap.cs" />
+    <Compile Include="Models\FAQsTblModel.cs" />
     <Compile Include="Models\GenderTblMap.cs" />
     <Compile Include="Models\GenderTblModel.cs" />
     <Compile Include="Models\LogInViewModel.cs" />
@@ -366,6 +369,7 @@
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\Holy-Scripts\Controllers\AdminController.js" />
     <Content Include="Scripts\Holy-Scripts\Controllers\AccountController.js" />
+    <Content Include="Scripts\Holy-Scripts\Controllers\ChatBotController.js" />
     <Content Include="Scripts\Holy-Scripts\Controllers\ChatRoomController.js" />
     <Content Include="Scripts\Holy-Scripts\Controllers\ConsultationController.js" />
     <Content Include="Scripts\Holy-Scripts\Controllers\AppointmentsController.js" />
@@ -380,6 +384,7 @@
     <Content Include="Scripts\Holy-Scripts\Services\AccountService.js" />
     <Content Include="Scripts\Holy-Scripts\Services\AdminService.js" />
     <Content Include="Scripts\Holy-Scripts\Services\AppointmentService.js" />
+    <Content Include="Scripts\Holy-Scripts\Services\ChatBotService.js" />
     <Content Include="Scripts\Holy-Scripts\Services\ConsultationService.js" />
     <Content Include="Scripts\Holy-Scripts\Services\PaymentService.js" />
     <Content Include="Scripts\Holy-Scripts\Services\ResourceService.js" />
@@ -1185,9 +1190,11 @@
     <Content Include="Views\Resources\Admin\Index.cshtml" />
     <Content Include="Views\Resources\Doctor\Index.cshtml" />
     <Content Include="Views\Resources\User\Index.cshtml" />
+    <Content Include="Views\Admin\FAQs.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\ChatBot\" />
     <Folder Include="Views\Transcription\" />
   </ItemGroup>
   <ItemGroup>

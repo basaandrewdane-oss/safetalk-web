@@ -41,6 +41,111 @@
         a.right:hover {
             color: #7e57c2 !important;
         }
+
+        .chat-message {
+            display: inline-block;
+            padding: 10px 14px;
+            margin: 6px 0;
+            border-radius: 16px;
+            max-width: 75%;
+            word-wrap: break-word;
+            white-space: pre-line; /* respects \n as line breaks */
+            line-height: 1.4;
+            font-size: 14px;
+            clear: both;
+            box-sizing: border-box;
+        }
+
+            /* Reset any inner element padding/margin */
+            .chat-message p,
+            .chat-message span,
+            .chat-message div {
+                margin: 0 !important;
+                padding: 0 !important;
+                text-indent: 0 !important;
+            }
+
+        /* USER message (right-aligned, grey bubble) */
+        .user-msg {
+            background-color: #eeeeee;
+            color: #000;
+            float: right;
+            text-align: left;
+            border-bottom-right-radius: 4px;
+        }
+
+        /* BOT message (left-aligned, purple bubble) */
+        .bot-msg {
+            background-color: #7e57c2;
+            color: white;
+            float: left;
+            text-align: left;
+            border-bottom-left-radius: 4px;
+        }
+
+        .chatbot-window {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 300px;
+            height: 400px; /* fixed height for the chat window */
+            display: flex;
+            flex-direction: column;
+            z-index: 9999;
+        }
+
+        /* Messages area scrolls */
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 10px;
+        }
+
+        /* Input fixed at bottom */
+        .chat-input {
+            border-top: 1px solid #ddd;
+        }
+
+        .typing-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 10px 14px;
+            background-color: #7e57c2;
+            border-radius: 16px;
+            /*max-width: 75%;*/
+        }
+
+            .typing-indicator span {
+                width: 6px;
+                height: 6px;
+                background: white;
+                border-radius: 50%;
+                display: inline-block;
+                animation: blink 1.4s infinite both;
+            }
+
+                .typing-indicator span:nth-child(2) {
+                    animation-delay: 0.2s;
+                }
+
+                .typing-indicator span:nth-child(3) {
+                    animation-delay: 0.4s;
+                }
+
+        @@keyframes blink {
+            0% {
+                opacity: .2;
+            }
+
+            20% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: .2;
+            }
+        }
     </style>
 </head>
 <body ng-app="SafeTalkApp">
@@ -105,6 +210,41 @@
                 </div>
             </div>
         </div>
+        <div ng-controller="ChatBotController">
+            <!-- Floating Chat Button -->
+            <div class="fixed-action-btn">
+                <a class="btn-floating btn-large purple" ng-click="toggleChat()">
+                    <i class="material-icons">chat</i>
+                </a>
+            </div>
+
+            <!-- Chat Window -->
+            <div class="card chatbot-window" ng-show="chatOpen">
+                <div class="card-content messages-container">
+                    <span class="card-title">AI Chatbot</span>
+
+                    <!-- Messages -->
+                    <div ng-repeat="m in messages"
+                         class="chat-message"
+                         ng-class="{'user-msg': m.from=='user', 'bot-msg': m.from=='bot'}">{{m.text}}</div>
+
+                    <!-- Typing indicator -->
+                    <div class="chat-message bot-msg typing-indicator" ng-if="typing">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+
+                <!-- Input always visible -->
+                <div class="card-action chat-input">
+                    <form ng-submit="sendMessage()">
+                        <div class="input-field">
+                            <input type="text" ng-model="message" placeholder="Type a message..." />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         <div class="footer-copyright deep-purple lighten-3">
             <div class="container white-text">
                 © 2025 SafeTalk
