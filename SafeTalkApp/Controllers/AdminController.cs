@@ -107,6 +107,28 @@ namespace SafeTalkApp.Controllers
             }
         }
 
+        public ActionResult Prompts()
+        {
+            return View();
+        }
+
+        public JsonResult GetPrompts()
+        {
+            try
+            {
+                using (var db = new SafeTalkAppContext())
+                {
+                    var prompts = db.prompts_tbl.ToList();
+                    return Json(prompts, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (not implemented here)
+                return Json(new { success = false, message = "Error retrieving prompts: " + ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
         public ActionResult PendingDoctors()
         {
             return View();

@@ -12,7 +12,7 @@
         return $http.post("/Admin/UpdateFaq", faq);
     }
 
-    this.deleteFaq = function (faqID) {
+    this.deleteFaq = function (faqID){
         return $http.post("/Admin/DeleteFaq", { faqID: faqID });
     }
 

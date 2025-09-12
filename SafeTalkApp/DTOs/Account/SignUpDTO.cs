@@ -1,14 +1,12 @@
-﻿using Org.BouncyCastle.Asn1.Cms;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace SafeTalkApp.Models
+namespace SafeTalkApp.DTOs.Account
 {
-    public class SignUpViewModel
+    public class SignUpDTO
     {
-        public int roleID { get; set; }
         public string firstName { get; set; }
         public string middleName { get; set; }
         public string lastName { get; set; }
@@ -17,8 +15,9 @@ namespace SafeTalkApp.Models
         public string phoneNumber { get; set; }
         public string licenseNumber { get; set; }
         public string specialization { get; set; }
-        public List<UserAvailabilityTblModel> availability { get; set; }
         public string email { get; set; }
         public string password { get; set; }
+        public int roleID { get; set; }
+        public List<AvailabilityDTO> availability { get; set; }
     }
 }

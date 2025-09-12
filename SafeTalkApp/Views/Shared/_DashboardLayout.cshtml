@@ -133,7 +133,7 @@
             <li><a href="@Url.Action("Appointments", "Appointment")"><i class="material-icons teal-text">event</i>Appointments</a></li>
             <li><a href="@Url.Action("Availability", "Doctor")"><i class="material-icons teal-text">access_time</i>Availability</a></li>
             <li><a href="@Url.Action("Consultations", "Consultation")"><i class="material-icons accent-text">chat</i>Consultations</a></li>
-            <li><a href="@Url.Action("Resources", "Doctor")"><i class="material-icons teal-text">library_books</i>Resources</a></li>
+            <li><a href="@Url.Action("Index", "Resources")"><i class="material-icons teal-text">library_books</i>Resources</a></li>
         }
         else if (User.IsInRole("User"))
         {
@@ -141,16 +141,17 @@
             <li><a href="@Url.Action("Appointments", "Appointment")"><i class="material-icons teal-text">event</i>Appointments</a></li>
             <li><a href="@Url.Action("Consultations", "Consultation")"><i class="material-icons accent-text">chat</i>Consultations</a></li>
             <li><a href="@Url.Action("Doctors", "User")"><i class="material-icons teal-text">groups</i>Doctors</a></li>
-            <li><a href="@Url.Action("Resources", "User")"><i class="material-icons teal-text">library_books</i>Resources</a></li>
+            <li><a href="@Url.Action("Index", "Resources")"><i class="material-icons teal-text">library_books</i>Resources</a></li>
         }
         else if (User.IsInRole("Admin"))
         {
             <li><a href="@Url.Action("ManageUsers", "Admin")"><i class="material-icons teal-text">manage_accounts</i>Manage Users</a></li>
             <li><a href="@Url.Action("PendingDoctors", "Admin")"><i class="material-icons teal-text">view_list</i>Pending Doctors</a></li>
             <li><a href="@Url.Action("Index", "Resources")"><i class="material-icons teal-text">library_books</i>Resources</a></li>
+            <li><a href="@Url.Action("FAQs", "Admin")"><i class="material-icons teal-text">question_mark</i>FAQs</a></li>
         }
 
-        <li><a href="@Url.Action("Profile", "Account")"><i class="material-icons teal-text">person</i>Profile</a></li>
+        <li><a href="@Url.Action("UserProfile", "Account")"><i class="material-icons teal-text">person</i>Profile</a></li>
         <li ng-controller="AccountController" ng-click="logout()"><a href=""><i class="material-icons red-text">exit_to_app</i>Logout</a></li>
     </ul>
 

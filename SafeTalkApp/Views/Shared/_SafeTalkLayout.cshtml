@@ -146,6 +146,27 @@
                 opacity: .2;
             }
         }
+
+        .suggested-prompts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 8px 0;
+        }
+
+            .suggested-prompts button {
+                background: #f0f0f0;
+                border: none;
+                border-radius: 16px;
+                padding: 6px 12px;
+                cursor: pointer;
+                font-size: 14px;
+                transition: background 0.2s;
+            }
+
+                .suggested-prompts button:hover {
+                    background: #ddd;
+                }
     </style>
 </head>
 <body ng-app="SafeTalkApp">
@@ -227,6 +248,14 @@
                     <div ng-repeat="m in messages"
                          class="chat-message"
                          ng-class="{'user-msg': m.from=='user', 'bot-msg': m.from=='bot'}">{{m.text}}</div>
+
+                    <!-- ✅ Suggested prompts -->
+                    <div class="suggested-prompts" ng-if="promptsVisible">
+                        <button ng-repeat="prompt in prompts"
+                                ng-click="usePrompt(prompt)">
+                            {{prompt.text}}
+                        </button>
+                    </div>
 
                     <!-- Typing indicator -->
                     <div class="chat-message bot-msg typing-indicator" ng-if="typing">

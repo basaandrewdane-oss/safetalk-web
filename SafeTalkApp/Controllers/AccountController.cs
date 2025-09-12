@@ -1,11 +1,14 @@
 ﻿using Microsoft.Owin.Security;
+using SafeTalkApp.DTOs.Account;
 using SafeTalkApp.Models;
+using SafeTalkApp.Services;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Net.Mail;
 using System.Security.Claims;
 using System.Web;
@@ -15,7 +18,94 @@ namespace SafeTalkApp.Controllers
 {
     public class AccountController : Controller
     {
+        private readonly IAccountService _accountService;
+        public AccountController(IAccountService accountService)
+        {
+            _accountService = accountService;
+        }
         // GET: Account
+        public ActionResult Login()
+        {
+            return View();
+        }
+
+        public ActionResult Logout()
+        {
+            var authManager = HttpContext.GetOwinContext().Authentication;
+            authManager.SignOut("ApplicationCookie");
+            return RedirectToAction("Login", "Account");
+        }
+
+        public ActionResult Waiting()
+        {
+            return View();
+        }
+
+        public ActionResult Signup(string role)
+        {
+            if (string.IsNullOrWhiteSpace(role))
+            {
+                return RedirectToAction("SelectRole"); // optional fallback
+            }
+
+            role = role.Trim().ToLower();
+
+            switch (role)
+            {
+                case "user":
+                    return View("~/Views/Account/Signup/User/index.cshtml");
+                case "doctor":
+                    return View("~/Views/Account/Signup/Doctor/index.cshtml");
+                default:
+                    return View("Error"); // Or return a not found message
+            }
+        }
+
+        public JsonResult CreateAccount(SignUpDTO signUp)
+        {
+            var result = _accountService.RegisterUser(signUp);
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult AuthenticateUser(LoginDTO login)
+        {
+            var result = _accountService.AuthenticateUser(login);
+
+            if (result.success)
+            {
+                var claims = new List<Claim>
+                        {
+                            new Claim(ClaimTypes.NameIdentifier, result.userID.ToString()),
+                            new Claim(ClaimTypes.Name, result.email),
+                            new Claim(ClaimTypes.GivenName, result.firstName + " " + result.lastName),
+                            new Claim(ClaimTypes.Role, result.role ?? "User")
+                        };
+
+                var identity = new ClaimsIdentity(claims, "ApplicationCookie");
+
+                var authManager = HttpContext.GetOwinContext().Authentication;
+                authManager.SignIn(new AuthenticationProperties { IsPersistent = false }, identity);
+            }
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult VerifyEmail(string token)
+        {
+            var verified = _accountService.VerifyEmail(token);
+            return verified ? View("EmailVerified") : View("Error");
+        }
+
+        public ActionResult Error()
+        {
+            return View();
+        }
+
+        public ActionResult EmailVerified()
+        {
+            return View();
+        }
+
         public JsonResult GetRoles()
         {
             try
@@ -67,199 +157,6 @@ namespace SafeTalkApp.Controllers
             }
         }
 
-        public ActionResult Login()
-        {
-            return View();
-        }
-
-        public ActionResult Logout()
-        {
-            var authManager = HttpContext.GetOwinContext().Authentication;
-            authManager.SignOut("ApplicationCookie");
-            return RedirectToAction("Login", "Account");
-        }
-
-        public ActionResult Waiting()
-        {
-            return View();
-        }
-
-        public ActionResult VerifyEmail(string token)
-        {
-            using (var db = new SafeTalkAppContext())
-            {
-                var user = db.user_tbl.FirstOrDefault(u => u.emailVerificationToken == token);
-                if (user == null)
-                {
-                    return View("Error"); // Or a custom error view
-                }
-
-                user.isEmailVerified = true;
-                user.emailVerificationToken = null; // Optional: clear the token
-                db.SaveChanges();
-
-                return View("EmailVerified"); // Success view
-            }
-        }
-
-        public ActionResult Error()
-        {
-            return View();
-        }
-
-        public ActionResult EmailVerified()
-        {
-            return View();
-        }
-
-        public ActionResult Signup(string role)
-        {
-            if (string.IsNullOrWhiteSpace(role))
-            {
-                return RedirectToAction("SelectRole"); // optional fallback
-            }
-
-            role = role.Trim().ToLower();
-
-            switch (role)
-            {
-                case "user":
-                    return View("~/Views/Account/Signup/User/index.cshtml");
-                case "doctor":
-                    return View("~/Views/Account/Signup/Doctor/index.cshtml");
-                default:
-                    return View("Error"); // Or return a not found message
-            }
-        }
-
-        public JsonResult CreateAccount(SignUpViewModel signUp)
-        {
-            try
-            {
-                using (var db = new SafeTalkAppContext())
-                {
-                    var token = Guid.NewGuid().ToString();
-
-                    var createUser = new UserTblModel()
-                    {
-                        firstName = signUp.firstName,
-                        middleName = signUp.middleName,
-                        lastName = signUp.lastName,
-                        birthDate = signUp.birthDate,
-                        genderID = signUp.genderID,
-                        phoneNumber = signUp.phoneNumber,
-                        licenseNumber = signUp.roleID == 2 ? signUp.licenseNumber : null,
-                        specialization = signUp.roleID == 2 ? signUp.specialization : null,
-                        email = signUp.email,
-                        password = BCrypt.Net.BCrypt.HashPassword(signUp.password),
-                        isVerified = signUp.roleID == 2 ? false : true, // Doctors are not verified by default
-                        emailVerificationToken = token,
-                        isEmailVerified = false,
-                        dateCreated = DateTime.Now,
-                        dateUpdated = DateTime.Now,
-                    };
-                    db.user_tbl.AddOrUpdate(createUser);
-                    db.SaveChanges();
-
-                    var userRole = new UserRoleTblModel()
-                    {
-                        userID = createUser.userID,
-                        roleID = signUp.roleID,
-                        dateCreated = DateTime.Now,
-                        dateUpdated = DateTime.Now,
-                    };
-                    db.user_role_tbl.AddOrUpdate(userRole);
-                    db.SaveChanges();
-
-                    if (signUp.roleID == 2 && signUp.availability != null)
-                    {
-                        foreach (var slot in signUp.availability)
-                        {
-                            var userAvailability = new UserAvailabilityTblModel()
-                            {
-                                userID = createUser.userID,
-                                dayID = slot.dayID,
-                                availabilityStart = slot.availabilityStart,
-                                availabilityEnd = slot.availabilityEnd,
-                                fee = slot.fee,
-                                dateCreated = DateTime.Now,
-                                dateUpdated = DateTime.Now
-                            };
-                            db.user_availability_tbl.Add(userAvailability);
-                        }
-                        db.SaveChanges();
-                    }
-                    //SendVerificationEmail(signUp.email, signUp.firstName, token);
-                }
-                return Json(new { success = true, message = "Account created successfully." }, JsonRequestBehavior.AllowGet);
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = "An error occurred while creating the account: " + ex.Message }, JsonRequestBehavior.AllowGet);
-            }
-        }
-
-        public JsonResult LoginUser(LogInViewModel logIn)
-        {
-            try
-            {
-                using (var db = new SafeTalkAppContext())
-                {
-                    var user = db.user_tbl.FirstOrDefault(u => u.email == logIn.email);
-
-                    if (user == null)
-                    {
-                        return Json(new { success = false, message = "Invalid email or password." }, JsonRequestBehavior.AllowGet);
-                    }
-
-                    if (!user.isEmailVerified)
-                    {
-                        return Json(new { success = false, message = "Please verify your email before logging in." }, JsonRequestBehavior.AllowGet);
-                    }
-
-                    if (user != null && BCrypt.Net.BCrypt.Verify(logIn.password, user.password))
-                    {
-
-                        var roleName = (from ur in db.user_role_tbl
-                                        where ur.userID == user.userID
-                                        join r in db.role_tbl on ur.roleID equals r.roleID
-                                        select r.roleName)
-                                        .FirstOrDefault();
-
-                        if (roleName == "Doctor" && user.isVerified == false)
-                        {
-                            return Json(new { success = true, role = roleName, verified = false }, JsonRequestBehavior.AllowGet);
-                        }
-
-                        var claims = new List<Claim>
-                        {
-                            new Claim(ClaimTypes.NameIdentifier, user.userID.ToString()),
-                            new Claim(ClaimTypes.Name, user.email),
-                            new Claim(ClaimTypes.GivenName, user.firstName + " " + user.lastName),
-                            new Claim(ClaimTypes.Role, roleName ?? "User")
-                        };
-
-                        var identity = new ClaimsIdentity(claims, "ApplicationCookie");
-
-                        var authManager = HttpContext.GetOwinContext().Authentication;
-                        authManager.SignIn(new AuthenticationProperties { IsPersistent = false }, identity);
-
-                        return Json(new { success = true }, JsonRequestBehavior.AllowGet);
-                    }
-                    else
-                    {
-                        // Invalid credentials
-                        return Json(new { success = false, message = "Invalid email or password." }, JsonRequestBehavior.AllowGet);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Login Error: {ex.Message}\n{ex.StackTrace}");
-
-                return Json(new { success = false, message = "An unexpected error occurred. Please try again." }, JsonRequestBehavior.AllowGet);
-            }
-        }
 
         //public ActionResult CreateAdmin()
         //{
@@ -299,39 +196,5 @@ namespace SafeTalkApp.Controllers
         //        return Content("Admin account created.");
         //    }
         //}
-
-        private void SendVerificationEmail(string email, string name, string token)
-        {
-            string verificationLink = Url.Action("VerifyEmail", "Account", new { token = token }, protocol: Request.Url.Scheme);
-            string body = $"Hi {name},<br/><br/>Please verify your email by clicking the link below:<br/><a href='{verificationLink}'>Verify Email</a>";
-
-            SendEmail(email, "Verify Your Account", body);
-        }
-
-        public void SendEmail(string toEmail, string subject, string body)
-        {
-            string smtpHost = ConfigurationManager.AppSettings["SmtpHost"];
-            int smtpPort = int.Parse(ConfigurationManager.AppSettings["SmtpPort"]);
-            string smtpUser = ConfigurationManager.AppSettings["SmtpUser"];
-            string smtpPass = ConfigurationManager.AppSettings["SmtpPass"];
-
-            var smtpClient = new SmtpClient(smtpHost)
-            {
-                Port = smtpPort,
-                Credentials = new NetworkCredential(smtpUser, smtpPass),
-                EnableSsl = true,
-            };
-
-            var mailMessage = new MailMessage
-            {
-                From = new MailAddress(smtpUser),
-                Subject = subject,
-                Body = body,
-                IsBodyHtml = true,
-            };
-            mailMessage.To.Add(toEmail);
-
-            smtpClient.Send(mailMessage);
-        }
     }
 }

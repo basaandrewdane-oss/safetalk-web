@@ -23,7 +23,7 @@ namespace SafeTalkApp.Controllers
                 return View("~/Views/Resources/Admin/Index.cshtml");
             }
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "SafeTalk");
         }
 
         public JsonResult GetResources()

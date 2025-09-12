@@ -34,8 +34,11 @@
 
     $scope.startEditFaq = function (faq) {
         $scope.editFaq = angular.copy(faq);
-        $('#editModal').modal('open');
-        setTimeout(function () { M.updateTextFields(); }, 100);
+        $timeout(function () {
+            var elems = document.getElementById('editModal');
+            var instance = M.Modal.init(elems);
+            instance.open();
+        });
     }
 
     $scope.saveEdit = function () {
@@ -128,10 +131,6 @@
             }
         });
     }
-
-    $(document).ready(function () {
-        $('.modal').modal();
-    });
 
     $scope.loadFaqs();
 });
