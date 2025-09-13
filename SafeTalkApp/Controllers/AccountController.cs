@@ -71,6 +71,10 @@ namespace SafeTalkApp.Controllers
         {
             var result = _accountService.AuthenticateUser(login);
 
+            if (result.verified == false)
+            {
+                return Json(result, JsonRequestBehavior.AllowGet);
+            }
             if (result.success)
             {
                 var claims = new List<Claim>
