@@ -24,7 +24,7 @@
     this.login = function (loginData) {
         var response = $http({
             method: "post",
-            url: "/Account/AuthenticateUser",
+            url: "/Account/LoginUser",
             data: loginData
         });
         return response;
