@@ -1,4 +1,5 @@
 ﻿app.controller("AppointmentsController", function ($scope, $timeout, AppointmentService) {
+    $scope.showCanceled = false;
     // ===== User Appointments =====
     $scope.getDoctors = function () {
         var getDoctors = AppointmentService.getDoctors();
@@ -149,7 +150,6 @@
     }
 
     $scope.filteredAppointments = function () {
-        $scope.showCanceled = false;
         if (!$scope.appointments) return [];
         return $scope.appointments.filter(function (appt) {
             return $scope.showCanceled || appt.status !== 5;

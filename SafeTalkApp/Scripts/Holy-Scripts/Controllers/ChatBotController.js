@@ -20,6 +20,24 @@
         $scope.chatOpen = !$scope.chatOpen;
     };
 
+    // Listen for outside clicks to close the chat
+    var clickHandler = function (event) {
+        var chatbotWindow = document.getElementById('chatbot-window');
+        var chatButton = document.querySelector('.fixed-action-btn');
+
+        if (chatbotWindow && !chatbotWindow.contains(event.target) && !chatButton.contains(event.target)) {
+            $scope.$apply(function () {
+                $scope.chatOpen = false;
+            });
+        }
+    };
+
+    angular.element(document).on('click', clickHandler);
+
+    $scope.$on('$destroy', function () {
+        angular.element(document).off('click', clickHandler);
+    });
+
     $scope.usePrompt = function (prompt) {
         $scope.message = prompt.text;
         $scope.sendMessage();

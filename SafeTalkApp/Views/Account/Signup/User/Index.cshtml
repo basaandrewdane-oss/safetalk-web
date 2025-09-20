@@ -18,8 +18,8 @@
                         <h4 class="pink-text text-lighten-2 center-align">Create Your Account</h4>
                         <form name="userForm" ng-submit="signUp()" novalidate>
 
-                            <!-- Name Row -->
                             <div class="row">
+                                <!-- Name Row -->
                                 <div class="input-field col s12 m6 l6">
                                     <input id="first_name" name="firstName" type="text" ng-model="firstName" required>
                                     <label for="first_name">First Name</label>
@@ -32,7 +32,7 @@
                                     <input id="middle_name" name="middleName" type="text" ng-model="middleName">
                                     <label for="middle_name">Middle Name (Optional)</label>
                                 </div>
-                                <div class="input-field col s12 m12 l12">
+                                <div class="input-field col s12 m6 l6">
                                     <input id="last_name" name="lastName" type="text" ng-model="lastName" required>
                                     <label for="last_name">Last Name</label>
                                     <span class="helper-text red-text text-lighten-2"
@@ -40,10 +40,8 @@
                                         Last Name is required
                                     </span>
                                 </div>
-                            </div>
 
-                            <!-- Birthdate / Gender / Phone -->
-                            <div class="row">
+                                <!-- Birthdate / Gender / Phone -->
                                 <div class="input-field col s12 m6 l6">
                                     <input id="birth_date" name="birthDate" type="text" class="datepicker"
                                            ng-model="birthDate" validate-age required>
@@ -57,7 +55,6 @@
                                         You must be at least 18 years old
                                     </span>
                                 </div>
-
                                 <div class="input-field col s12 m6 l6" ng-init="getGenders()">
                                     <select id="gender" name="gender" ng-model="selectedGender"
                                             ng-options="g.genderID as g.gender for g in genders"
@@ -70,8 +67,7 @@
                                         Gender is required
                                     </span>
                                 </div>
-
-                                <div class="input-field col s12 m12 l12">
+                                <div class="input-field col s12 m6 l6">
                                     <input id="phone_number" name="phoneNumber" type="text"
                                            ng-model="phoneNumber" required ng-pattern="/^(09|\+639)\d{9}$/">
                                     <label for="phone_number">Mobile Number</label>
@@ -84,10 +80,8 @@
                                         Enter a valid Philippine mobile number (e.g. 09171234567 or +639171234567)
                                     </span>
                                 </div>
-                            </div>
 
-                            <!-- Email / Password -->
-                            <div class="row">
+                                <!-- Email / Password -->
                                 <div class="input-field col s12 m6 l6">
                                     <input id="email" name="email" type="email" ng-model="email" required>
                                     <label for="email">Email</label>
@@ -100,7 +94,6 @@
                                         Invalid email format
                                     </span>
                                 </div>
-
                                 <div class="input-field col s12 m6 l6">
                                     <input id="password" name="password" type="password" ng-model="password"
                                            ng-minlength="8" password-validator required>
@@ -118,8 +111,7 @@
                                         Must include uppercase, number, and special character
                                     </span>
                                 </div>
-
-                                <div class="input-field col s12 m12 l12">
+                                <div class="input-field col s12 m6 l6">
                                     <input id="confirmPassword" name="confirmPassword" type="password"
                                            ng-model="confirmPassword" required>
                                     <label for="confirmPassword">Confirm Password</label>
@@ -133,7 +125,6 @@
                                     </span>
                                 </div>
                             </div>
-
                             <!-- Buttons -->
                             <div class="row center-align" style="margin-top: 20px;">
                                 <!-- Primary Action -->
@@ -141,18 +132,15 @@
                                     Sign Up
                                 </button>
                                 <!-- Secondary Action -->
-                                <a class="waves-effect waves-light btn-large teal lighten-2 white-text" style="margin-top: 5px;">
+                                <a class="waves-effect waves-light btn-large teal lighten-2 white-text" style="margin-top: 5px;"
+                                   ng-click="cancelSignUp()">
                                     Cancel
                                 </a>
                             </div>
                         </form>
                     </div>
-                    <div class="card-action center-align deep-purple lighten-3 white-text"
-                         style="border-radius: 30px;">
-                        Already have an account?
-                        <a href="/Account/Login" class="white-text text-darken-4">
-                            <b>Login</b>
-                        </a>
+                    <div class="center-align deep-purple-text text-lighten-3">
+                        Already have an account? <a href="/Account/Login" class="pink-text text-lighten-3"><b>Log in</b></a>
                     </div>
                 </div>
             </div>

@@ -17,7 +17,7 @@
                 </div>
 
                 <div class="card-action">
-                    <form action="@Url.Action("CapturePayPalOrder", "Appointment")" method="post" class="center-align">
+                    <form action="@Url.Action("CapturePayPalOrder", "Payment")" method="post" class="center-align">
                         <input type="hidden" name="token" value="@ViewBag.Token" />
                         <input type="hidden" name="appointmentID" value="@ViewBag.AppointmentID" />
 

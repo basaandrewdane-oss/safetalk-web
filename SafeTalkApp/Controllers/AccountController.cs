@@ -23,7 +23,7 @@ namespace SafeTalkApp.Controllers
         {
             _accountService = accountService;
         }
-        // GET: Account
+
         public ActionResult Login()
         {
             return View();
@@ -61,7 +61,7 @@ namespace SafeTalkApp.Controllers
             }
         }
 
-        public JsonResult CreateAccount(SignUpDTO signUp)
+        public JsonResult RegisterUser(SignUpDTO signUp)
         {
             var result = _accountService.RegisterUser(signUp);
             return Json(result, JsonRequestBehavior.AllowGet);
@@ -75,10 +75,10 @@ namespace SafeTalkApp.Controllers
             {
                 var claims = new List<Claim>
                         {
-                            new Claim(ClaimTypes.NameIdentifier, result.userID.ToString()),
-                            new Claim(ClaimTypes.Name, result.email),
-                            new Claim(ClaimTypes.GivenName, result.firstName + " " + result.lastName),
-                            new Claim(ClaimTypes.Role, result.role ?? "User")
+                            new Claim(ClaimTypes.NameIdentifier, result.data.userID.ToString()),
+                            new Claim(ClaimTypes.Name, result.data.email),
+                            new Claim(ClaimTypes.GivenName, result.data.firstName + " " + result.data.lastName),
+                            new Claim(ClaimTypes.Role, result.data.role ?? "User")
                         };
 
                 var identity = new ClaimsIdentity(claims, "ApplicationCookie");
@@ -93,7 +93,7 @@ namespace SafeTalkApp.Controllers
         public ActionResult VerifyEmail(string token)
         {
             var verified = _accountService.VerifyEmail(token);
-            return verified ? View("EmailVerified") : View("Error");
+            return verified.success ? View("EmailVerified") : View("Error");
         }
 
         public ActionResult Error()
@@ -108,53 +108,20 @@ namespace SafeTalkApp.Controllers
 
         public JsonResult GetRoles()
         {
-            try
-            {
-                using (var db = new SafeTalkAppContext())
-                {
-                    var roles = db.role_tbl.Select(r => new { r.roleID, r.roleName }).ToList();
-                    return Json(roles, JsonRequestBehavior.AllowGet);
-                }
-            }
-            catch (Exception ex)
-            {
-                // Log the exception (not implemented here)
-                return Json(new { success = false, message = "Error retrieving roles: " + ex.Message }, JsonRequestBehavior.AllowGet);
-            }
+            var result = _accountService.GetRoles();
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
 
         public JsonResult GetGenders()
         {
-            try
-            {
-                using (var db = new SafeTalkAppContext())
-                {
-                    var genders = db.gender_tbl.Select(g => new { g.genderID, g.gender }).ToList();
-                    return Json(genders, JsonRequestBehavior.AllowGet);
-                }
-            }
-            catch (Exception ex)
-            {
-                // Log the exception (not implemented here)
-                return Json(new { success = false, message = "Error retrieving genders: " + ex.Message }, JsonRequestBehavior.AllowGet);
-            }
+            var result = _accountService.GetGenders();
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
 
         public JsonResult GetDaysOfWeek()
         {
-            try
-            {
-                using (var db = new SafeTalkAppContext())
-                {
-                    var days = db.days_of_week_tbl.Select(d => new { d.dayID, d.day }).ToList();
-                    return Json(days, JsonRequestBehavior.AllowGet);
-                }
-            }
-            catch (Exception ex)
-            {
-                // Log the exception (not implemented here)
-                return Json(new { success = false, message = "Error retrieving days of week: " + ex.Message }, JsonRequestBehavior.AllowGet);
-            }
+            var result = _accountService.GetDaysOfWeek();
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
 
 

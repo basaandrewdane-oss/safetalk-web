@@ -58,6 +58,7 @@ namespace SafeTalkApp.Controllers
                         appointmentID = appointmentID,
                         imagePath = "/Uploads/Payments/" + fileName, // For easier access on frontend
                         status = PaymentStatus.Pending,
+                        transactionId = Guid.NewGuid().ToString(), // Temporary transaction ID
                         dateCreated = DateTime.Now,
                         dateUpdated = DateTime.Now
                     };
@@ -186,6 +187,36 @@ namespace SafeTalkApp.Controllers
             }
 
             return View("PaymentProcessing");
+        }
+
+        public JsonResult VerifyPayment(int appointmentID)
+        {
+            try
+            {
+                using (var db = new SafeTalkAppContext())
+                {
+                    var payment = db.payment_tbl.FirstOrDefault(p => p.appointmentID == appointmentID);
+                    if (payment == null)
+                    {
+                        return Json(new { success = false, message = "Payment not found." }, JsonRequestBehavior.AllowGet);
+                    }
+                    payment.status = PaymentStatus.Completed; // Assuming you want to mark it as verified
+                    payment.dateUpdated = DateTime.Now;
+                    db.SaveChanges();
+                    var appointment = db.appointments_tbl.Find(appointmentID);
+                    if (appointment != null)
+                    {
+                        appointment.status = AppointmentStatus.Paid; // Update appointment status
+                        appointment.dateUpdated = DateTime.Now;
+                        db.SaveChanges();
+                    }
+                    return Json(new { success = true, message = "Payment verified successfully." }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
         }
 
         public class PayPalHelper

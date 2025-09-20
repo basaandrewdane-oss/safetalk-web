@@ -37,6 +37,17 @@
                             </div>
                             <div ng-switch-when="2" ng-controller="PaymentController">
                                 <button class="waves-effect waves-light btn green" ng-click="openImageModal(appt.paymentImage, appt.appointmentID)">Verify Payment</button>
+                                <!-- Image Preview Modal -->
+                                <div id="imageModal" class="modal" ng-controller="PaymentController">
+                                    <div class="modal-content center-align">
+                                        <img class="materialboxed" ng-src="{{modalImage}}" style="max-width: 100%; height: auto; cursor: zoom-in;" />
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button class="btn green" ng-click="verifyPayment(appointmentID)">Approve</button>
+                                        <button class="btn red" ng-click="verifyPayment(appointmentID)">Reject</button>
+                                        <a href="#!" class="waves-effect waves-light modal-close btn grey">Close</a>
+                                    </div>
+                                </div>
                             </div>
                             <div ng-switch-when="3">
                                 <a href="@Url.Action("Consultations", "Consultation")" class="waves-effect waves-light btn teal lighten-2">Proceed</a>
@@ -64,16 +75,5 @@
                 </tr>
             </tbody>
         </table>
-        <!-- Image Preview Modal -->
-        <div id="imageModal" class="modal" ng-controller="PaymentController">
-            <div class="modal-content center-align">
-                <img class="materialboxed" ng-src="{{modalImage}}" style="max-width: 100%; height: auto; cursor: zoom-in;" />
-            </div>
-            <div class="modal-footer">
-                <button class="btn green" ng-click="verifyPayment(appointmentID)">Approve</button>
-                <button class="btn red" ng-click="verifyPayment(appointmentID)">Reject</button>
-                <a href="#!" class="waves-effect waves-light modal-close btn grey">Close</a>
-            </div>
-        </div>
     </div>
 </main>

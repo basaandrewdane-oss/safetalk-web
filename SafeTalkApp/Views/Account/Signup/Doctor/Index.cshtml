@@ -9,15 +9,14 @@
         <div class="row">
             <div class="col s12 m10 offset-m1 l8 offset-l2">
                 <div class="card center z-depth-3 white">
-                    <h4 class="pink-text text-lighten-2">Create Your Account</h4>
+                    @*<h4 class="pink-text text-lighten-2">Create Your Account</h4>*@
                     <div class="row">
                         <form class="col s12" name="doctorForm" novalidate>
 
                             <div ng-show="currentStep === 1">
                                 <div class="row">
-                                    <h5 class="deep-purple-text text-lighten-3 left">Personal Details</h5>
+                                    <h4 class="deep-purple-text text-lighten-3 center">Personal Details</h4>
                                 </div>
-
                                 <div class="row">
                                     <div class="input-field col s12 m6 l6">
                                         <input id="first_name"
@@ -38,7 +37,7 @@
                                                ng-model="middleName">
                                         <label for="middle_name">Middle Name (Optional)</label>
                                     </div>
-                                    <div class="input-field col s12 m12 l12">
+                                    <div class="input-field col s12 m6 l6">
                                         <input id="last_name"
                                                name="lastName"
                                                type="text"
@@ -50,18 +49,14 @@
                                             Last Name is Required
                                         </span>
                                     </div>
-                                </div>
-
-                                <div class="row">
                                     <div class="input-field col s12 m6 l6">
                                         <input id="birth_date"
                                                name="birthDate"
-                                               type="text"
-                                               class="datepicker"
+                                               type="date"
                                                ng-model="birthDate"
                                                validate-age
                                                required>
-                                        <label for="birth_date">Birth Date</label>
+                                        <label for="birth_date" class="active">Birth Date</label>
                                         <span class="helper-text left-align red-text text-lighten-2"
                                               ng-show="(doctorForm.birthDate.$touched || doctorForm.$submitted) && doctorForm.birthDate.$error.required">
                                             Birth Date is required
@@ -88,8 +83,7 @@
                                             Gender is required
                                         </span>
                                     </div>
-
-                                    <div class="input-field col s12 m12 l12">
+                                    <div class="input-field col s12 m6 l6">
                                         <input id="phone_number"
                                                name="phoneNumber"
                                                type="text"
@@ -102,19 +96,17 @@
                                             Phone Number is Required
                                         </span>
                                         <span class="helper-text left-align red-text text-lighten-2"
-                                              ng-show="(doctorForm.phoneNumber.$touched || doctorForm.$submitted) && doctorForm.phoneNumber.$error.pattern">
+                                              ng-show="(doctorForm.phoneNumber.$dirty || doctorForm.$submitted) && doctorForm.phoneNumber.$error.pattern">
                                             Enter a valid Philippine mobile number (e.g. 09171234567 or +639171234567)
                                         </span>
                                     </div>
                                 </div>
                             </div>
 
-
                             <div ng-show="currentStep === 2">
                                 <div class="row">
-                                    <h5 class="deep-purple-text text-lighten-3 left">Account</h5>
+                                    <h4 class="deep-purple-text text-lighten-3 center">Account</h4>
                                 </div>
-
                                 <div class="row">
                                     <div class="input-field col s12 m6 l6">
                                         <input id="email"
@@ -132,7 +124,6 @@
                                             Invalid email format
                                         </span>
                                     </div>
-
                                     <div class="input-field col s12 m6 l6">
                                         <input id="password"
                                                name="password"
@@ -155,20 +146,17 @@
                                             Must include uppercase, number, and special character
                                         </span>
                                     </div>
-
-                                    <div class="input-field col s12 m12 l12">
+                                    <div class="input-field col s12 m6 l6">
                                         <input id="confirmPassword"
                                                name="confirmPassword"
                                                type="password"
                                                ng-model="confirmPassword"
                                                required>
                                         <label for="confirmPassword">Confirm Password</label>
-
                                         <span class="helper-text left-align red-text text-lighten-2"
                                               ng-show="(doctorForm.confirmPassword.$touched || doctorForm.$submitted) && doctorForm.confirmPassword.$error.required">
                                             Confirm Password is required
                                         </span>
-
                                         <span class="helper-text left-align red-text text-lighten-2"
                                               ng-show="(doctorForm.confirmPassword.$dirty || doctorForm.$submitted) && confirmPassword !== password">
                                             Passwords do not match.
@@ -177,12 +165,10 @@
                                 </div>
                             </div>
 
-
                             <div ng-show="currentStep === 3">
                                 <div class="row">
                                     <h5 class="deep-purple-text text-lighten-3 left">Credentials and Availability</h5>
                                 </div>
-
                                 <div class="row">
                                     <div class="input-field col s12 m6 l6">
                                         <input id="license_number"
@@ -201,7 +187,6 @@
                                             License number must be atleast 7 digit
                                         </span>
                                     </div>
-
                                     <div class="input-field col s12 m6 l6">
                                         <input id="specialization"
                                                name="specialization"
@@ -214,7 +199,6 @@
                                             Specialization is required
                                         </span>
                                     </div>
-
                                     <div class="input-field col s12 m6 l6" ng-init="getDaysOfWeek()">
                                         <select multiple
                                                 id="days"
@@ -233,32 +217,29 @@
                                             Select at least one day.
                                         </span>
                                     </div>
-
                                     <div ng-repeat="day in selectedDays">
                                         <div class="input-field col s12 m6 l6">
                                             <input id="timeStart{{day}}"
                                                    name="timeStart{{day}}"
-                                                   type="text"
-                                                   class="timepicker"
+                                                   type="time"
                                                    ng-model="availabilityTimes[day].start"
                                                    placeholder="Start Time"
-                                                   material-timepicker24
                                                    required>
-                                            <label><b class="teal-text text-lighten-2">Start Time</b> for <b class="deep-purple-text text-lighten-3">{{getDayName(day)}}</b></label>
+                                            <label for="timeStart{{day}}" class="active">
+                                                <b class="teal-text text-lighten-2">Start Time</b> for
+                                                <b class="deep-purple-text text-lighten-3">{{getDayName(day)}}</b>
+                                            </label>
                                             <span class="helper-text left-align red-text text-lighten-2"
                                                   ng-show="(doctorForm['timeStart' + day].$touched || doctorForm.$submitted) && doctorForm['timeStart' + day].$error.required">
                                                 This field is required
                                             </span>
                                         </div>
-
                                         <div class="input-field col s12 m6 l6">
                                             <input id="timeEnd{{day}}"
                                                    name="timeEnd{{day}}"
-                                                   type="text"
-                                                   class="timepicker"
+                                                   type="time"
                                                    ng-model="availabilityTimes[day].end"
                                                    placeholder="End Time"
-                                                   material-timepicker24
                                                    required>
                                             <label><b class="pink-text text-lighten-2">End Time</b> for <b class="deep-purple-text text-lighten-3">{{getDayName(day)}}</b></label>
                                             <span class="helper-text left-align red-text text-lighten-2"
@@ -266,7 +247,6 @@
                                                 This field is required
                                             </span>
                                         </div>
-
                                         <div class="input-field col s12 m6 l6">
                                             <input id="fee{{day}}"
                                                    name="fee{{day}}"
@@ -294,9 +274,7 @@
                                     </div>
                                 </div>
                             </div>
-
-
-
+                            <!-- Buttons -->
                             <div class="row">
                                 <div class="col s12 m6 l6">
                                     <a class="waves-effect waves-teal btn-large white teal-text text-lighten-2"
@@ -319,13 +297,13 @@
                                     </button>
                                 </div>
                             </div>
-
                         </form>
-                    </div> <!-- /row -->
-                    <div class="card-action center-align deep-purple lighten-3 white-text" style="border-radius: 30px; margin-top: 5px;">
-                        Already have an account? <a href="/Account/Login" class="white-text text-darken-4"><b>Login</b></a>
                     </div>
-                </div> <!-- /card -->
+                    <div class="center-align deep-purple-text text-lighten-3">
+                        <br />
+                        Already have an account? <a href="/Account/Login" class="pink-text text-lighten-3"><b>Log in</b></a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -32,7 +32,7 @@
                     <td>
                         <div class="center" ng-switch="appt.status">
                             <button ng-switch-when="0" class="btn red" ng-click="cancelAppointment(appt.appointmentID)">Cancel</button>
-                            <div ng-controller="PaymentController">
+                            <div>
                                 <!-- PayPal Button with SVG logo -->
                                 <button ng-switch-when="1" class="btn blue darken-3 white-text waves-effect waves-light" ng-click="payWithPayPal(appt)">
                                     <img src="~/Content/Images/paypal-logo.svg" alt="PayPal" style="height: 15px; margin-right: 8px;">

@@ -1,5 +1,5 @@
 ﻿@{
-    Layout = "~/Views/Shared/_SafeTalkLayout.cshtml";
+    Layout = "~/Views/Shared/_HomeLayout.cshtml";
 }
 <style>
     .slider .indicators .indicator-item.active {
@@ -46,7 +46,7 @@
 
     <div class="grey lighten-5">
         <div class="section container">
-            <div class="row"  style="display: flex;">
+            <div class="row"  style="display: flex; flex-wrap: wrap; align-items: stretch;">
                 <div class="col s12 m6">
                     <i class="medium material-icons teal-text text-lighten-2">calendar_month</i>
                     <h5 class="grey-text text-darken-4">Book an appointment online</h5>
@@ -55,7 +55,7 @@
                         SafeTalk makes it easy to book appointments online, ensuring you get the guidance and support you need, when you need it.
                     </p>
                 </div>
-                <div class="col s12 m6 center right-align" style="align-self: flex-end;">
+                <div class="col s12 m6 center right-align" style="display: flex; justify-content: center; align-items: center;">
                     <a class="waves-effect waves-light btn-large teal lighten-2" style="width:80%;">
                         Book now
                     </a>

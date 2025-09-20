@@ -270,12 +270,16 @@
     <Compile Include="Controllers\PaymentController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
     <Compile Include="Controllers\ResourcesController.cs" />
-    <Compile Include="Controllers\SafeTalkController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\TranscriptionController.cs" />
     <Compile Include="DTOs\Account\AvailabilityDTO.cs" />
     <Compile Include="DTOs\Account\LoginDTO.cs" />
-    <Compile Include="DTOs\Account\SignUpResult.cs" />
     <Compile Include="DTOs\Account\SignUpDTO.cs" />
+    <Compile Include="DTOs\Admin\DoctorDTO.cs" />
+    <Compile Include="DTOs\Admin\FAQsDTO.cs" />
+    <Compile Include="DTOs\Admin\PromptsDTO.cs" />
+    <Compile Include="DTOs\Home\DoctorDTO.cs" />
+    <Compile Include="DTOs\Shared\ApiResponse.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -291,6 +295,7 @@
     <Compile Include="Models\FAQsTblModel.cs" />
     <Compile Include="Models\GenderTblMap.cs" />
     <Compile Include="Models\GenderTblModel.cs" />
+    <Compile Include="Models\ISafeTalkAppContext.cs" />
     <Compile Include="Models\LogInViewModel.cs" />
     <Compile Include="Models\PaymentStatus.cs" />
     <Compile Include="Models\PaymentTblMap.cs" />
@@ -312,9 +317,13 @@
     <Compile Include="Models\UserTblModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\AccountService.cs" />
+    <Compile Include="Services\AdminService.cs" />
     <Compile Include="Services\EmailService.cs" />
     <Compile Include="Services\IAccountService.cs" />
+    <Compile Include="Services\IAdminService.cs" />
     <Compile Include="Services\IEmailService.cs" />
+    <Compile Include="Services\IHomeService.cs" />
+    <Compile Include="Services\HomeService.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -396,6 +405,7 @@
     <Content Include="Scripts\Holy-Scripts\Controllers\ChatRoomController.js" />
     <Content Include="Scripts\Holy-Scripts\Controllers\ConsultationController.js" />
     <Content Include="Scripts\Holy-Scripts\Controllers\AppointmentsController.js" />
+    <Content Include="Scripts\Holy-Scripts\Controllers\HomeController.js" />
     <Content Include="Scripts\Holy-Scripts\Controllers\PaymentController.js" />
     <Content Include="Scripts\Holy-Scripts\Controllers\ResourceController.js" />
     <Content Include="Scripts\Holy-Scripts\Directives\fileModel.js" />
@@ -409,6 +419,7 @@
     <Content Include="Scripts\Holy-Scripts\Services\AppointmentService.js" />
     <Content Include="Scripts\Holy-Scripts\Services\ChatBotService.js" />
     <Content Include="Scripts\Holy-Scripts\Services\ConsultationService.js" />
+    <Content Include="Scripts\Holy-Scripts\Services\HomeService.js" />
     <Content Include="Scripts\Holy-Scripts\Services\PaymentService.js" />
     <Content Include="Scripts\Holy-Scripts\Services\ResourceService.js" />
     <Content Include="Scripts\i18n\angular-locale_af-na.js" />
@@ -1181,12 +1192,12 @@
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
-    <Content Include="Views\Shared\_SafeTalkLayout.cshtml" />
-    <Content Include="Views\SafeTalk\Index.cshtml" />
+    <Content Include="Views\Shared\_HomeLayout.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Scripts\version.json" />
-    <Content Include="Views\SafeTalk\Doctors.cshtml" />
-    <Content Include="Views\SafeTalk\Contact.cshtml" />
-    <Content Include="Views\SafeTalk\About.cshtml" />
+    <Content Include="Views\Home\Doctors.cshtml" />
+    <Content Include="Views\Home\Contact.cshtml" />
+    <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Shared\_AccountLayout.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Account\Signup\User\Index.cshtml" />

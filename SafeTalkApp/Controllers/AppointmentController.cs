@@ -282,7 +282,8 @@ namespace SafeTalkApp.Controllers
                 {
                     var appointments = (from a in db.appointments_tbl
                                         join d in db.user_tbl on a.patientID equals d.userID
-                                        join p in db.payment_tbl on a.appointmentID equals p.appointmentID
+                                        join p in db.payment_tbl on a.appointmentID equals p.appointmentID into pay
+                                        from p in pay.DefaultIfEmpty()
                                         where a.doctorID == userID
                                         orderby a.date descending, a.startTime descending
                                         select new
@@ -333,36 +334,6 @@ namespace SafeTalkApp.Controllers
                     //    );
                     //}
                     return Json(new { success = true, message = "Appointment approved and confirmation email sent." }, JsonRequestBehavior.AllowGet);
-                }
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = ex.Message }, JsonRequestBehavior.AllowGet);
-            }
-        }
-
-        public JsonResult VerifyPayment(int appointmentID)
-        {
-            try
-            {
-                using (var db = new SafeTalkAppContext())
-                {
-                    var payment = db.payment_tbl.FirstOrDefault(p => p.appointmentID == appointmentID);
-                    if (payment == null)
-                    {
-                        return Json(new { success = false, message = "Payment not found." }, JsonRequestBehavior.AllowGet);
-                    }
-                    payment.status = PaymentStatus.Completed; // Assuming you want to mark it as verified
-                    payment.dateUpdated = DateTime.Now;
-                    db.SaveChanges();
-                    var appointment = db.appointments_tbl.Find(appointmentID);
-                    if (appointment != null)
-                    {
-                        appointment.status = AppointmentStatus.Paid; // Update appointment status
-                        appointment.dateUpdated = DateTime.Now;
-                        db.SaveChanges();
-                    }
-                    return Json(new { success = true, message = "Payment verified successfully." }, JsonRequestBehavior.AllowGet);
                 }
             }
             catch (Exception ex)

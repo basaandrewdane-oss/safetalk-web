@@ -40,6 +40,7 @@ namespace SafeTalkApp
                 "~/Scripts/Holy-Scripts/Controllers/AppointmentsController.js",
                 "~/Scripts/Holy-Scripts/Controllers/ChatBotController.js",
                 "~/Scripts/Holy-Scripts/Controllers/ConsultationController.js",
+                "~/Scripts/Holy-Scripts/Controllers/HomeController.js",
                 "~/Scripts/Holy-Scripts/Controllers/PaymentController.js",
                 "~/Scripts/Holy-Scripts/Controllers/ResourceController.js",
                 "~/Scripts/Holy-Scripts/Services/AccountService.js",
@@ -47,6 +48,7 @@ namespace SafeTalkApp
                 "~/Scripts/Holy-Scripts/Services/AppointmentService.js",
                 "~/Scripts/Holy-Scripts/Services/ChatBotService.js",
                 "~/Scripts/Holy-Scripts/Services/ConsultationService.js",
+                "~/Scripts/Holy-Scripts/Services/HomeService.js",
                 "~/Scripts/Holy-Scripts/Services/PaymentService.js",
                 "~/Scripts/Holy-Scripts/Services/ResourceService.js"));
         }

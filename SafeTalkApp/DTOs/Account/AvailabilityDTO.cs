@@ -8,8 +8,8 @@ namespace SafeTalkApp.DTOs.Account
     public class AvailabilityDTO
     {
         public int dayID { get; set; }
-        public TimeSpan availabilityStart { get; set; }
-        public TimeSpan availabilityEnd { get; set; }
+        public string availabilityStart { get; set; }
+        public string availabilityEnd { get; set; }
         public decimal fee { get; set; }
     }
 }

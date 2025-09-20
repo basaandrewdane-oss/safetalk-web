@@ -1,7 +1,7 @@
-﻿app.controller("PaymentController", function ($scope, $timeout, PaymentService) {
+﻿app.controller("PaymentController", function ($scope, $timeout, $rootScope, PaymentService) {
     // ===== For user payment =====
 
-    $scope.payWithPayPal = function (appointment) {
+    $rootScope.payWithPayPal = function (appointment) {
         PaymentService.createPayPalOrder(appointment.appointmentID).then(function (response) {
             if (response.data.success) {
                 // Show loading swal before redirect
@@ -27,7 +27,7 @@
         });
     };
 
-    $scope.openPaymentModal = function (appointment) {
+    $rootScope.openPaymentModal = function (appointment) {
         $scope.selectedAppointment = appointment;
         $timeout(function () {
             const modalElem = document.getElementById('paymentModal');

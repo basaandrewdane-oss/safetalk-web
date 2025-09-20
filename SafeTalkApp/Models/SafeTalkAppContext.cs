@@ -8,7 +8,7 @@ using System.Web;
 namespace SafeTalkApp.Models
 {
     [DbConfigurationType(typeof(MySqlEFConfiguration))]
-    public class SafeTalkAppContext : DbContext
+    public class SafeTalkAppContext : DbContext, ISafeTalkAppContext
     {
         static SafeTalkAppContext()
         {

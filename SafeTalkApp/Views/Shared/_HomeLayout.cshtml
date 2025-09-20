@@ -38,8 +38,16 @@
                 box-shadow: 0 1px 0 0 #4db6ac !important;
             }
 
-        a.right:hover {
-            color: #7e57c2 !important;
+        .col ul li a:hover {
+            color: #B39DDB !important; /* example: deep-purple lighten-3 */
+            text-decoration: underline; /* optional */
+            transition: color 0.3s ease; /* smooth transition */
+        }
+
+        ul#mobile-demo li a:hover {
+            color: #B39DDB !important; /* example: deep-purple lighten-3 */
+            text-decoration: underline; /* optional */
+            transition: color 0.3s ease; /* smooth transition */
         }
 
         .chat-message {
@@ -167,32 +175,36 @@
                 .suggested-prompts button:hover {
                     background: #ddd;
                 }
+
+        [ng-cloak] {
+            display: none !important;
+        }
     </style>
 </head>
 <body ng-app="SafeTalkApp">
     <div class="navbar-fixed">
         <nav class="pink lighten-2">
             <div class="nav-wrapper container">
-                <a href="@Url.Action("Index", "SafeTalk")" class="brand-logo">SafeTalk</a>
+                <a href="@Url.Action("Index", "Home")" class="brand-logo">SafeTalk</a>
                 <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons ">menu</i></a>
                 <ul class="right show-on-medium-and-down">
                     <li><a href="@Url.Action("Login", "Account")" class="waves-effect waves-light btn teal lighten-2">Log In</a></li>
                 </ul>
                 <ul class="right hide-on-med-and-down">
-                    <li><a href="@Url.Action("Index", "SafeTalk")" class="">Home</a></li>
-                    <li><a href="@Url.Action("Doctors", "SafeTalk")" class="">Our Doctors</a></li>
-                    <li><a href="@Url.Action("Contact", "SafeTalk")" class="">Contact</a></li>
-                    <li><a href="@Url.Action("About", "SafeTalk")" class="">About Us</a></li>
+                    <li><a href="@Url.Action("Index", "Home")" class="">Home</a></li>
+                    <li><a href="@Url.Action("Doctors", "Home")" class="">Our Doctors</a></li>
+                    <li><a href="@Url.Action("Contact", "Home")" class="">Contact</a></li>
+                    <li><a href="@Url.Action("About", "Home")" class="">About Us</a></li>
                 </ul>
             </div>
         </nav>
     </div>
 
     <ul class="sidenav" id="mobile-demo">
-        <li class="active"><a href="@Url.Action("Index", "SafeTalk")" class="">Home</a></li>
-        <li><a href="@Url.Action("Doctors", "SafeTalk")" class="">Our Doctors</a></li>
-        <li><a href="@Url.Action("Contact", "SafeTalk")" class="">Contact</a></li>
-        <li><a href="@Url.Action("About", "SafeTalk")" class="">About Us</a></li>
+        <li class="active"><a href="@Url.Action("Index", "Home")" class="">Home</a></li>
+        <li><a href="@Url.Action("Doctors", "Home")" class="">Our Doctors</a></li>
+        <li><a href="@Url.Action("Contact", "Home")" class="">Contact</a></li>
+        <li><a href="@Url.Action("About", "Home")" class="">About Us</a></li>
     </ul>
     <div>
         @RenderBody()
@@ -214,7 +226,7 @@
                                 </div>
                                 <div class="input-field col s12">
                                     <textarea id="textarea1" class="materialize-textarea"></textarea>
-                                    <label for="textarea1">Textarea</label>
+                                    <label for="textarea1">Share your feedback</label>
                                 </div>
                             </div>
                         </form>
@@ -223,10 +235,10 @@
                 <div class="col l4 offset-l2 s12">
                     <h5 class="">Links</h5>
                     <ul>
-                        <li><a class="grey-text text-darken-2" href="@Url.Action("Index", "SafeTalk")">Home</a></li>
-                        <li><a class="grey-text text-darken-2" href="@Url.Action("Doctors", "SafeTalk")">Our Doctors</a></li>
-                        <li><a class="grey-text text-darken-2" href="@Url.Action("Contact", "SafeTalk")">Contact</a></li>
-                        <li><a class="grey-text text-darken-2" href="@Url.Action("About", "SafeTalk")">About</a></li>
+                        <li><a class="grey-text text-darken-2" href="@Url.Action("Index", "Home")">Home</a></li>
+                        <li><a class="grey-text text-darken-2" href="@Url.Action("Doctors", "Home")">Our Doctors</a></li>
+                        <li><a class="grey-text text-darken-2" href="@Url.Action("Contact", "Home")">Contact</a></li>
+                        <li><a class="grey-text text-darken-2" href="@Url.Action("About", "Home")">About</a></li>
                     </ul>
                 </div>
             </div>
@@ -240,7 +252,7 @@
             </div>
 
             <!-- Chat Window -->
-            <div class="card chatbot-window" ng-show="chatOpen">
+            <div id="chatbot-window" class="card chatbot-window" ng-show="chatOpen" ng-cloak>
                 <div class="card-content messages-container">
                     <span class="card-title">AI Chatbot</span>
 
@@ -277,7 +289,6 @@
         <div class="footer-copyright deep-purple lighten-3">
             <div class="container white-text">
                 © 2025 SafeTalk
-                <a class="right white-text" href="#!">More Links</a>
             </div>
         </div>
     </footer>

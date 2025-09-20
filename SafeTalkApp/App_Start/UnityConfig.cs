@@ -1,7 +1,9 @@
+using SafeTalkApp.Models;
 using SafeTalkApp.Services;
 using System;
 
 using Unity;
+using Unity.AspNet.Mvc;
 
 namespace SafeTalkApp
 {
@@ -43,8 +45,11 @@ namespace SafeTalkApp
 
             // TODO: Register your type's mappings here.
             // container.RegisterType<IProductRepository, ProductRepository>();
+            container.RegisterType<ISafeTalkAppContext, SafeTalkAppContext>(new PerRequestLifetimeManager());
             container.RegisterType<IAccountService, AccountService>();
             container.RegisterType<IEmailService, EmailService>();
+            container.RegisterType<IHomeService, HomeService>();
+            container.RegisterType<IAdminService, AdminService>();
         }
     }
 }
