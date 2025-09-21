@@ -165,7 +165,6 @@ namespace SafeTalkApp.Services
 
                     return ApiResponse<bool>.Ok(true, "Doctor verified successfully.");
                 }
-
                 return ApiResponse<bool>.Fail("Doctor not found.");
             }
             catch (Exception ex)

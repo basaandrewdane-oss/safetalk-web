@@ -248,7 +248,7 @@
             cancelButtonText: "No, keep going.",
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = "/SafeTalk/Index";
+                window.location.href = "/Home/Index";
             }
         })
     }

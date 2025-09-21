@@ -21,7 +21,9 @@
                 <tbody>
                     <tr ng-repeat="consult in verifiedAppointments">
                         <td ng-controller="ConsultationController">
+                            <div class="center">
                             <button class="btn green" ng-click="goToConsultation(consult.appointmentID)">Join</button>
+                            </div>
                         </td>
                         <td>{{consult.doctorName}}</td>
                         <td>{{consult.date | dotNetDate | date: 'yyyy-MM-dd'}}</td>

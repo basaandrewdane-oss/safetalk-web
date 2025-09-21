@@ -52,7 +52,7 @@ namespace SafeTalkApp.Controllers
 
             var body = new
             {
-                model = "command-r-plus",
+                model = "command-r-plus-08-2024",
                 message = message,
                 preamble = "You are a friendly chatbot providing clear, safe, and respectful sexual education answers."
             };
@@ -64,6 +64,8 @@ namespace SafeTalkApp.Controllers
             // Send POST
             var response = await httpClient.PostAsync("https://api.cohere.ai/v1/chat", content);
             var result = await response.Content.ReadAsStringAsync();
+
+            System.Diagnostics.Debug.WriteLine(result);
 
             dynamic json = JsonConvert.DeserializeObject(result);
             string reply = json.text ?? "Sorry, I didn’t quite get that. Could you rephrase?";
