@@ -2,6 +2,7 @@
 using Microsoft.AspNet.SignalR;
 using SafeTalkApp.Models;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -14,8 +15,8 @@ namespace SafeTalkApp.Hubs
         private readonly SafeTalkAppContext db = new SafeTalkAppContext();
 
         // Stores connection IDs for each appointment
-        private static readonly Dictionary<string, HashSet<string>> AppointmentGroups =
-            new Dictionary<string, HashSet<string>>();
+        private static readonly ConcurrentDictionary<string, HashSet<string>> AppointmentGroups =
+    new ConcurrentDictionary<string, HashSet<string>>();
         // ----------------------
         // Connection Handling
         // ----------------------
@@ -88,10 +89,17 @@ namespace SafeTalkApp.Hubs
             }
 
             // ✅ Valid join
-            if (!AppointmentGroups.ContainsKey(appointmentId))
-                AppointmentGroups[appointmentId] = new HashSet<string>();
-
-            AppointmentGroups[appointmentId].Add(Context.ConnectionId);
+            AppointmentGroups.AddOrUpdate(
+            appointmentId,
+            _ => new HashSet<string> { Context.ConnectionId },
+            (_, set) =>
+            {
+                lock (set) // HashSet itself is not thread-safe
+                {
+                    set.Add(Context.ConnectionId);
+                }
+                return set;
+            });
 
             return Groups.Add(Context.ConnectionId, $"appointment_{appointmentId}");
         }
