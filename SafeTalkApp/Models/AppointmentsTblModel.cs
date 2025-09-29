@@ -15,6 +15,7 @@ namespace SafeTalkApp.Models
         public TimeSpan startTime { get; set; }
         public TimeSpan endTime { get; set; }
         public decimal fee { get; set; }
+        public string chiefComplaint { get; set; }
         public int status { get; set; }
         public string transcriptFilePath { get; set; }
         public DateTime dateCreated { get; set; }

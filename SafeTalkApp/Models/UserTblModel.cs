@@ -20,6 +20,7 @@ namespace SafeTalkApp.Models
         public string password { get; set; }
         public bool isVerified { get; set; }
         public string emailVerificationToken { get; set; }
+        public DateTime? emailVerificationExpiry { get; set; }
         public bool isEmailVerified { get; set; }
         public DateTime dateCreated { get; set; }
         public DateTime dateUpdated { get; set; }

@@ -93,6 +93,9 @@
         }
         $scope.timerDisplay = "00:00:00";
         endSessionUI();
+        cleanupCall();
+        stopLiveTranscription();
+        stopRecording();
     }
 
     function stopRecording() {

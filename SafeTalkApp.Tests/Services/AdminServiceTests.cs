@@ -13,13 +13,13 @@ namespace SafeTalkApp.Tests.Services
     [TestClass]
     public class AdminServiceTests
     {
-        private Mock<SafeTalkAppContext> _mockContext;
+        private Mock<ISafeTalkAppContext> _mockContext;
         private AdminService _service;
 
         [TestInitialize]
         public void Setup()
         {
-            _mockContext = new Mock<SafeTalkAppContext>();
+            _mockContext = new Mock<ISafeTalkAppContext>();
             var mockEmailService = new Mock<IEmailService>();
             _service = new AdminService(_mockContext.Object, mockEmailService.Object);
         }

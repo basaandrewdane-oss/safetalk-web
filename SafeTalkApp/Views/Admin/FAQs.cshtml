@@ -8,31 +8,31 @@
     <div class="divider"></div>
 
     <!-- Add FAQ Button -->
-    <div class="right-align" style="margin:15px 0;">
+    <div class="left-align" style="margin:15px 0;">
         <a class="btn purple modal-trigger" href="#addModal">
             <i class="material-icons left">add</i>Add FAQ
         </a>
     </div>
 
     <!-- FAQ List -->
-    <table class="striped highlight responsive-table">
+    <table id="faqsTable" class="striped highlight responsive-table">
         <thead>
             <tr>
+                <th>Actions</th>
                 <th>Question</th>
                 <th>Answer</th>
                 <th>Keywords</th>
-                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
             <tr ng-repeat="faq in faqs">
+                <td>
+                    <button class="btn-small teal lighten-2" style="width: 50px;" ng-click="startEditFaq(faq)">Edit</button>
+                    <button class="btn-small pink lighten-2" style="width: 50px;" ng-click="deleteFaq(faq.Id)">Delete</button>
+                </td>
                 <td>{{faq.question}}</td>
                 <td>{{faq.answer}}</td>
                 <td>{{faq.keywords}}</td>
-                <td>
-                    <button class="btn-small blue" ng-click="startEditFaq(faq)">Edit</button>
-                    <button class="btn-small red" ng-click="deleteFaq(faq.Id)">Delete</button>
-                </td>
             </tr>
         </tbody>
     </table>

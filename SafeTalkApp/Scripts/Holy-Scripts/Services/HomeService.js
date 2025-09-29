@@ -1,19 +1,8 @@
-﻿app.service("HomeService", function ($http) {
+﻿app.service("HomeService", function ($http, ApiHelper) {
 
     this.getDoctors = function () {
-        return $http.get("/Home/GetDoctors").then(function (response) {
-            if (response.data.success) {
-                return {
-                    data: response.data.data,
-                    message: response.message
-                };
-            }
-            else {
-                return Promise.reject({
-                    message: response.data.message,
-                    data: response.data.data
-                })
-            }
-        })
+        return ApiHelper.handleApiResponse(
+            $http.get("/Home/GetDoctors")
+        );
     }
 })

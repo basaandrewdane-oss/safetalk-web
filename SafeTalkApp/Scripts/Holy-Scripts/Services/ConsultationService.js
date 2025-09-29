@@ -1,29 +1,22 @@
-﻿app.service("ConsultationService", function ($http) {
+﻿app.service("ConsultationService", function ($http, ApiHelper) {
 
     this.getChatMessages = function (appointmentID) {
-        var response = $http({
-            method: "get",
-            url: "/Consultation/GetChatMessages",
-            params: { appointmentID: appointmentID }
-        });
-        return response;
+        return ApiHelper.handleApiResponse(
+            $http.get("/Consultation/GetChatMessages", { params: { appointmentID: appointmentID } })
+        )
     }
 
     // ===== User Consultation =====
     this.getPatientConsultations = function () {
-        var response = $http({
-            method: "get",
-            url: "/Consultation/GetPatientConsultations",
-        });
-        return response;
+        return ApiHelper.handleApiResponse(
+            $http.get("/Consultation/GetPatientConsultations")
+        )
     }
 
     // ===== Doctor Consultation =====
     this.getDoctorConsultations = function () {
-        var response = $http({
-            method: "get",
-            url: "/Consultation/GetDoctorConsultations",
-        });
-        return response;
+        return ApiHelper.handleApiResponse(
+            $http.get("/Consultation/GetDoctorConsultations")
+        )
     }
 });

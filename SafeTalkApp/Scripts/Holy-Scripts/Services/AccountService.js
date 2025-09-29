@@ -1,71 +1,38 @@
-﻿app.service("AccountService", function ($http) {
+﻿app.service("AccountService", function ($http, ApiHelper) {
     // ===== Account Management =====
     this.getRoles = function () {
-        return $http.get("/Account/GetRoles").then(function (response) {
-            if (response.data.success) {
-                return {
-                    data: response.data.data,
-                    message: response.data.message
-                };
-            }
-            else {
-                return Promise.reject({
-                    message: response.data.message,
-                    data: response.data.data
-                });
-            }
-        });
+        return ApiHelper.handleApiResponse($http.get("/Account/GetRoles"));
     };
 
     this.getGenders = function () {
-        return $http.get("/Account/GetGenders").then(function (response) {
-            if (response.data.success) {
-                return {
-                    data: response.data.data,
-                    message: response.data.message
-                }
-            }
-            else {
-                return Promise.reject({
-                    message: response.data.message,
-                    data: response.data.data
-                });
-            }
-        });
+        return ApiHelper.handleApiResponse($http.get("/Account/GetGenders"));
     }
 
     this.getDaysOfWeek = function () {
-        return $http.get("/Account/GetDaysOfWeek").then(function (response) {
-            if (response.data.success) {
-                return {
-                    data: response.data.data,
-                    message: response.data.message
-                };
-            }
-            else {
-                return Promise.reject({
-                    message: response.data.message,
-                    data: response.data.data
-                });
-            }
-        });
+        return ApiHelper.handleApiResponse($http.get("/Account/GetDaysOfWeek"));
     }
 
     this.registerUser = function (userData) {
-        var response = $http({
-            method: "post",
-            url: "/Account/RegisterUser",
-            data: userData
-        })
-        return response;
+        return ApiHelper.handleApiResponse($http.post("/Account/RegisterUser", userData));
+    }
+
+    this.checkEmailExists = function (email) {
+        return ApiHelper.handleApiResponse($http.get("/Account/EmailExists?email=" + encodeURIComponent(email)));
     }
 
     this.login = function (loginData) {
-        var response = $http({
-            method: "post",
-            url: "/Account/AuthenticateUser",
-            data: loginData
-        });
-        return response;
+        return ApiHelper.handleApiResponse($http.post("/Account/AuthenticateUser", loginData));
     }
+
+    this.verifyEmail = function (token) {
+        return ApiHelper.handleApiResponse(
+            $http.post("/Account/VerifyEmailToken?token=" + encodeURIComponent(token))
+        );
+    }
+
+    this.resendVerificationEmail = function (email) {
+        return ApiHelper.handleApiResponse(
+            $http.post("/Account/ResendVerificationEmail", { email: email })
+        );
+    };
 });

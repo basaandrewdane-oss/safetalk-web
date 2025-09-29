@@ -1,10 +1,10 @@
 ﻿app.controller("AppointmentsController", function ($scope, $timeout, AppointmentService) {
-    $scope.showCanceled = false;
+    $scope.appointmentFilter = "active";
     // ===== User Appointments =====
     $scope.getDoctors = function () {
         var getDoctors = AppointmentService.getDoctors();
-        getDoctors.then(function (response) {
-            $scope.doctors = response.data;
+        getDoctors.then(function (result) {
+            $scope.doctors = result.data;
         }).catch(function (error) {
             console.error("Error loading doctors", error);
             Swal.fire("Error", "Unable to load doctors.", "error");
@@ -31,8 +31,8 @@
 
     $scope.getDoctorsAvailability = function (userID) {
         var getDoctorsAvailability = AppointmentService.getDoctorsAvailability(userID);
-        getDoctorsAvailability.then(function (response) {
-            $scope.doctorAvailability = response.data;
+        getDoctorsAvailability.then(function (result) {
+            $scope.doctorAvailability = result.data;
             if ($scope.doctorAvailability.length > 0) {
                 $scope.selectedSlotIndex = null; // no default selected yet
             }
@@ -42,7 +42,6 @@
     }
 
     $scope.selectSlot = function (slot, dayID, fee) {
-
         $scope.selectedSlot = slot;
         $scope.selectedDayID = dayID;
         $scope.fee = fee;
@@ -50,6 +49,13 @@
 
     $scope.$watch('selectedDayID', function (dayID) {
         if (typeof dayID === 'number') {
+            $scope.selectedDate = null;
+
+            // Clear the input text
+            var dateInput = document.getElementById('appointmentDate');
+            if (dateInput) {
+                dateInput.value = '';
+            }
             // Delay to allow DOM to render the input
             setTimeout(function () {
                 var elems = document.querySelectorAll('.datepicker');
@@ -73,6 +79,11 @@
         }
     });
 
+    $scope.confirmBooking = function () {
+        $('#reviewModal').modal('close'); // close modal
+        $scope.bookAppointment();         // call existing submit
+    };
+
     $scope.bookAppointment = function () {
         if (!$scope.selectedSlot || !$scope.selectedDate) {
             Swal.fire("Error", "Please select a date and time slot.", "error");
@@ -80,20 +91,23 @@
         }
         var appointmentData = {
             doctorID: $scope.selectedDoctor.userID,
-            date: $scope.selectedDate.toISOString().split('T')[0],
-            startTime: $scope.selectedSlot.Start,
-            endTime: $scope.selectedSlot.End,
-            fee: $scope.fee
+            date: $scope.selectedDate,
+            startTime: $scope.selectedSlot.start,
+            endTime: $scope.selectedSlot.end,
+            fee: $scope.fee,
+            chiefComplaint: $scope.appointment.chiefComplaint
         };
-        AppointmentService.bookAppointment(appointmentData).then(function (response) {
-            if (response.data.success) {
-                Swal.fire("Success", "Appointment booked successfully.", "success");
-                // Optionally, redirect or clear the form
-                setTimeout(() => {
-                    window.location.href = "/Appointment/Appointments"; // Redirect to appointment history
-                }, 1000); // Redirect after 1 second)
+        AppointmentService.bookAppointment(appointmentData).then(function (result) {
+            if (result.success) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Appointment booked successfully.",
+                    confirmButtonText: "Proceed to Appointments"
+                }).then(() => {
+                    window.location.href = "/Appointment/Appointments";
+                });
             } else {
-                Swal.fire("Error", response.data.message, "error");
+                Swal.fire("Error", result.message, "error");
             }
         }).catch(function (error) {
             console.error("Booking error", error);
@@ -106,8 +120,8 @@
             $('#appointmentsTable').DataTable().destroy();
         }
         var getPatientAppointments = AppointmentService.getPatientAppointments();
-        getPatientAppointments.then(function (response) {
-            $scope.appointments = response.data;
+        getPatientAppointments.then(function (result) {
+            $scope.appointments = result.data;
             $timeout(function () {
                 $('#appointmentsTable').DataTable({
                     responsive: true,
@@ -132,14 +146,14 @@
             cancelButtonText: "No, keep it"
         }).then((result) => {
             if (result.isConfirmed) {
-                AppointmentService.cancelAppointment(appointmentID).then(function (response) {
-                    if (response.data.success) {
+                AppointmentService.cancelAppointment(appointmentID).then(function (result) {
+                    if (result.success) {
                         Swal.fire("Success", "Appointment cancelled successfully.", "success");
                         $timeout(function () {
                             $scope.getPatientAppointments(); // Refresh the list
                         });
                     } else {
-                        Swal.fire("Error", response.data.message, "error");
+                        Swal.fire("Error", result.message, "error");
                     }
                 }, function (error) {
                     console.error("Cancellation error", error);
@@ -149,10 +163,26 @@
         });
     }
 
+    $scope.rebookAppointment = function () {
+        window.location.href = "/Appointment/Book";
+    }
+
     $scope.filteredAppointments = function () {
         if (!$scope.appointments) return [];
+
         return $scope.appointments.filter(function (appt) {
-            return $scope.showCanceled || appt.status !== 5;
+            switch ($scope.appointmentFilter) {
+                case "all":
+                    return appt.status !== 6; // all except completed
+                case "active":
+                    return appt.status !== 4 && appt.status !== 5 && appt.status !== 6;
+                case "includeRejected":
+                    return appt.status !== 5 && appt.status !== 6;
+                case "includeCanceled":
+                    return appt.status !== 4 && appt.status !== 6;
+                default:
+                    return true;
+            }
         });
     };
 
@@ -162,8 +192,8 @@
             $('#appointmentsTable').DataTable().destroy();
         }
         var getDoctorAppointments = AppointmentService.getDoctorAppointments();
-        getDoctorAppointments.then(function (response) {
-            $scope.appointments = response.data;
+        getDoctorAppointments.then(function (result) {
+            $scope.appointments = result.data;
             $timeout(function () {
                 $('#appointmentsTable').DataTable({
                     responsive: true,
@@ -188,18 +218,45 @@
             cancelButtonText: "No, cancel"
         }).then((result) => {
             if (result.isConfirmed) {
-                AppointmentService.approveAppointment(appointmentID).then(function (response) {
-                    if (response.data.success) {
+                AppointmentService.approveAppointment(appointmentID).then(function (result) {
+                    if (result.success) {
                         Swal.fire("Success", "Appointment approved successfully.", "success");
                         $timeout(function () {
                             $scope.getDoctorAppointments(); // Refresh the list
                         });
                     } else {
-                        Swal.fire("Error", response.data.message, "error");
+                        Swal.fire("Error", result.message, "error");
                     }
                 }, function (error) {
                     console.error("Approval error", error);
                     Swal.fire("Error", "Unable to approve appointment. Please try again.", "error");
+                });
+            }
+        });
+    }
+
+    $scope.rejectAppointment = function (appointmentID) {
+        Swal.fire({
+            title: "Reject Appointment",
+            text: "Are you sure you want to reject this appointment?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, reject",
+            cancelButtonText: "No, cancel"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                AppointmentService.rejectAppointment(appointmentID).then(function (result) {
+                    if (result.success) {
+                        Swal.fire("Success", "Appointment rejected successfully.", "success");
+                        $timeout(function () {
+                            $scope.getDoctorAppointments(); // Refresh the list
+                        });
+                    } else {
+                        Swal.fire("Error", result.message, "error");
+                    }
+                }, function (error) {
+                    console.error("Rejection error", error);
+                    Swal.fire("Error", "Unable to reject appointment. Please try again.", "error");
                 });
             }
         });

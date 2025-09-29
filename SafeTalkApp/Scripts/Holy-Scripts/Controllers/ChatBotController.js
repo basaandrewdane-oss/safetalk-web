@@ -38,7 +38,8 @@
         angular.element(document).off('click', clickHandler);
     });
 
-    $scope.usePrompt = function (prompt) {
+    $scope.usePrompt = function (prompt, $event) {
+        if ($event) $event.stopPropagation();
         $scope.message = prompt.text;
         $scope.sendMessage();
     };
@@ -57,10 +58,10 @@
         $scope.typing = true;
         // Call backend API
         ChatBotService.sendMessage(userMessage)
-            .then(function (response) {
-                console.log(JSON.stringify(response.data));
+            .then(function (result) {
+                console.log(JSON.stringify(result.data));
                 $scope.typing = false;
-                $scope.messages.push({ from: 'bot', text: cleanText(response.data) });
+                $scope.messages.push({ from: 'bot', text: cleanText(result.data) });
             }, function() {
                 $scope.messages.push({ from: 'bot', text: "⚠️ Error contacting AI." });
             });

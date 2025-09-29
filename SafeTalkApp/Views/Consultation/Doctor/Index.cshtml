@@ -5,7 +5,7 @@
 <!-- Doctor Consultations Page -->
 <main>
     <div class="container" ng-init="getDoctorConsultations()" ng-controller="ConsultationController">
-        <h4 class="pink-text text-lighten-2">Available Consultations</h4>
+        <h4 class="pink-text text-lighten-2">Consultations</h4>
         <div class="divider"></div>
         <div ng-if="verifiedAppointments.length > 0">
             <table class="display responsive nowrap" id="verifiedAppointmentsTable">
@@ -16,24 +16,31 @@
                         <th>Date</th>
                         <th>Start Time</th>
                         <th>End Time</th>
+                        <th>Status</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr ng-repeat="consult in verifiedAppointments">
-                        <td ng-controller="ConsultationController">
-                            <div class="center">
-                                <button class="btn teal lighten-2 center-align" ng-click="goToConsultation(consult.appointmentID)">Join</button>
-                            </div>                        </td>
+                        <td>
+                            <div class="center" ng-switch="consult.status">
+                                <button ng-switch-when="3" class="btn teal lighten-2 center-align" ng-click="goToConsultation(consult.appointmentID)">Join</button>
+                                <div ng-switch-when="6">
+                                    <a ng-href="{{consult.transcriptFilePath}}" class="waves-effect waves-light btn teal lighten-2" download>Download Transcript</a>
+                                </div>
+                            </div>
+                        </td>
                         <td>{{consult.patientName}}</td>
                         <td>{{consult.date | dotNetDate | date: 'yyyy-MM-dd'}}</td>
                         <td>{{consult.startTime | timespanToTime}}</td>
                         <td>{{consult.endTime | timespanToTime}}</td>
-
+                        <td ng-switch="consult.status">
+                            <span ng-switch-when="6" class="green-text">Completed</span>
+                        </td>
                     </tr>
                 </tbody>
             </table>
         </div>
-        <div class="center-align" ng-if="verifiedConsultations.length === 0">
+        <div class="center-align" ng-if="verifiedAppointments.length === 0">
             <p class="grey-text">No consultations available at this time.</p>
         </div>
     </div>

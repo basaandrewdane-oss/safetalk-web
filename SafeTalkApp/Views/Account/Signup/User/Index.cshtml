@@ -43,7 +43,7 @@
 
                                 <!-- Birthdate / Gender / Phone -->
                                 <div class="input-field col s12 m6 l6">
-                                    <input id="birth_date" name="birthDate" type="text" class="datepicker"
+                                    <input id="birth_date" name="birthDate" type="date"
                                            ng-model="birthDate" validate-age required>
                                     <label for="birth_date">Birth Date</label>
                                     <span class="helper-text red-text text-lighten-2"
@@ -83,7 +83,7 @@
 
                                 <!-- Email / Password -->
                                 <div class="input-field col s12 m6 l6">
-                                    <input id="email" name="email" type="email" ng-model="email" required>
+                                    <input id="email" name="email" type="email" ng-model="email" ng-blur="checkEmailExists(email)" required>
                                     <label for="email">Email</label>
                                     <span class="helper-text red-text text-lighten-2"
                                           ng-show="(userForm.email.$touched || userForm.$submitted) && userForm.email.$error.required">
@@ -92,6 +92,11 @@
                                     <span class="helper-text red-text text-lighten-2"
                                           ng-show="userForm.email.$dirty && userForm.email.$invalid">
                                         Invalid email format
+                                    </span>
+                                    <!-- Duplicate email -->
+                                    <span class="helper-text red-text text-lighten-2"
+                                          ng-show="emailExists">
+                                        Email is already registered
                                     </span>
                                 </div>
                                 <div class="input-field col s12 m6 l6">

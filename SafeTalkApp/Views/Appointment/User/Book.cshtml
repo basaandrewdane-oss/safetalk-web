@@ -8,7 +8,7 @@
         <h4 class="pink-text text-lighten-2">
             Book Consultation
         </h4>
-        <div class="divider teal lighten-3"></div>
+        <div class="divider"></div>
 
         <div class="row">
             <form class="col s12 m12 l12" name="bookingForm" ng-submit="bookAppointment()" novalidate>
@@ -22,7 +22,7 @@
                         <select id="doctors"
                                 name="doctors"
                                 ng-model="selectedDoctor"
-                                ng-options="d as (d.firstName + ' ' + d.lastName) for d in doctors"
+                                ng-options="d as (d.fullName) for d in doctors"
                                 material-select
                                 watch-collection="doctors"
                                 form-name="bookingForm">
@@ -40,26 +40,53 @@
                     </div>
                 </div>
 
+                <!-- Chief Complaint Section -->
+                <div class="row">
+                    <h5 class="pink-text text-lighten-2">Chief Complaint</h5>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <textarea id="chiefComplaint"
+                                  name="chiefComplaint"
+                                  class="materialize-textarea"
+                                  ng-model="appointment.chiefComplaint"
+                                  placeholder="Briefly describe your main concern"
+                                  required>
+                        </textarea>
+                        <label for="chiefComplaint" class="grey-text text-darken-2">Enter Chief Complaint</label>
+                    </div>
+                </div>
+
                 <!-- Schedule Section -->
                 <div class="row">
                     <h5 class="pink-text text-lighten-2">Pick a Schedule</h5>
                 </div>
+
                 <div class="row" ng-if="doctorAvailability.length">
-                    <div class="col s12 m3 l3 card-panel white hoverable" ng-repeat="availability in doctorAvailability" style="padding: 30px; border-radius: 30px;">
-                        <h6 class="deep-purple-text text-lighten-3">{{availability.day}}</h6>
-                        <p class="grey-text">Fee: ₱{{availability.fee | number:2}}</p>
-                        <div ng-repeat="slot in availability.slots">
-                            <label>
-                                <input type="radio"
-                                       name="slot"
-                                       ng-click="selectSlot(slot, availability.dayID, availability.fee)" />
-                                <span class="grey-text text-darken-2">{{slot.Start}} - {{slot.End}}</span>
-                            </label>
+
+                    <!-- Each Day Card -->
+                    <div class="col s12 m4 l3" ng-repeat="availability in doctorAvailability">
+                        <div class="card hoverable" style="border-radius: 20px;">
+                            <div class="card-content center">
+                                <h6 class="deep-purple-text text-lighten-2">{{availability.day}}</h6>
+                                <p class="grey-text">Fee: ₱{{availability.fee | number:2}}</p>
+
+                                <div class="slot-list" style="margin-top: 15px;">
+                                    <div ng-repeat="slot in availability.slots" style="margin-bottom: 8px;">
+                                        <label>
+                                            <input type="radio"
+                                                   name="slot"
+                                                   ng-click="selectSlot(slot, availability.dayID, availability.fee)" />
+                                            <span class="chip grey lighten-3 grey-text text-darken-2">{{ ('1970-01-01T' + slot.start) | date:'hh:mm a' }}-{{ ('1970-01-01T' + slot.end) | date:'hh:mm a' }}</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Date Picker -->
+                <!-- Date Picker (only when slot is selected) -->
                 <div class="row" ng-if="selectedSlot">
                     <div class="input-field col s12 m6">
                         <input id="appointmentDate"
@@ -75,13 +102,37 @@
                 <!-- Submit Button -->
                 <div class="row center">
                     <div class="col s12">
-                        <button class="btn waves-effect waves-light pink lighten-2" type="submit" name="action" style="border-radius:30px;">
+                        <button class="btn waves-effect waves-light teal lighten-2 modal-trigger"
+                                type="button"
+                                data-target="reviewModal"
+                                style="border-radius:30px;">
                             Submit
-                            <i class="material-icons right teal-text text-lighten-3">send</i>
+                            <i class="material-icons right">send</i>
                         </button>
                     </div>
                 </div>
             </form>
+
+            <!-- Review Modal -->
+            <div id="reviewModal" class="modal" style="border-radius:20px; width: 40%">
+                <div class="modal-content">
+                    <h5 class="pink-text text-lighten-2">Review Your Booking</h5>
+                    <p><strong>Doctor:</strong> {{selectedDoctor.fullName}}</p>
+                    <p><strong>Specialization:</strong> {{selectedDoctor.specialization}}</p>
+                    <p><strong>Date:</strong> {{selectedDate | date:'fullDate'}}</p>
+                    <p>
+                        <strong>Time:</strong>
+                        {{ ('1970-01-01T' + selectedSlot.start) | date:'hh:mm a' }} -
+                        {{ ('1970-01-01T' + selectedSlot.end) | date:'hh:mm a' }}
+                    </p>
+                    <p><strong>Fee:</strong> ₱{{fee | number:2}}</p>
+                    <p ng-if="appointment.chiefComplaint"><strong>Chief Complaint:</strong> {{appointment.chiefComplaint}}</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn waves-effect teal lighten-2" ng-click="confirmBooking()">Confirm</button>
+                    <button class="btn-flat modal-close">Cancel</button>
+                </div>
+            </div>
         </div>
     </div>
 </main>

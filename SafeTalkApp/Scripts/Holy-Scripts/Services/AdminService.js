@@ -1,32 +1,44 @@
-﻿app.service("AdminService", function ($http) {
+﻿app.service("AdminService", function ($http, ApiHelper) {
 
     this.getFaqs = function () {
-        return $http.get("/Admin/GetFaqs");
+        return ApiHelper.handleApiResponse(
+            $http.get("/Admin/GetFaqs")
+        )
     }
 
     this.addFaq = function (faq) {
-        return $http.post("/Admin/AddFaq", faq);
+        return ApiHelper.handleApiResponse(
+            $http.post("/Admin/AddFaq", faq)
+        )
     }
 
     this.updateFaq = function (faq) {
-        return $http.post("/Admin/UpdateFaq", faq);
+        return ApiHelper.handleApiResponse(
+            $http.post("/Admin/UpdateFaq", faq)
+        )
     }
 
-    this.deleteFaq = function (faqID){
-        return $http.post("/Admin/DeleteFaq", { faqID: faqID });
+    this.deleteFaq = function (faqID) {
+        return ApiHelper.handleApiResponse(
+            $http.post("/Admin/DeleteFaq", { faqID: faqID })
+        )
     }
 
     this.getPendingDoctors = function () {
-        return $http.get("/Admin/GetPendingDoctors");
+        return ApiHelper.handleApiResponse(
+            $http.get("/Admin/GetPendingDoctors")
+        )
     }
 
     this.verifyDoctor = function (userID) {
-        var response = $http({
-            method: "post",
-            url: "/Admin/VerifyDoctor",
-            data: { userID: userID }
-        });
-        return response;
+        return ApiHelper.handleApiResponse(
+            $http.post("/Admin/VerifyDoctor", { userID: userID })
+        )
     }
 
+    this.getPayments = function () {
+        return ApiHelper.handleApiResponse(
+            $http.get("/Admin/GetPayments")
+        )
+    }
 });

@@ -28,5 +28,14 @@ namespace SafeTalkApp.DTOs.Shared
                 data = default
             };
         }
+        public static ApiResponse<T> Fail(string message, T data)
+        {
+            return new ApiResponse<T>
+            {
+                success = false,
+                message = message,
+                data = data
+            };
+        }
     }
 }

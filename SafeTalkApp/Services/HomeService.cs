@@ -1,5 +1,4 @@
-﻿using SafeTalkApp.DTOs.Home;
-using SafeTalkApp.DTOs.Shared;
+﻿using SafeTalkApp.DTOs.Shared;
 using SafeTalkApp.Models;
 using System;
 using System.Collections.Generic;
@@ -26,7 +25,7 @@ namespace SafeTalkApp.Services
                                where userRole.roleID == 2 && user.isVerified == true && user.isEmailVerified == true
                                select new DoctorDTO
                                {
-                                   name = user.firstName +
+                                   fullName = user.firstName +
                                    (user.middleName == null || user.middleName == "" ? "" : " " + user.middleName) +
                                    " " + user.lastName,
                                    specialization = user.specialization,

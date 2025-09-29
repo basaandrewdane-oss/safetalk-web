@@ -10,9 +10,9 @@
             $('#verifiedAppointmentsTable').DataTable().destroy();
         }
         var getPatientConsultations = ConsultationService.getPatientConsultations();
-        getPatientConsultations.then(function (response) {
+        getPatientConsultations.then(function (result) {
             $scope.verifiedAppointments = [];
-            $scope.verifiedAppointments = response.data;
+            $scope.verifiedAppointments = result.data;
             $timeout(function () {
                 $('#verifiedAppointmentsTable').DataTable({
                     responsive: true,
@@ -33,9 +33,9 @@
             $('#verifiedAppointmentsTable').DataTable().destroy();
         }
         var getDoctorConsultations = ConsultationService.getDoctorConsultations();
-        getDoctorConsultations.then(function (response) {
+        getDoctorConsultations.then(function (result) {
             $scope.verifiedAppointments = [];
-            $scope.verifiedAppointments = response.data;
+            $scope.verifiedAppointments = result.data;
             $timeout(function () {
                 $('#verifiedAppointmentsTable').DataTable({
                     responsive: true,

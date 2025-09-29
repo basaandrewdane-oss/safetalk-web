@@ -17,6 +17,7 @@ namespace SafeTalkApp.Controllers
         {
             _adminService = adminService;
         }
+
         public ActionResult FAQs()
         {
             return View();
@@ -31,19 +32,19 @@ namespace SafeTalkApp.Controllers
         public JsonResult AddFaq(FAQsDTO faq)
         {
             var response = _adminService.AddFaq(faq);
-            return Json(response, JsonRequestBehavior.AllowGet);
+            return Json(response);
         }
 
         public JsonResult UpdateFaq(FAQsDTO faq)
         {
             var response = _adminService.UpdateFaq(faq);
-            return Json(response, JsonRequestBehavior.AllowGet);
+            return Json(response);
         }
 
         public JsonResult DeleteFaq(int faqID)
         {
             var response = _adminService.DeleteFaq(faqID);
-            return Json(response, JsonRequestBehavior.AllowGet);
+            return Json(response);
         }
 
         public ActionResult Prompts()
@@ -71,7 +72,18 @@ namespace SafeTalkApp.Controllers
         public JsonResult VerifyDoctor(int userID)
         {
             var result = _adminService.VerifyDoctor(userID);
-            return Json(result, JsonRequestBehavior.AllowGet);
+            return Json(result);
+        }
+
+        public ActionResult Payments()
+        {
+            return View();
+        }
+
+        public JsonResult GetPayments()
+        {
+            var response = _adminService.GetPayments();
+            return Json(response, JsonRequestBehavior.AllowGet);
         }
     }
 }

@@ -43,6 +43,7 @@ namespace SafeTalkApp
                 "~/Scripts/Holy-Scripts/Controllers/HomeController.js",
                 "~/Scripts/Holy-Scripts/Controllers/PaymentController.js",
                 "~/Scripts/Holy-Scripts/Controllers/ResourceController.js",
+                "~/Scripts/Holy-Scripts/ApiHelper.js",
                 "~/Scripts/Holy-Scripts/Services/AccountService.js",
                 "~/Scripts/Holy-Scripts/Services/AdminService.js",
                 "~/Scripts/Holy-Scripts/Services/AppointmentService.js",

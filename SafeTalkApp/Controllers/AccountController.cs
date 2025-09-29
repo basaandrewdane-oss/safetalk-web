@@ -64,6 +64,12 @@ namespace SafeTalkApp.Controllers
         public JsonResult RegisterUser(SignUpDTO signUp)
         {
             var result = _accountService.RegisterUser(signUp);
+            return Json(result);
+        }
+
+        public JsonResult EmailExists(string email)
+        {
+            var result = _accountService.EmailExists(email);
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
@@ -87,13 +93,25 @@ namespace SafeTalkApp.Controllers
                 authManager.SignIn(new AuthenticationProperties { IsPersistent = false }, identity);
             }
 
-            return Json(result, JsonRequestBehavior.AllowGet);
+            return Json(result);
         }
 
         public ActionResult VerifyEmail(string token)
         {
-            var verified = _accountService.VerifyEmail(token);
-            return verified.success ? View("EmailVerified") : View("Error");
+            ViewBag.Token = token; // pass token to the view
+            return View();         // returns a Razor page with AngularJS
+        }
+
+        public JsonResult VerifyEmailToken(string token)
+        {
+            var result = _accountService.VerifyEmail(token);
+            return Json(result);
+        }
+
+        public JsonResult ResendVerificationEmail(string email)
+        {
+            var result = _accountService.ResendVerificationEmail(email);
+            return Json(result);
         }
 
         public ActionResult Error()
@@ -140,9 +158,9 @@ namespace SafeTalkApp.Controllers
         //            lastName = "Admin",
         //            birthDate = new DateTime(1990, 1, 1),
         //            genderID = 1, // or any valid gender ID
-        //            phoneNumber = "09123456789",
+        //            phoneNumber = "09940063174",
         //            email = email,
-        //            password = BCrypt.Net.BCrypt.HashPassword("AdminPassword123!"),
+        //            password = BCrypt.Net.BCrypt.HashPassword("tfsqxoe2B!"),
         //            dateCreated = DateTime.Now,
         //            dateUpdated = DateTime.Now,
         //            isVerified = true

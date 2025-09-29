@@ -1,0 +1,59 @@
+﻿@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+
+<main>
+    <div class="container" ng-init="getPayments()" ng-controller="AdminController">
+        <div>
+            <h4 class="pink-text text-lighten-2">Payments</h4>
+        </div>
+        <table id="paymentsTable" class="display responsive nowrap">
+            <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>Appointment ID</th>
+                    <th>Amount</th>
+                    <th>Transaction ID</th>
+                    <th>Payment Date</th>
+                    <th>Payer</th>
+                    <th>Doctor</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="payment in payments">
+                    <td>
+                        <div ng-controller="PaymentController">
+                            <div class="center" ng-switch="payment.status">
+                                <button ng-switch-when="0" class="waves-effect waves-light btn green" ng-click="openImageModal(payment.imagePath, payment.appointmentID)">Verify Payment</button>
+                                <button class="btn grey" ng-switch-default disabled>No Action</button>
+                            </div>
+                            <!-- Image Preview Modal -->
+                            <div id="imageModal" class="modal" ng-controller="PaymentController">
+                                <div class="modal-content center-align">
+                                    <img class="materialboxed" ng-src="{{modalImage}}" style="max-width: 100%; height: auto; cursor: zoom-in;" />
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn green" ng-click="verifyPayment(appointmentID)">Approve</button>
+                                    <button class="btn red" ng-click="verifyPayment(appointmentID)">Reject</button>
+                                    <a href="#!" class="waves-effect waves-light modal-close btn grey">Close</a>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>{{payment.appointmentID}}</td>
+                    <td>{{payment.amount}}</td>
+                    <td>{{payment.transactionId}}</td>
+                    <td>{{payment.paymentDate | dotNetDate | date: 'yyyy-MM-dd'}}</td>
+                    <td>{{payment.patientName}}</td>
+                    <td>{{payment.doctorName}}</td>
+                    <td ng-switch="payment.status">
+                        <span ng-switch-when="0" class="orange-text">Pending</span>
+                        <span ng-switch-when="1" class="green-text">Completed</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</main>

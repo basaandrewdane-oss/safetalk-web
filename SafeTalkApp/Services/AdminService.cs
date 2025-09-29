@@ -11,10 +11,10 @@ namespace SafeTalkApp.Services
 {
     public class AdminService : IAdminService
     {
-        private readonly SafeTalkAppContext _db;
+        private readonly ISafeTalkAppContext _db;
         private readonly IEmailService _emailService;
 
-        public AdminService(SafeTalkAppContext db, IEmailService emailService)
+        public AdminService(ISafeTalkAppContext db, IEmailService emailService)
         {
             _db = db;
             _emailService = emailService;
@@ -171,6 +171,34 @@ namespace SafeTalkApp.Services
             {
                 // Log the exception (not implemented here)
                 return ApiResponse<bool>.Fail("Error approving doctor: " + ex.Message);
+            }
+        }
+
+        public ApiResponse<IEnumerable<PaymentDTO>> GetPayments()
+        {
+            try
+            {
+                var payments = (from payment in _db.payment_tbl
+                                join appt in _db.appointments_tbl on payment.appointmentID equals appt.appointmentID
+                                join user in _db.user_tbl on appt.patientID equals user.userID
+                                join doctor in _db.user_tbl on appt.doctorID equals doctor.userID
+                                select new PaymentDTO
+                                {
+                                    paymentID = payment.paymentID,
+                                    appointmentID = payment.appointmentID,
+                                    amount = payment.amount,
+                                    transactionId = payment.transactionId,
+                                    imagePath = payment.imagePath,
+                                    paymentDate = payment.paymentDate,
+                                    patientName = user.firstName + " " + user.lastName,
+                                    doctorName = doctor.firstName + " " + doctor.lastName,
+                                    status = payment.status,
+                                }).ToList();
+                return ApiResponse<IEnumerable<PaymentDTO>>.Ok(payments);
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<IEnumerable<PaymentDTO>>.Fail("Error retrieving payments: " + ex.Message);
             }
         }
 

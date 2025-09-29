@@ -1,9 +1,11 @@
 using SafeTalkApp.Models;
 using SafeTalkApp.Services;
 using System;
-
+using System.Configuration;
+using System.Net.Http;
 using Unity;
 using Unity.AspNet.Mvc;
+using Unity.Injection;
 
 namespace SafeTalkApp
 {
@@ -50,6 +52,22 @@ namespace SafeTalkApp
             container.RegisterType<IEmailService, EmailService>();
             container.RegisterType<IHomeService, HomeService>();
             container.RegisterType<IAdminService, AdminService>();
+            container.RegisterType<IAppointmentService, AppointmentService>();
+            container.RegisterType<IChatBotService, ChatBotService>();
+            container.RegisterType<IConsultationService, ConsultationService>();
+            container.RegisterType<IPaymentService, PaymentService>();
+            container.RegisterType<IPayPalService, PayPalService>();
+            container.RegisterType<ITranscriptionService, TranscriptionService>();
+
+            var httpClient = new HttpClient();
+            container.RegisterInstance<HttpClient>(httpClient);
+
+            
+            string apiKey = ConfigurationManager.AppSettings["CohereApiKey"];
+            container.RegisterInstance<string>("CohereApiKey", apiKey);
+
+            string assemblyApiKey = ConfigurationManager.AppSettings["AssemblyAIKey"];
+            container.RegisterInstance<string>("AssemblyAIKey", assemblyApiKey);
         }
     }
 }

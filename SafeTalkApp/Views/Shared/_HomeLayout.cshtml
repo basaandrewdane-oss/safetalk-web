@@ -179,22 +179,25 @@
         [ng-cloak] {
             display: none !important;
         }
+
+        .swal2-select {
+            width: 85%;
+        }
     </style>
 </head>
-<body ng-app="SafeTalkApp">
+<body ng-app="SafeTalkApp" ng-controller="AccountController">
     <div class="navbar-fixed">
         <nav class="pink lighten-2">
             <div class="nav-wrapper container">
                 <a href="@Url.Action("Index", "Home")" class="brand-logo">SafeTalk</a>
                 <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons ">menu</i></a>
-                <ul class="right show-on-medium-and-down">
-                    <li><a href="@Url.Action("Login", "Account")" class="waves-effect waves-light btn teal lighten-2">Log In</a></li>
-                </ul>
                 <ul class="right hide-on-med-and-down">
                     <li><a href="@Url.Action("Index", "Home")" class="">Home</a></li>
-                    <li><a href="@Url.Action("Doctors", "Home")" class="">Our Doctors</a></li>
+                    <li><a href="@Url.Action("Doctors", "Home")" class="">Doctors</a></li>
                     <li><a href="@Url.Action("Contact", "Home")" class="">Contact</a></li>
                     <li><a href="@Url.Action("About", "Home")" class="">About Us</a></li>
+                    <li><a href="@Url.Action("Login", "Account")" class="waves-effect waves-light btn teal lighten-2" style="margin: 5px;">Log In</a></li>
+                    <li><a href="#" class="waves-effect waves-light btn deep-purple lighten-2" ng-click="getRoles()" style="margin: 5px;">Sign Up</a></li>
                 </ul>
             </div>
         </nav>
@@ -205,6 +208,8 @@
         <li><a href="@Url.Action("Doctors", "Home")" class="">Our Doctors</a></li>
         <li><a href="@Url.Action("Contact", "Home")" class="">Contact</a></li>
         <li><a href="@Url.Action("About", "Home")" class="">About Us</a></li>
+        <li><a href="@Url.Action("Login", "Account")">Log In</a></li>
+        <li><a href="#" ng-click="getRoles()">Sign Up</a></li>
     </ul>
     <div>
         @RenderBody()
@@ -264,7 +269,7 @@
                     <!-- ✅ Suggested prompts -->
                     <div class="suggested-prompts" ng-if="promptsVisible">
                         <button ng-repeat="prompt in prompts"
-                                ng-click="usePrompt(prompt)">
+                                ng-click="usePrompt(prompt, $event)">
                             {{prompt.text}}
                         </button>
                     </div>

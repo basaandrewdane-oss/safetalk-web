@@ -1,10 +1,14 @@
-﻿app.service("ChatBotService", function ($http) {
+﻿app.service("ChatBotService", function ($http, ApiHelper) {
 
     this.sendMessage = function (userMessage) {
-        return $http.post("/ChatBot/GetResponse", { message: userMessage });
+        return ApiHelper.handleApiResponse(
+            $http.post("/ChatBot/GetResponse", { message: userMessage })
+        );
     };
 
     this.getPrompts = function () {
-        return $http.get("/Admin/GetPrompts");
+        return ApiHelper.handleApiResponse(
+            $http.get("/Admin/GetPrompts")
+        )
     }
 });

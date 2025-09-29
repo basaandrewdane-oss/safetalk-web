@@ -12,7 +12,7 @@
     <div class="row">
         <div class="col s12">
             <!-- Neutral heading -->
-            <h4 class="grey-text text-darken-4 center">Our Doctors</h4>
+            <h4 class="grey-text text-darken-4 center">Health Professionals</h4>
         </div>
     </div>
 
@@ -26,21 +26,21 @@
                          class="circle responsive-img"
                          style="width:100px; height:100px; object-fit:cover; margin-bottom:15px;">
                     <!-- Doctor Name -->
-                    <span class="card-title grey-text text-darken-4">{{d.name}}</span>
+                    <span class="card-title grey-text text-darken-4">{{d.fullName}}</span>
 
                     <!-- Specialization -->
                     <p class="grey-text text-darken-2">{{d.specialization}}</p>
                     <!-- Years of Experience -->
-                    <p class="grey-text">Experience: {{d.experience}} years</p>
+                    @*<p class="grey-text">Experience: {{d.experience}} years</p>*@
                     <!-- Rating -->
-                    <p>
+                    <!--<p>
                         <i class="material-icons yellow-text">star</i>
                         <i class="material-icons yellow-text">star</i>
                         <i class="material-icons yellow-text">star</i>
                         <i class="material-icons yellow-text">star_half</i>
                         <i class="material-icons grey-text">star</i>
                         <span class="grey-text text-darken-1">(45 reviews)</span>
-                    </p>
+                    </p>-->
                 </div>
                 <!-- Neutral background for action -->
                 <div class="card-action grey lighten-5">

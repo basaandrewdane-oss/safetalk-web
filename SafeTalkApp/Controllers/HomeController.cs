@@ -1,5 +1,4 @@
-﻿using SafeTalkApp.DTOs.Home;
-using SafeTalkApp.Services;
+﻿using SafeTalkApp.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;

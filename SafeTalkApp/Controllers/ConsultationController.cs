@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNet.Identity;
 using SafeTalkApp.Models;
+using SafeTalkApp.Services;
 using System;
 using System.Linq;
 using System.Web.Mvc;
@@ -8,7 +9,12 @@ namespace SafeTalkApp.Controllers
 {
     public class ConsultationController : Controller
     {
-        // GET: Consultation
+        private readonly ConsultationService _consultationService;
+
+        public ConsultationController(ConsultationService consultationService)
+        {
+            _consultationService = consultationService;
+        }
         public ActionResult Consultations()
         {
             if (User.IsInRole("Doctor"))
@@ -28,14 +34,20 @@ namespace SafeTalkApp.Controllers
         {
             using (var db = new SafeTalkAppContext())
             {
-                var appointment = db.appointments_tbl.FirstOrDefault(a => a.appointmentID == appointmentID);
+                var response = _consultationService.GetAppointment(appointmentID);
 
-                if (appointment == null)
+                if (response.data == null)
+                {
                     return RedirectToAction("Unexisting", "Consultation");
+                }
 
+                var appointment = response.data;
                 var currentUserId = User.Identity.GetUserId<int>();
+
                 if (appointment.doctorID != currentUserId && appointment.patientID != currentUserId)
+                {
                     return RedirectToAction("Unauthorized", "Consultation");
+                }
 
                 //var now = DateTime.Now;
                 //var startDateTime = appointment.date + appointment.startTime;
@@ -74,29 +86,13 @@ namespace SafeTalkApp.Controllers
             try
             {
                 var currentUserId = User.Identity.GetUserId<int>();
-
-                using (var db = new SafeTalkAppContext())
+                var messages = _consultationService.GetChatMessages(appointmentID);
+                return Json(new
                 {
-                    var messages = (from m in db.chat_message_tbl
-                                    join u in db.user_tbl on m.senderID equals u.userID
-                                    where m.appointmentID == appointmentID
-                                    orderby m.sentAt ascending
-                                    select new
-                                    {
-                                        m.messageID,
-                                        m.appointmentID,
-                                        m.senderID,
-                                        senderName = u.firstName + " " + u.lastName,
-                                        m.message,
-                                        m.sentAt
-                                    }).ToList();
-                    return Json(new
-                    {
-                        success = true,
-                        currentUserId,
-                        messages
-                    }, JsonRequestBehavior.AllowGet);
-                }
+                    success = true,
+                    currentUserId,
+                    messages
+                }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
@@ -110,27 +106,9 @@ namespace SafeTalkApp.Controllers
         {
             try
             {
-                using (var db = new SafeTalkAppContext())
-                {
-                    int userID = User.Identity.GetUserId<int>(); // Assuming you have a way to get the current user's ID
-                    var appointments = (from a in db.appointments_tbl
-                                        join d in db.user_tbl on a.doctorID equals d.userID
-                                        join p in db.payment_tbl on a.appointmentID equals p.appointmentID
-                                        where a.patientID == userID && p.status == PaymentStatus.Completed
-                                        orderby a.date descending, a.startTime descending
-                                        select new
-                                        {
-                                            a.appointmentID,
-                                            a.date,
-                                            a.startTime,
-                                            a.endTime,
-                                            a.status,
-                                            doctorName = d.firstName + " " + d.lastName,
-                                            doctorEmail = d.email,
-                                            paymentImage = p.imagePath
-                                        }).ToList();
-                    return Json(appointments, JsonRequestBehavior.AllowGet);
-                }
+                int userID = User.Identity.GetUserId<int>(); // Assuming you have a way to get the current user's ID
+                var consultations = _consultationService.GetPatientConsultations(userID);
+                return Json(consultations, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
@@ -143,27 +121,9 @@ namespace SafeTalkApp.Controllers
         {
             try
             {
-                using (var db = new SafeTalkAppContext())
-                {
-                    int userID = User.Identity.GetUserId<int>(); // Assuming you have a way to get the current user's ID
-                    var appointments = (from a in db.appointments_tbl
-                                        join d in db.user_tbl on a.patientID equals d.userID
-                                        join p in db.payment_tbl on a.appointmentID equals p.appointmentID
-                                        where a.doctorID == userID && p.status == PaymentStatus.Completed
-                                        orderby a.date descending, a.startTime descending
-                                        select new
-                                        {
-                                            a.appointmentID,
-                                            a.date,
-                                            a.startTime,
-                                            a.endTime,
-                                            a.status,
-                                            patientName = d.firstName + " " + d.lastName,
-                                            patientEmail = d.email,
-                                            paymentImage = p.imagePath
-                                        }).ToList();
-                    return Json(appointments, JsonRequestBehavior.AllowGet);
-                }
+                int userID = User.Identity.GetUserId<int>(); // Assuming you have a way to get the current user's ID
+                var consultations = _consultationService.GetDoctorConsultations(userID);
+                return Json(consultations, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {

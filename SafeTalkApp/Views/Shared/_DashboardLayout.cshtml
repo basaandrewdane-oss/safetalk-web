@@ -147,6 +147,7 @@
         {
             <li><a href="@Url.Action("ManageUsers", "Admin")"><i class="material-icons teal-text">manage_accounts</i>Manage Users</a></li>
             <li><a href="@Url.Action("PendingDoctors", "Admin")"><i class="material-icons teal-text">view_list</i>Pending Doctors</a></li>
+            <li><a href="@Url.Action("Payments", "Admin")"><i class="material-icons teal-text">payments</i>Payments</a></li>
             <li><a href="@Url.Action("Index", "Resources")"><i class="material-icons teal-text">library_books</i>Resources</a></li>
             <li><a href="@Url.Action("FAQs", "Admin")"><i class="material-icons teal-text">question_mark</i>FAQs</a></li>
         }
@@ -171,10 +172,9 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             M.Sidenav.init(document.querySelectorAll('.sidenav'));
-            M.Materialbox.init(document.querySelectorAll('.materialboxed'));
-            M.FormSelect.init(document.querySelectorAll('.select'));
+            M.FormSelect.init(document.querySelectorAll('select'));
             M.Datepicker.init(document.querySelectorAll('.datepicker'));
-            /*M.Modal.init(document.querySelectorAll('.modal'));*/
+            M.Modal.init(document.querySelectorAll('.modal'));
         });
     </script>
 </body>

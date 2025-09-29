@@ -2,8 +2,8 @@
     // ===== For user payment =====
 
     $rootScope.payWithPayPal = function (appointment) {
-        PaymentService.createPayPalOrder(appointment.appointmentID).then(function (response) {
-            if (response.data.success) {
+        PaymentService.createPayPalOrder(appointment.appointmentID).then(function (result) {
+            if (result.success) {
                 // Show loading swal before redirect
                 Swal.fire({
                     title: 'Redirecting to PayPal...',
@@ -16,14 +16,14 @@
                 });
 
                 // Redirect to PayPal
-                window.location.href = response.data.approvalUrl;
+                window.location.href = result.data;
 
             } else {
-                Swal.fire("Error", response.data.message, "error");
+                Swal.fire("Error", result.message, "error");
             }
         }).catch(function (err) {
             Swal.fire("Error", "Something went wrong while creating the PayPal order.", "error");
-            console.error(err);
+            console.log(err);
         });
     };
 
@@ -60,15 +60,15 @@
                 formData.append("paymentProof", $scope.paymentProof);
 
                 var submitPayment = PaymentService.submitPayment(formData);
-                submitPayment.then(function (response) {
-                    if (response.data.success) {
+                submitPayment.then(function (result) {
+                    if (result.success) {
                         Swal.fire("Success", "Payment submitted successfully.", "success");
                         $('#paymentModal').modal('close');
                         $timeout(function () {
                             $scope.getPatientAppointments(); // Refresh the list
                         });
                     } else {
-                        Swal.fire("Error", response.data.message, "error");
+                        Swal.fire("Error", result.message, "error");
                     }
                 }).catch(function (error) {
                     console.error("Payment submission error", error);
@@ -105,11 +105,11 @@
             cancelButtonText: "No, cancel"
         }).then((result) => {
             if (result.isConfirmed) {
-                PaymentService.verifyPayment(appointmentID).then(function (response) {
-                    if (response.data.success) {
+                PaymentService.verifyPayment(appointmentID).then(function (result) {
+                    if (result.success) {
                         Swal.fire("Success", "Payment verified successfully.", "success");
                         $timeout(function () {
-                            $scope.getDoctorAppointments(); // Refresh the list
+                            $scope.getPayments(); // Refresh the list
                             const modalElem = document.getElementById('imageModal');
 
                             if (!modalElem.classList.contains('modal-initialized')) {
@@ -121,7 +121,7 @@
                             instance.close(); // Close the image modal after verification
                         });
                     } else {
-                        Swal.fire("Error", response.data.message, "error");
+                        Swal.fire("Error", result.message, "error");
                     }
                 }, function (error) {
                     console.error("Verification error", error);

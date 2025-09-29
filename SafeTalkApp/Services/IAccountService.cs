@@ -8,9 +8,10 @@ namespace SafeTalkApp.Services
     public interface IAccountService
     {
         ApiResponse<object> RegisterUser(SignUpDTO signUp);
+        ApiResponse<bool> EmailExists(string email);
         ApiResponse<LoginDTO> AuthenticateUser(LoginDTO login);
-        ApiResponse<bool> VerifyEmail(string token);
-
+        ApiResponse<VerifyEmailResultDTO> VerifyEmail(string token);
+        ApiResponse<ResendVerficationResultDTO> ResendVerificationEmail(string email);
         ApiResponse<IEnumerable<object>> GetRoles();
         ApiResponse<IEnumerable<object>> GetGenders();
         ApiResponse<IEnumerable<object>> GetDaysOfWeek();

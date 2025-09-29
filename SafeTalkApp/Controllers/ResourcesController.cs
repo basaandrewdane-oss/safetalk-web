@@ -60,7 +60,7 @@ namespace SafeTalkApp.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = "Error adding resource", ex.Message }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = false, message = "Error adding resource", ex.Message });
             }
         }
 
@@ -89,7 +89,7 @@ namespace SafeTalkApp.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = "Error editing resource", ex.Message }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = false, message = "Error editing resource", ex.Message });
             }
         }
 
@@ -111,7 +111,7 @@ namespace SafeTalkApp.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = "Error deleting resource.", ex.Message }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = false, message = "Error deleting resource.", ex.Message });
             }
         }
     }

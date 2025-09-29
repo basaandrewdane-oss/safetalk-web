@@ -1,14 +1,10 @@
-﻿using Microsoft.Owin.Security;
-using SafeTalkApp.DTOs.Account;
+﻿using SafeTalkApp.DTOs.Account;
 using SafeTalkApp.DTOs.Shared;
 using SafeTalkApp.Models;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity.Migrations;
 using System.Linq;
-using System.Security.Claims;
 using System.Web;
-using System.Web.Mvc;
 using System.Web.UI.WebControls;
 
 namespace SafeTalkApp.Services
@@ -44,6 +40,7 @@ namespace SafeTalkApp.Services
                     password = BCrypt.Net.BCrypt.HashPassword(signUp.password),
                     isVerified = signUp.roleID == 2 ? false : true, // Doctors are not verified by default
                     emailVerificationToken = token,
+                    emailVerificationExpiry = DateTime.Now.AddHours(24),
                     isEmailVerified = false,
                     dateCreated = DateTime.Now,
                     dateUpdated = DateTime.Now,
@@ -79,13 +76,28 @@ namespace SafeTalkApp.Services
                     }
                     _db.SaveChanges();
                 }
-                //_emailService.SendVerificationEmail(createUser.email, token);
+                //var verificationLink = $"https://localhost:44338/Account/VerifyEmail?token={HttpUtility.UrlEncode(token)}";
+                //_emailService.SendVerificationEmail(signUp.email, verificationLink);
                 return ApiResponse<object>.Ok("Registration successful! Please verify your email.");
             }
             catch (Exception ex)
             {
                 Console.WriteLine("EXCEPTION: " + ex.Message);
                 return ApiResponse<object>.Fail($"An unexpected error occurred. Please try again. Error: {ex.Message}");
+            }
+        }
+
+        public ApiResponse<bool> EmailExists(string email)
+        {
+            try
+            {
+                var exists = _db.user_tbl.Any(u => u.email == email);
+                return ApiResponse<bool>.Ok(exists);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("EXCEPTION: " + ex.Message);
+                return ApiResponse<bool>.Fail("An unexpected error occurred. Please try again.");
             }
         }
 
@@ -137,19 +149,65 @@ namespace SafeTalkApp.Services
             }
         }
 
-        public ApiResponse<bool> VerifyEmail(string token)
+        public ApiResponse<VerifyEmailResultDTO> VerifyEmail(string token)
         {
+            Console.WriteLine("Incoming token: " + token);
             var user = _db.user_tbl.FirstOrDefault(u => u.emailVerificationToken == token);
+
             if (user == null)
             {
-                return ApiResponse<bool>.Fail("Invalid or expired token.");
+                return ApiResponse<VerifyEmailResultDTO>.Fail("Invalid token.");
+            }
+
+            if (user.emailVerificationExpiry < DateTime.Now)
+            {
+                return ApiResponse<VerifyEmailResultDTO>.Fail(
+                    "Token has expired. Please request a new verification email.",
+                    new VerifyEmailResultDTO { IsVerified = false, IsExpired = true, Email = user.email }
+                );
             }
 
             user.isEmailVerified = true;
-            user.emailVerificationToken = null; // Optional: clear the token
+            user.emailVerificationToken = null;
             _db.SaveChanges();
 
-            return ApiResponse<bool>.Ok(true, "Email verified successfully.");
+            return ApiResponse<VerifyEmailResultDTO>.Ok(
+                new VerifyEmailResultDTO { IsVerified = true, IsExpired = false, Email = user.email },
+                "Email verified successfully."
+            );
+        }
+
+        public ApiResponse<ResendVerficationResultDTO> ResendVerificationEmail(string email)
+        {
+            var user = _db.user_tbl.FirstOrDefault(u => u.email == email);
+
+            if (user == null)
+            {
+                return ApiResponse<ResendVerficationResultDTO>.Fail("User not found.");
+            }
+
+            if (user.isEmailVerified)
+            {
+                return ApiResponse<ResendVerficationResultDTO>.Fail("Email is already verified.");
+            }
+
+            // Generate a new token + expiry
+            var newToken = Guid.NewGuid().ToString();
+            user.emailVerificationToken = newToken;
+            user.emailVerificationExpiry = DateTime.Now.AddHours(24);
+            user.dateUpdated = DateTime.Now;
+
+            _db.SaveChanges();
+
+            var verificationLink = $"https://localhost/Account/VerifyEmail?token={newToken}";
+            _emailService.SendVerificationEmail(user.email, verificationLink);
+
+            return ApiResponse<ResendVerficationResultDTO>.Ok(new ResendVerficationResultDTO
+            {
+                Email = user.email,
+                Expiry = user.emailVerificationExpiry
+            }, 
+            "A new verification email has been sent. Please check your inbox.");
         }
 
         public ApiResponse<IEnumerable<object>> GetRoles()

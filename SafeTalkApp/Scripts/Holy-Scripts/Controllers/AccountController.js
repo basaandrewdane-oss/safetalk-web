@@ -1,13 +1,9 @@
 ﻿app.controller("AccountController", function ($scope, AccountService) {
-    $scope.$on('$viewContentLoaded', function () {
-        $scope.isLoading = false;
-    });
+    $scope.emailExists = false;
 
     window.addEventListener('pageshow', function (event) {
         if (event.persisted) {
-            // If coming from bfcache (i.e., via browser back)
-            $scope.isLoading = false;
-            $scope.$apply(); // important to trigger AngularJS digest cycle
+            Swal.close(); // Close any open SweetAlert modals on back/forward navigation
         }
     });
 
@@ -47,14 +43,20 @@
                     }).then((result) => {
                         if (result.isConfirmed) {
                             sessionStorage.setItem("selectedRole", result.value);
-                            $scope.$apply(() => {
-                                $scope.isLoading = true;
+
+                            // ✅ SweetAlert2 loading modal
+                            Swal.fire({
+                                title: "Redirecting...",
+                                allowOutsideClick: false,
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                }
                             });
                             setTimeout(() => {
                                 if (chosenRole === "User" || chosenRole === "Doctor") {
                                     window.location.href = "/Account/Signup/" + chosenRole.toLowerCase();
                                 }
-                            }, 2000); // Redirect after 2 seconds
+                            }, 200); // Redirect after 2 seconds
                         }
                     })
                 }
@@ -98,14 +100,23 @@
         Swal.fire({
             title: "Terms and Conditions",
             input: "checkbox",
-            inputValue: 1,
             inputPlaceholder: `I agree with the <a href="https://example.com/terms" target="_blank" style="color: #3085d6;">terms and conditions</a>`,
             confirmButtonText: `Continue&nbsp;<i class="fa fa-arrow-right"></i>`,
             inputValidator: (result) => {
-                return !result && "You need to agree with T&C";
+                if (!result) {
+                    return "You need to agree with T&C";
+                }
             }
         }).then(({ value: accept }) => {
             if (accept) {
+                // show loading
+                Swal.fire({
+                    title: "Creating account...",
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
                 $scope.selectedRole = parseInt(sessionStorage.getItem("selectedRole"));
 
                 if ($scope.selectedRole == 2) {
@@ -142,8 +153,8 @@
                 }
 
                 var createAccount = AccountService.registerUser(userData);
-                createAccount.then(function (response) {
-                    if (response.data.success) {
+                createAccount.then(function (result) {
+                    if (result.success) {
                         Swal.fire({
                             title: `Account created successfully!`,
                             icon: "success",
@@ -154,17 +165,26 @@
                             if (result.isConfirmed) {
                                 setTimeout(() => {
                                     window.location.href = "/Account/Login"; // Redirect to login page
-                                }, 1000); // Redirect after 1 second
+                                }, 200); // Redirect after 1 second
                                 sessionStorage.removeItem("selectedRole"); // Clear the session storage
                             }
                         });
                     }
                     else {
-                        Swal.fire("Error", response.data.message, "error");
+                        Swal.fire("Error", result.message, "error");
                     }
                 }, function (error) {
-                    Swal.fire("Something went wrong.");
+                    Swal.fire("Something went wrong.", error, "error");
                 });
+            }
+        });
+    }
+
+    $scope.checkEmailExists = function (email) {
+        var checkEmail = AccountService.checkEmailExists(email);
+        checkEmail.then(function (result) {
+            if (result.success) {
+                $scope.emailExists = result.data;
             }
         });
     }
@@ -191,21 +211,22 @@
         };
 
         var login = AccountService.login(loginData);
-        login.then(function (response) {
-            if (response.data.success) {
+        login.then(function (result) {
+            if (result.success) {
                 Swal.fire({
                     title: "Login Successful",
                     text: "Redirecting to your dashboard...",
                     icon: "success",
-                    timer: 2000,
-                    showConfirmButton: false
-                }).then(() => {
-                    setTimeout(() => {
-                        window.location.href = "/Dashboard/Index";
-                    }, 1500);
-                });
+                    showConfirmButton: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                        setTimeout(() => {
+                            window.location.href = "/Dashboard/Index";
+                        }, 1500);
+                    }
+                })
             } else {
-                Swal.fire("Login Failed", response.data.message, "warning");
+                Swal.fire("Login Failed", result.message, "warning");
             }
         }, function (error) {
             console.error("Login error", error);
@@ -268,4 +289,55 @@
             }
         })
     }
+
+    $scope.verifyEmail = function (token) {
+        $scope.isLoading = true;
+        var verifyEmail = AccountService.verifyEmail(token);
+        verifyEmail.then(function (result) {
+            $scope.isLoading = false;
+            if (result.success) {
+                Swal.fire({
+                    title: "✅ Email Verified Successfully!",
+                    text: "You can now login to your account.",
+                    icon: "success"
+                }).then(() => {
+                    window.location.href = "/Account/Login";
+                });
+            } if (!result.success) {
+                let msg = result.message || "Verification failed.";
+                if (result.data.IsExpired) {
+                    Swal.fire({
+                        title: "❌ Verification Failed",
+                        text: msg,
+                        icon: "error",
+                        showCancelButton: true,
+                        confirmButtonText: "Resend Verification Email"
+                    }).then((res) => {
+                        if (res.isConfirmed) {
+                            var resend = AccountService.resendVerificationEmail(result.data.Email);
+                            resend.then(function (res) {
+                                if (res.success) {
+                                    Swal.fire("Success", res.message, "success");
+                                } else {
+                                    Swal.fire("Error", res.message, "error");
+                                }
+                            }).catch(function () {
+                                Swal.fire("Error", "Something went wrong while resending verification email.", "error");
+                            });
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        title: "❌ Verification Failed",
+                        text: msg,
+                        icon: "error"
+                    });
+                }
+            }
+        }).catch(function (error) {
+            $scope.isLoading = false;
+            console.log(error);
+            Swal.fire("Error", "Something went wrong while verifying.", "error");
+        });
+    };
 });

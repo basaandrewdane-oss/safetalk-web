@@ -1,0 +1,9 @@
+﻿@{
+    Layout = "~/Views/Shared/_AccountLayout.cshtml";
+}
+
+<div ng-controller="AccountController" ng-init="verifyEmail('@ViewBag.Token')">
+    <div ng-show="isLoading" class="center">
+        <p>Verifying your email, please wait...</p>
+    </div>
+</div>

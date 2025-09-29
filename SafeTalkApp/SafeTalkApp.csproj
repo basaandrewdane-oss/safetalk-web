@@ -274,12 +274,24 @@
     <Compile Include="Controllers\TranscriptionController.cs" />
     <Compile Include="DTOs\Account\AvailabilityDTO.cs" />
     <Compile Include="DTOs\Account\LoginDTO.cs" />
+    <Compile Include="DTOs\Account\ResendVerficationResultDTO.cs" />
     <Compile Include="DTOs\Account\SignUpDTO.cs" />
-    <Compile Include="DTOs\Admin\DoctorDTO.cs" />
+    <Compile Include="DTOs\Account\VerifyEmailResultDTO.cs" />
+    <Compile Include="DTOs\Admin\PaymentDTO.cs" />
+    <Compile Include="DTOs\Appointment\AppointmentResultDTO.cs" />
+    <Compile Include="DTOs\Appointment\BookAppointmentDTO.cs" />
+    <Compile Include="DTOs\Appointment\DoctorAppointmentDTO.cs" />
+    <Compile Include="DTOs\Appointment\DoctorAvailabilityDTO.cs" />
+    <Compile Include="DTOs\Appointment\PatientAppointmentDTO.cs" />
+    <Compile Include="DTOs\Consultation\ChatMessageDTO.cs" />
+    <Compile Include="DTOs\Payment\PaymentProcessingDTO.cs" />
+    <Compile Include="DTOs\Payment\PaymentReviewDTO.cs" />
+    <Compile Include="DTOs\Shared\DoctorDTO.cs" />
     <Compile Include="DTOs\Admin\FAQsDTO.cs" />
     <Compile Include="DTOs\Admin\PromptsDTO.cs" />
-    <Compile Include="DTOs\Home\DoctorDTO.cs" />
     <Compile Include="DTOs\Shared\ApiResponse.cs" />
+    <Compile Include="DTOs\Shared\AppointmentStatusDTO.cs" />
+    <Compile Include="DTOs\Shared\EmailMessageDTO.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -295,7 +307,15 @@
     <Compile Include="Models\FAQsTblModel.cs" />
     <Compile Include="Models\GenderTblMap.cs" />
     <Compile Include="Models\GenderTblModel.cs" />
-    <Compile Include="Models\ISafeTalkAppContext.cs" />
+    <Compile Include="Services\AppointmentService.cs" />
+    <Compile Include="Services\ChatBotService.cs" />
+    <Compile Include="Services\ConsultationService.cs" />
+    <Compile Include="Services\IAppointmentService.cs" />
+    <Compile Include="Services\IChatBotService.cs" />
+    <Compile Include="Services\IConsultationService.cs" />
+    <Compile Include="Services\IPaymentService.cs" />
+    <Compile Include="Services\IPayPalService.cs" />
+    <Compile Include="Services\ISafeTalkAppContext.cs" />
     <Compile Include="Models\LogInViewModel.cs" />
     <Compile Include="Models\PaymentStatus.cs" />
     <Compile Include="Models\PaymentTblMap.cs" />
@@ -324,6 +344,10 @@
     <Compile Include="Services\IEmailService.cs" />
     <Compile Include="Services\IHomeService.cs" />
     <Compile Include="Services\HomeService.cs" />
+    <Compile Include="Services\ITranscriptionService.cs" />
+    <Compile Include="Services\PaymentService.cs" />
+    <Compile Include="Services\PayPalService.cs" />
+    <Compile Include="Services\TranscriptionService.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -399,6 +423,7 @@
     <Content Include="Scripts\angular-aria.min.js.map" />
     <Content Include="Scripts\angular-animate.min.js.map" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
+    <Content Include="Scripts\Holy-Scripts\ApiHelper.js" />
     <Content Include="Scripts\Holy-Scripts\Controllers\AdminController.js" />
     <Content Include="Scripts\Holy-Scripts\Controllers\AccountController.js" />
     <Content Include="Scripts\Holy-Scripts\Controllers\ChatBotController.js" />
@@ -1189,44 +1214,44 @@
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
-    <Content Include="Views\Web.config" />
-    <Content Include="Views\_ViewStart.cshtml" />
-    <Content Include="Views\Shared\Error.cshtml" />
-    <Content Include="Views\Shared\_HomeLayout.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Scripts\version.json" />
-    <Content Include="Views\Home\Doctors.cshtml" />
-    <Content Include="Views\Home\Contact.cshtml" />
-    <Content Include="Views\Home\About.cshtml" />
-    <Content Include="Views\Shared\_AccountLayout.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
-    <Content Include="Views\Account\Signup\User\Index.cshtml" />
     <Content Include="Views\Account\Signup\Doctor\Index.cshtml" />
-    <Content Include="Views\Shared\_DashboardLayout.cshtml" />
-    <Content Include="Views\Dashboard\Index.cshtml" />
+    <Content Include="Views\Account\Signup\User\Index.cshtml" />
+    <Content Include="Views\Account\VerifyEmail.cshtml" />
+    <Content Include="Views\Admin\FAQs.cshtml" />
+    <Content Include="Views\Admin\Payments.cshtml" />
     <Content Include="Views\Admin\PendingDoctors.cshtml" />
-    <Content Include="Views\Account\Waiting.cshtml" />
     <Content Include="Views\Appointment\Doctor\Index.cshtml" />
-    <Content Include="Views\Consultation\Doctor\Index.cshtml" />
     <Content Include="Views\Appointment\User\Book.cshtml" />
-    <Content Include="Views\User\History.cshtml" />
-    <Content Include="Views\Consultation\User\Index.cshtml" />
     <Content Include="Views\Appointment\User\Index.cshtml" />
     <Content Include="Views\Consultation\ChatRoom.cshtml" />
-    <Content Include="Views\Consultation\Unexisting.cshtml" />
-    <Content Include="Views\Consultation\Unauthorized.cshtml" />
+    <Content Include="Views\Consultation\Doctor\Index.cshtml" />
     <Content Include="Views\Consultation\Inactive.cshtml" />
-    <Content Include="Views\Account\Error.cshtml" />
-    <Content Include="Views\Account\EmailVerified.cshtml" />
+    <Content Include="Views\Consultation\Unauthorized.cshtml" />
+    <Content Include="Views\Consultation\Unexisting.cshtml" />
+    <Content Include="Views\Consultation\User\Index.cshtml" />
+    <Content Include="Views\Dashboard\Index.cshtml" />
+    <Content Include="Views\Home\About.cshtml" />
+    <Content Include="Views\Home\Contact.cshtml" />
+    <Content Include="Views\Home\Doctors.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Payment\PaymentProcessing.cshtml" />
     <Content Include="Views\Payment\PaymentReview.cshtml" />
-    <Content Include="Views\Resources\Admin\Index.cshtml" />
-    <Content Include="Views\Resources\Doctor\Index.cshtml" />
-    <Content Include="Views\Resources\User\Index.cshtml" />
-    <Content Include="Views\Admin\FAQs.cshtml" />
     <Content Include="Views\Profile\Admin\Index.cshtml" />
     <Content Include="Views\Profile\Doctor\Index.cshtml" />
     <Content Include="Views\Profile\User\Index.cshtml" />
+    <Content Include="Views\Resources\Admin\Index.cshtml" />
+    <Content Include="Views\Resources\Doctor\Index.cshtml" />
+    <Content Include="Views\Resources\User\Index.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Shared\_AccountLayout.cshtml" />
+    <Content Include="Views\Shared\_DashboardLayout.cshtml" />
+    <Content Include="Views\Shared\_HomeLayout.cshtml" />
+    <Content Include="Views\User\Doctors.cshtml" />
+    <Content Include="Views\User\Resources.cshtml" />
+    <Content Include="Views\Web.config" />
+    <Content Include="Views\_ViewStart.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
