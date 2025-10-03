@@ -6,6 +6,13 @@
         )
     }
 
+    this.downloadTranscript = function (appointmentID) {
+        return $http.get("/Transcription/DownloadTranscript", {
+            params: { appointmentID: appointmentID },
+            responseType: "arraybuffer" // binary data
+        });
+    };
+
     // ===== User Consultation =====
     this.getPatientConsultations = function () {
         return ApiHelper.handleApiResponse(

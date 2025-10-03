@@ -183,6 +183,39 @@
         .swal2-select {
             width: 85%;
         }
+
+        .hover-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hover-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            /* Set bottom offset to match the height of .card-action */
+            bottom: 53.8px; /* Adjust this based on your .card-action height */
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 10;
+            pointer-events: none;
+            overflow-y: auto;
+        }
+
+        .hover-card:hover .hover-content {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .hover-link {
+            display: inline-block;
+            margin-top: 10px;
+            color: #b39ddb;
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body ng-app="SafeTalkApp" ng-controller="AccountController">
@@ -299,22 +332,15 @@
     </footer>
     <script src="~/Scripts/jquery-3.7.0.min.js"></script>
     <script src="~/Scripts/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     @Scripts.Render("~/bundles/safetalkapp")
     <script>
         // sidenav initialization
         document.addEventListener('DOMContentLoaded', function () {
-            var elems = document.querySelectorAll('.sidenav');
-            var instances = M.Sidenav.init(elems);
-        });
-        // slider initialization
-        document.addEventListener('DOMContentLoaded', function () {
-            var elems = document.querySelectorAll('.slider');
-            var instances = M.Slider.init(elems);
-        });
-        // parallax initialization
-        document.addEventListener('DOMContentLoaded', function () {
-            var elems = document.querySelectorAll('.parallax');
-            var instances = M.Parallax.init(elems);
+            M.Modal.init(document.querySelectorAll('.modal'));
+            M.Sidenav.init(document.querySelectorAll('.sidenav'));
+            M.Slider.init(document.querySelectorAll('.slider'));
+            M.Parallax.init(document.querySelectorAll('.parallax'));
         });
     </script>
 </body>

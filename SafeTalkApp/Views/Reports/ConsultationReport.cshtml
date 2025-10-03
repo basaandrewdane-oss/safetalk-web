@@ -1,0 +1,11 @@
+﻿@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+
+<div class="container" ng-controller="ReportsController" ng-init="getConsultationReport()">
+    <h4 class="center-align teal-text">Consultation Report</h4>
+    <canvas id="consultationChart"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

@@ -10,5 +10,6 @@ namespace SafeTalkApp.Services
     public interface ITranscriptionService
     {
         Task<ApiResponse<string>> ProcessAndSaveTranscription(HttpPostedFileBase file, int appointmentID);
+        Task<ApiResponse<byte[]>> DownloadTranscriptFile(int appointmentID);
     }
 }

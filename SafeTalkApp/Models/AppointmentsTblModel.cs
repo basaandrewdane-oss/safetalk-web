@@ -18,6 +18,8 @@ namespace SafeTalkApp.Models
         public string chiefComplaint { get; set; }
         public int status { get; set; }
         public string transcriptFilePath { get; set; }
+        public string audioFileHash { get; set; }
+        public string transcriptHash { get; set; }
         public DateTime dateCreated { get; set; }
         public DateTime dateUpdated { get; set; }
     }

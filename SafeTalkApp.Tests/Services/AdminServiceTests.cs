@@ -13,8 +13,8 @@ namespace SafeTalkApp.Tests.Services
     [TestClass]
     public class AdminServiceTests
     {
-        private Mock<ISafeTalkAppContext> _mockContext;
-        private AdminService _service;
+        private Mock<ISafeTalkAppContext> _mockContext = null!;
+        private AdminService _service = null!;
 
         [TestInitialize]
         public void Setup()

@@ -3,6 +3,8 @@
     $scope.resource = {};
     $scope.formMode = "Add";
 
+    let resourceModal;
+
     // Load resources
     $scope.loadResources = function () {
         ResourceService.loadResources().then(function (response) {
@@ -17,14 +19,14 @@
     $scope.openAddForm = function () {
         $scope.formMode = "Add";
         $scope.resource = {};
-        $('#resourceModal').modal('open');
+        resourceModal.open();
     };
 
     // Open Edit
     $scope.openEditForm = function (res) {
         $scope.formMode = "Edit";
         $scope.resource = angular.copy(res);
-        $('#resourceModal').modal('open');
+        resourceModal.open();
         setTimeout(function () { M.updateTextFields(); }, 100);
     };
 
@@ -47,7 +49,7 @@
                     ResourceService.saveResource(payload)
                         .then(function () {
                             $scope.loadResources();
-                            $('#resourceModal').modal('close');
+                            resourceModal.close();
                         });
                     Swal.fire({
                         icon: 'success',
@@ -79,7 +81,7 @@
                     ResourceService.saveResource(payload)
                         .then(function () {
                             $scope.loadResources();
-                            $('#resourceModal').modal('close');
+                            resourceModal.close();
                         });
                     Swal.fire({
                         icon: 'success',
@@ -136,8 +138,11 @@
     };
 
     // Init
-    $(document).ready(function () {
-        $('.modal').modal();
+    angular.element(document).ready(function () {
+        var elem = document.getElementById('resourceModal');
+        resourceModal = M.Modal.init(elem, {
+            dismissible: true
+        });
     });
 
     $scope.loadResources();

@@ -15,6 +15,7 @@ namespace SafeTalkApp.Controllers
         {
             _consultationService = consultationService;
         }
+
         public ActionResult Consultations()
         {
             if (User.IsInRole("Doctor"))

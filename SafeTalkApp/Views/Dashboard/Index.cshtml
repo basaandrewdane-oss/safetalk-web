@@ -40,29 +40,31 @@
             </p>
 
             <!-- Quick Stats Row -->
-            <div class="row">
-                <div class="col s6 m3">
-                    <div class="card-panel teal lighten-4 center stat-card">
-                        <h6>Appointments</h6>
-                        <p class="flow-text">3</p> <!-- Replace with dynamic count -->
+            <div ng-controller="DashboardController" ng-init="loadStats()">
+                <div class="row">
+                    <div class="col s6 m4 l4">
+                        <div class="card-panel teal lighten-4 center stat-card">
+                            <h6>Appointments</h6>
+                            <p class="flow-text">{{stats.appointments}}</p> <!-- Replace with dynamic count -->
+                        </div>
                     </div>
-                </div>
-                <div class="col s6 m3">
-                    <div class="card-panel deep-purple lighten-4 center stat-card">
-                        <h6>Consultations</h6>
-                        <p class="flow-text">2</p> <!-- Replace with dynamic count -->
+                    <div class="col s6 m4 l4">
+                        <div class="card-panel deep-purple lighten-4 center stat-card">
+                            <h6>Consultations</h6>
+                            <p class="flow-text">{{stats.consultations}}</p> <!-- Replace with dynamic count -->
+                        </div>
                     </div>
-                </div>
-                <div class="col s6 m3">
-                    <div class="card-panel pink lighten-4 center stat-card">
-                        <h6>Messages</h6>
-                        <p class="flow-text">5</p> <!-- Replace with dynamic count -->
-                    </div>
-                </div>
-                <div class="col s6 m3">
-                    <div class="card-panel grey lighten-4 center stat-card">
-                        <h6>Resources</h6>
-                        <p class="flow-text">12</p> <!-- Replace with dynamic count -->
+                    <!--<div class="col s6 m3">
+                        <div class="card-panel pink lighten-4 center stat-card">
+                            <h6>Messages</h6>
+                            <p class="flow-text">5</p>--> <!-- Replace with dynamic count -->
+                        <!--</div>
+                    </div>-->
+                    <div class="col s6 m4 l4">
+                        <div class="card-panel grey lighten-4 center stat-card">
+                            <h6>Resources</h6>
+                            <p class="flow-text">{{stats.resources}}</p> <!-- Replace with dynamic count -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -79,7 +81,7 @@
                             <p class="grey-text text-darken-2">Access mental health and wellness resources.</p>
                         </div>
                         <div class="card-action center deep-purple lighten-5">
-                            <a href="@Url.Action("Index", "Resources")" class="btn-small deep-purple lighten-3">Go</a>
+                            <a href="@Url.Action("Index", "Resources")" class="btn-small deep-purple lighten-3">View</a>
                         </div>
                     </div>
                 </div>
@@ -98,7 +100,7 @@
                                     <p class="grey-text text-darken-2">Manage and view your upcoming appointments.</p>
                                 </div>
                                 <div class="card-action center deep-purple lighten-5">
-                                    <a href="@Url.Action("Appointments", "Appointment")" class="btn-small deep-purple lighten-3">Go</a>
+                                    <a href="@Url.Action("Appointments", "Appointment")" class="btn-small deep-purple lighten-3">View</a>
                                 </div>
                             </div>
                         </div>
@@ -111,7 +113,7 @@
                                     <p class="grey-text text-darken-2">Read and send messages securely.</p>
                                 </div>
                                 <div class="card-action center deep-purple lighten-5">
-                                    <a href="@Url.Action("Consultations", "Consultation")" class="btn-small deep-purple lighten-3">Go</a>
+                                    <a href="@Url.Action("Consultations", "Consultation")" class="btn-small deep-purple lighten-3">View</a>
                                 </div>
                             </div>
                         </div>
@@ -122,7 +124,7 @@
                 @if (User.IsInRole("Doctor"))
                 {
                     <h6 class="grey-text text-darken-2">Doctor Tools</h6>
-                    <div class="col s12 m6 l6">
+                    <div class="col s12 m6 l4">
                         <div class="card hoverable">
                             <div class="card-content center">
                                 <i class="material-icons medium teal-text text-lighten-2">access_time</i>
@@ -130,7 +132,55 @@
                                 <p class="grey-text text-darken-2">Set your consultation schedule.</p>
                             </div>
                             <div class="card-action center deep-purple lighten-5">
-                                <a href="@Url.Action("Availability", "Doctor")" class="btn-small deep-purple lighten-3">Go</a>
+                                <a href="@Url.Action("Availability", "Doctor")" class="btn-small deep-purple lighten-3">View</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- Reports -->
+                @if (User.IsInRole("Doctor"))
+                {
+                    <h6 class="grey-text text-darken-2">Reports</h6>
+                    <div class="col s12 m6 l8">
+                        <div class="row">
+                            <div class="col s12 m6 l4">
+                                <div class="card hoverable">
+                                    <div class="card-content center">
+                                        <i class="material-icons medium teal-text text-lighten-2">trending_up</i>
+                                        <h6 class="grey-text text-darken-4">Consultation Trends</h6>
+                                        <p class="grey-text text-darken-2">View number of consultations over time.</p>
+                                    </div>
+                                    <div class="card-action center deep-purple lighten-5">
+                                        <a href="@Url.Action("ConsultationReport", "Reports")" class="btn-small deep-purple lighten-3">View</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col s12 m6 l4">
+                                <div class="card hoverable">
+                                    <div class="card-content center">
+                                        <i class="material-icons medium teal-text text-lighten-2">history</i>
+                                        <h6 class="grey-text text-darken-4">Patient History</h6>
+                                        <p class="grey-text text-darken-2">View a complete history of each patient you’ve seen.</p>
+                                    </div>
+                                    <div class="card-action center deep-purple lighten-5">
+                                        <a href="@Url.Action("PatientHistory", "Reports")" class="btn-small deep-purple lighten-3">View</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col s12 m6 l4">
+                                <div class="card hoverable">
+                                    <div class="card-content center">
+                                        <i class="material-icons medium teal-text text-lighten-2">assignment</i>
+                                        <h6 class="grey-text text-darken-4">Follow-ups & Missed</h6>
+                                        <p class="grey-text text-darken-2">Track missed appointments and follow-ups.</p>
+                                    </div>
+                                    <div class="card-action center deep-purple lighten-5">
+                                        <a href="@Url.Action("FollowUpReport", "Reports")" class="btn-small deep-purple lighten-3">View</a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -149,7 +199,7 @@
                                 <p class="grey-text text-darken-2">Schedule a consultation with a doctor.</p>
                             </div>
                             <div class="card-action center deep-purple lighten-5">
-                                <a href="@Url.Action("Book", "Appointment")" class="btn-small deep-purple lighten-3">Go</a>
+                                <a href="@Url.Action("Book", "Appointment")" class="btn-small deep-purple lighten-3">View</a>
                             </div>
                         </div>
                     </div>
@@ -162,7 +212,7 @@
                                 <p class="grey-text text-darken-2">View available professionals.</p>
                             </div>
                             <div class="card-action center deep-purple lighten-5">
-                                <a href="@Url.Action("Doctors", "User")" class="btn-small deep-purple lighten-3">Go</a>
+                                <a href="@Url.Action("Doctors", "User")" class="btn-small deep-purple lighten-3">View</a>
                             </div>
                         </div>
                     </div>
@@ -181,7 +231,7 @@
                                 <p class="grey-text text-darken-2">View and manage all platform users.</p>
                             </div>
                             <div class="card-action center deep-purple lighten-5">
-                                <a href="@Url.Action("ManageUsers", "Admin")" class="btn-small deep-purple lighten-3">Go</a>
+                                <a href="@Url.Action("ManageUsers", "Admin")" class="btn-small deep-purple lighten-3">View</a>
                             </div>
                         </div>
                     </div>
@@ -194,7 +244,7 @@
                                 <p class="grey-text text-darken-2">Review and approve pending doctor accounts.</p>
                             </div>
                             <div class="card-action center deep-purple lighten-5">
-                                <a href="@Url.Action("PendingDoctors", "Admin")" class="btn-small deep-purple lighten-3">Go</a>
+                                <a href="@Url.Action("PendingDoctors", "Admin")" class="btn-small deep-purple lighten-3">View</a>
                             </div>
                         </div>
                     </div>
@@ -207,7 +257,7 @@
                                 <p class="grey-text text-darken-2">Review and update FAQs</p>
                             </div>
                             <div class="card-action center deep-purple lighten-5">
-                                <a href="@Url.Action("FAQs", "Admin")" class="btn-small deep-purple lighten-3">Go</a>
+                                <a href="@Url.Action("FAQs", "Admin")" class="btn-small deep-purple lighten-3">View</a>
                             </div>
                         </div>
                     </div>
@@ -220,7 +270,7 @@
                                 <p class="grey-text text-darken-2">Review and update payments</p>
                             </div>
                             <div class="card-action center deep-purple lighten-5">
-                                <a href="@Url.Action("Payments", "Admin")" class="btn-small deep-purple lighten-3">Go</a>
+                                <a href="@Url.Action("Payments", "Admin")" class="btn-small deep-purple lighten-3">View</a>
                             </div>
                         </div>
                     </div>

@@ -14,18 +14,22 @@ namespace SafeTalkApp.Controllers
         {
             _safeTalkService = safeTalkService;
         }
+
         public ActionResult Index()
         {
             return View();
         }
+
         public ActionResult Doctors()
         {
             return View();
         }
+
         public ActionResult Contact()
         {
             return View();
         }
+
         public ActionResult About()
         {
             return View();

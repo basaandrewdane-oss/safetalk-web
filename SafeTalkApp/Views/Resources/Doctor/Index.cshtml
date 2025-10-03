@@ -7,7 +7,7 @@
         <h4 class="pink-text text-lighten-2">Manage Resources</h4>
         <div class="divider"></div>
         <br />
-        <a class="btn teal lighten-2 waves-effect waves-light modal-trigger" href="#resourceModal">Add Resource</a>
+        <a class="btn teal lighten-2 waves-effect waves-light" ng-click="openAddForm()">Add Resource</a>
     </div>
     <br />
     <div class="container">
@@ -41,7 +41,7 @@
     <div id="resourceModal" class="modal">
         <div class="modal-content">
             <h5 class="pink-text text-lighten-2">{{formMode}} Resource</h5>
-            <form ng-submit="saveResource()">
+            <form name="resourceForm" ng-submit="saveResource()">
                 <div class="input-field">
                     <input type="text" ng-model="resource.title" required>
                     <label class="active">Title</label>

@@ -269,6 +269,7 @@
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\PaymentController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
+    <Compile Include="Controllers\ReportsController.cs" />
     <Compile Include="Controllers\ResourcesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\TranscriptionController.cs" />
@@ -284,8 +285,12 @@
     <Compile Include="DTOs\Appointment\DoctorAvailabilityDTO.cs" />
     <Compile Include="DTOs\Appointment\PatientAppointmentDTO.cs" />
     <Compile Include="DTOs\Consultation\ChatMessageDTO.cs" />
+    <Compile Include="DTOs\Dashboard\DashboardStatsDTO.cs" />
     <Compile Include="DTOs\Payment\PaymentProcessingDTO.cs" />
     <Compile Include="DTOs\Payment\PaymentReviewDTO.cs" />
+    <Compile Include="DTOs\Reports\ConsultationReportDTO.cs" />
+    <Compile Include="DTOs\Reports\PatientHistoryDTO.cs" />
+    <Compile Include="DTOs\Resources\ResourcesDTO.cs" />
     <Compile Include="DTOs\Shared\DoctorDTO.cs" />
     <Compile Include="DTOs\Admin\FAQsDTO.cs" />
     <Compile Include="DTOs\Admin\PromptsDTO.cs" />
@@ -310,11 +315,15 @@
     <Compile Include="Services\AppointmentService.cs" />
     <Compile Include="Services\ChatBotService.cs" />
     <Compile Include="Services\ConsultationService.cs" />
+    <Compile Include="Services\DashboardService.cs" />
     <Compile Include="Services\IAppointmentService.cs" />
     <Compile Include="Services\IChatBotService.cs" />
     <Compile Include="Services\IConsultationService.cs" />
+    <Compile Include="Services\IDashboardService.cs" />
     <Compile Include="Services\IPaymentService.cs" />
     <Compile Include="Services\IPayPalService.cs" />
+    <Compile Include="Services\IReportsService.cs" />
+    <Compile Include="Services\IResourceService.cs" />
     <Compile Include="Services\ISafeTalkAppContext.cs" />
     <Compile Include="Models\LogInViewModel.cs" />
     <Compile Include="Models\PaymentStatus.cs" />
@@ -347,6 +356,8 @@
     <Compile Include="Services\ITranscriptionService.cs" />
     <Compile Include="Services\PaymentService.cs" />
     <Compile Include="Services\PayPalService.cs" />
+    <Compile Include="Services\ReportsService.cs" />
+    <Compile Include="Services\ResourceService.cs" />
     <Compile Include="Services\TranscriptionService.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -424,29 +435,33 @@
     <Content Include="Scripts\angular-animate.min.js.map" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\Holy-Scripts\ApiHelper.js" />
-    <Content Include="Scripts\Holy-Scripts\Controllers\AdminController.js" />
-    <Content Include="Scripts\Holy-Scripts\Controllers\AccountController.js" />
-    <Content Include="Scripts\Holy-Scripts\Controllers\ChatBotController.js" />
-    <Content Include="Scripts\Holy-Scripts\Controllers\ChatRoomController.js" />
-    <Content Include="Scripts\Holy-Scripts\Controllers\ConsultationController.js" />
-    <Content Include="Scripts\Holy-Scripts\Controllers\AppointmentsController.js" />
-    <Content Include="Scripts\Holy-Scripts\Controllers\HomeController.js" />
-    <Content Include="Scripts\Holy-Scripts\Controllers\PaymentController.js" />
-    <Content Include="Scripts\Holy-Scripts\Controllers\ResourceController.js" />
-    <Content Include="Scripts\Holy-Scripts\Directives\fileModel.js" />
-    <Content Include="Scripts\Holy-Scripts\Directives\materialSelect.js" />
-    <Content Include="Scripts\Holy-Scripts\Directives\materialTimepicker24.js" />
-    <Content Include="Scripts\Holy-Scripts\Directives\passwordValidator.js" />
-    <Content Include="Scripts\Holy-Scripts\Directives\validateAge.js" />
+    <Content Include="Scripts\Holy-Scripts\controllers\adminController.js" />
+    <Content Include="Scripts\Holy-Scripts\controllers\accountController.js" />
+    <Content Include="Scripts\Holy-Scripts\controllers\chatBotController.js" />
+    <Content Include="Scripts\Holy-Scripts\controllers\chatRoomController.js" />
+    <Content Include="Scripts\Holy-Scripts\controllers\consultationController.js" />
+    <Content Include="Scripts\Holy-Scripts\controllers\appointmentsController.js" />
+    <Content Include="Scripts\Holy-Scripts\controllers\dashboardController.js" />
+    <Content Include="Scripts\Holy-Scripts\controllers\homeController.js" />
+    <Content Include="Scripts\Holy-Scripts\controllers\paymentController.js" />
+    <Content Include="Scripts\Holy-Scripts\controllers\reportsController.js" />
+    <Content Include="Scripts\Holy-Scripts\controllers\resourceController.js" />
+    <Content Include="Scripts\Holy-Scripts\directives\fileModel.js" />
+    <Content Include="Scripts\Holy-Scripts\directives\materialSelect.js" />
+    <Content Include="Scripts\Holy-Scripts\directives\materialTimepicker24.js" />
+    <Content Include="Scripts\Holy-Scripts\directives\passwordValidator.js" />
+    <Content Include="Scripts\Holy-Scripts\directives\validateAge.js" />
     <Content Include="Scripts\Holy-Scripts\Module.js" />
-    <Content Include="Scripts\Holy-Scripts\Services\AccountService.js" />
-    <Content Include="Scripts\Holy-Scripts\Services\AdminService.js" />
-    <Content Include="Scripts\Holy-Scripts\Services\AppointmentService.js" />
-    <Content Include="Scripts\Holy-Scripts\Services\ChatBotService.js" />
-    <Content Include="Scripts\Holy-Scripts\Services\ConsultationService.js" />
-    <Content Include="Scripts\Holy-Scripts\Services\HomeService.js" />
-    <Content Include="Scripts\Holy-Scripts\Services\PaymentService.js" />
-    <Content Include="Scripts\Holy-Scripts\Services\ResourceService.js" />
+    <Content Include="Scripts\Holy-Scripts\services\accountService.js" />
+    <Content Include="Scripts\Holy-Scripts\services\adminService.js" />
+    <Content Include="Scripts\Holy-Scripts\services\appointmentService.js" />
+    <Content Include="Scripts\Holy-Scripts\services\chatBotService.js" />
+    <Content Include="Scripts\Holy-Scripts\services\consultationService.js" />
+    <Content Include="Scripts\Holy-Scripts\services\dashboardService.js" />
+    <Content Include="Scripts\Holy-Scripts\services\homeService.js" />
+    <Content Include="Scripts\Holy-Scripts\services\paymentService.js" />
+    <Content Include="Scripts\Holy-Scripts\services\reportsService.js" />
+    <Content Include="Scripts\Holy-Scripts\services\resourceService.js" />
     <Content Include="Scripts\i18n\angular-locale_af-na.js" />
     <Content Include="Scripts\i18n\angular-locale_af-za.js" />
     <Content Include="Scripts\i18n\angular-locale_af.js" />
@@ -1252,11 +1267,12 @@
     <Content Include="Views\User\Resources.cshtml" />
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Resources\Public\Index.cshtml" />
+    <Content Include="Views\Reports\ConsultationReport.cshtml" />
+    <Content Include="Views\Reports\PatientHistory.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\ChatBot\" />
-    <Folder Include="Views\Transcription\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />

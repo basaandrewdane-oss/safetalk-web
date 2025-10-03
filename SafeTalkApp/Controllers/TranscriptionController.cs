@@ -32,5 +32,17 @@ namespace SafeTalkApp.Controllers
             return Json(response);
         }
 
+        public async Task<ActionResult> DownloadTranscript(int appointmentID)
+        {
+            var result = await _transcriptionService.DownloadTranscriptFile(appointmentID);
+
+            if (!result.success || result.data == null)
+            {
+                return new HttpStatusCodeResult(500, result.message);
+            }
+
+            string fileName = $"appointment_{appointmentID}_transcript.txt";
+            return File(result.data, "text/plain", fileName);
+        }
     }
 }

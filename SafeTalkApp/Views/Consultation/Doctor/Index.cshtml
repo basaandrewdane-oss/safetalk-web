@@ -24,9 +24,7 @@
                         <td>
                             <div class="center" ng-switch="consult.status">
                                 <button ng-switch-when="3" class="btn teal lighten-2 center-align" ng-click="goToConsultation(consult.appointmentID)">Join</button>
-                                <div ng-switch-when="6">
-                                    <a ng-href="{{consult.transcriptFilePath}}" class="waves-effect waves-light btn teal lighten-2" download>Download Transcript</a>
-                                </div>
+                                <button ng-switch-when="6" class="waves-effect waves-light btn teal lighten-2" ng-click="downloadTranscript(consult.appointmentID)">Download Transcript</button>
                             </div>
                         </td>
                         <td>{{consult.patientName}}</td>

@@ -25,6 +25,7 @@ namespace SafeTalkApp.Controllers
         {
             _appointmentService = appointmentService;
         }
+
         public ActionResult Appointments()
         {
             if (User.IsInRole("Doctor"))
@@ -47,6 +48,7 @@ namespace SafeTalkApp.Controllers
 
 
         // Patient Appointment Actions
+        [Authorize(Roles = "User")]
         public ActionResult Book()
         {
             return View("~/Views/Appointment/User/Book.cshtml");

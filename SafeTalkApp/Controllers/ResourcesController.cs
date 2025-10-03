@@ -1,4 +1,6 @@
-﻿using SafeTalkApp.Models;
+﻿using SafeTalkApp.DTOs.Resources;
+using SafeTalkApp.Models;
+using SafeTalkApp.Services;
 using System;
 using System.Linq;
 using System.Web.Mvc;
@@ -7,7 +9,13 @@ namespace SafeTalkApp.Controllers
 {
     public class ResourcesController : Controller
     {
-        [Authorize]
+        private readonly IResourceService _resourceService;
+
+        public ResourcesController(IResourceService resourceService)
+        {
+            _resourceService = resourceService;
+        }
+
         public ActionResult Index()
         {
             if (User.IsInRole("Doctor"))
@@ -23,96 +31,34 @@ namespace SafeTalkApp.Controllers
                 return View("~/Views/Resources/Admin/Index.cshtml");
             }
 
-            return RedirectToAction("Index", "SafeTalk");
+            return View("~/Views/Resources/Public/Index.cshtml");
         }
 
         public JsonResult GetResources()
         {
-            try
-            {
-                using (var db = new SafeTalkAppContext())
-                {
-
-                    var resources = db.resource_tbl.ToList();
-                    return Json(resources, JsonRequestBehavior.AllowGet);
-                }
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = "Error getting resources", ex.Message }, JsonRequestBehavior.AllowGet);
-            }
+            var response = _resourceService.GetResources();
+            return Json(response, JsonRequestBehavior.AllowGet);
         }
 
         // Add resource
-        public JsonResult AddResource(ResourceTblModel model)
+        public JsonResult AddResource(ResourcesDTO model)
         {
-            try
-            {
-                using (var db = new SafeTalkAppContext())
-                {
-
-                    model.dateCreated = DateTime.Now;
-                    model.dateUpdated = DateTime.Now;
-                    db.resource_tbl.Add(model);
-                    db.SaveChanges();
-                    return Json(new { success = true });
-                }
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = "Error adding resource", ex.Message });
-            }
+            var response = _resourceService.AddResource(model);
+            return Json(response);
         }
 
         // Edit resource
-        public JsonResult EditResource(ResourceTblModel model)
+        public JsonResult EditResource(ResourcesDTO model)
         {
-            try
-            {
-                using (var db = new SafeTalkAppContext())
-                {
-                    var existing = db.resource_tbl.Find(model.resourceID);
-                    if (existing != null)
-                    {
-                        existing.title = model.title;
-                        existing.content = model.content;
-                        existing.category = model.category;
-                        existing.type = model.type;
-                        existing.url = model.url;
-                        existing.publishedDate = model.publishedDate;
-                        existing.dateUpdated = DateTime.Now;
-
-                        db.SaveChanges();
-                    }
-                    return Json(new { success = true });
-                }
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = "Error editing resource", ex.Message });
-            }
+            var response = _resourceService.EditResource(model);
+            return Json(response);
         }
 
         // Delete resource
         public JsonResult DeleteResource(int id)
         {
-            try
-            {
-                using (var db = new SafeTalkAppContext())
-                {
-                    var existing = db.resource_tbl.Find(id);
-                    if (existing != null)
-                    {
-                        db.resource_tbl.Remove(existing);
-                        db.SaveChanges();
-                    }
-                    return Json(new { success = true });
-                }
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = "Error deleting resource.", ex.Message });
-            }
+            var response = _resourceService.DeleteResource(id);
+            return Json(response);
         }
     }
 }

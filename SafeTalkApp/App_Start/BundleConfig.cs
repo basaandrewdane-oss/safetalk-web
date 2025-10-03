@@ -35,23 +35,27 @@ namespace SafeTalkApp
 
             bundles.Add(new ScriptBundle("~/bundles/safetalkapp").Include(
                 "~/Scripts/Holy-Scripts/Module.js",
-                "~/Scripts/Holy-Scripts/Controllers/AccountController.js",
-                "~/Scripts/Holy-Scripts/Controllers/AdminController.js",
-                "~/Scripts/Holy-Scripts/Controllers/AppointmentsController.js",
-                "~/Scripts/Holy-Scripts/Controllers/ChatBotController.js",
-                "~/Scripts/Holy-Scripts/Controllers/ConsultationController.js",
-                "~/Scripts/Holy-Scripts/Controllers/HomeController.js",
-                "~/Scripts/Holy-Scripts/Controllers/PaymentController.js",
-                "~/Scripts/Holy-Scripts/Controllers/ResourceController.js",
                 "~/Scripts/Holy-Scripts/ApiHelper.js",
-                "~/Scripts/Holy-Scripts/Services/AccountService.js",
-                "~/Scripts/Holy-Scripts/Services/AdminService.js",
-                "~/Scripts/Holy-Scripts/Services/AppointmentService.js",
-                "~/Scripts/Holy-Scripts/Services/ChatBotService.js",
-                "~/Scripts/Holy-Scripts/Services/ConsultationService.js",
-                "~/Scripts/Holy-Scripts/Services/HomeService.js",
-                "~/Scripts/Holy-Scripts/Services/PaymentService.js",
-                "~/Scripts/Holy-Scripts/Services/ResourceService.js"));
+                "~/Scripts/Holy-Scripts/controllers/accountController.js",
+                "~/Scripts/Holy-Scripts/controllers/adminController.js",
+                "~/Scripts/Holy-Scripts/controllers/appointmentsController.js",
+                "~/Scripts/Holy-Scripts/controllers/chatBotController.js",
+                "~/Scripts/Holy-Scripts/controllers/consultationController.js",
+                "~/Scripts/Holy-Scripts/controllers/dashboardController.js",
+                "~/Scripts/Holy-Scripts/controllers/homeController.js",
+                "~/Scripts/Holy-Scripts/controllers/paymentController.js",
+                "~/Scripts/Holy-Scripts/controllers/reportsController.js",
+                "~/Scripts/Holy-Scripts/controllers/resourceController.js",
+                "~/Scripts/Holy-Scripts/services/accountService.js",
+                "~/Scripts/Holy-Scripts/services/adminService.js",
+                "~/Scripts/Holy-Scripts/services/appointmentService.js",
+                "~/Scripts/Holy-Scripts/services/chatBotService.js",
+                "~/Scripts/Holy-Scripts/services/consultationService.js",
+                "~/Scripts/Holy-Scripts/services/dashboardService.js",
+                "~/Scripts/Holy-Scripts/services/homeService.js",
+                "~/Scripts/Holy-Scripts/services/paymentService.js",
+                "~/Scripts/Holy-Scripts/services/reportsService.js",
+                "~/Scripts/Holy-Scripts/services/resourceService.js"));
         }
     }
 }

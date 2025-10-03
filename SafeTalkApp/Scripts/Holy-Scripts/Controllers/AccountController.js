@@ -32,6 +32,7 @@
                 }
             }).then(result => {
                 if (result.isConfirmed) {
+                    var chosenRoleId = result.value;
                     var chosenRole = inputOptions[result.value];
                     Swal.fire({
                         title: `You selected: ${chosenRole}`,
@@ -42,7 +43,7 @@
                         cancelButtonText: "Cancel"
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            sessionStorage.setItem("selectedRole", result.value);
+                            sessionStorage.setItem("selectedRole", chosenRoleId);
 
                             // ✅ SweetAlert2 loading modal
                             Swal.fire({

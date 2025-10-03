@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using Unity;
@@ -104,7 +106,6 @@ namespace SafeTalkApp.Services
             }
         }
 
-
         public async Task<ApiResponse<string>> ProcessAndSaveTranscription(HttpPostedFileBase file, int appointmentID)
         {
             try
@@ -120,6 +121,8 @@ namespace SafeTalkApp.Services
 
                 try
                 {
+                    var audioHash = ComputeFileHash(tempPath);
+
                     var transcriptResponse = await TranscribeWithAssemblyAI(tempPath);
                     if (!transcriptResponse.success)
                     {
@@ -127,6 +130,8 @@ namespace SafeTalkApp.Services
                     }
 
                     var transcript = transcriptResponse.data;
+
+                    var transcriptHash = ComputeStringHash(transcript);
 
                     // 2️⃣ Save transcript as a .txt file
                     var transcriptDir = HttpContext.Current.Server.MapPath("~/Uploads/Transcripts");
@@ -141,6 +146,8 @@ namespace SafeTalkApp.Services
                     if (appointment != null)
                     {
                         appointment.transcriptFilePath = "/Uploads/Transcripts/" + transcriptFileName; // store relative path
+                        appointment.audioFileHash = audioHash;
+                        appointment.transcriptHash = transcriptHash;
                     }
                     _db.SaveChanges();
 
@@ -165,6 +172,64 @@ namespace SafeTalkApp.Services
             catch (Exception ex)
             {
                 return ApiResponse<string>.Fail(ex.Message);
+            }
+        }
+
+        public async Task<ApiResponse<byte[]>> DownloadTranscriptFile(int appointmentID)
+        {
+            try
+            {
+                var appointment = _db.appointments_tbl.FirstOrDefault(a => a.appointmentID == appointmentID);
+
+                if (appointment == null || string.IsNullOrEmpty(appointment.transcriptFilePath))
+                {
+                    return ApiResponse<byte[]>.Fail("Transcript not found.");
+                }
+
+                var fullPath = HttpContext.Current.Server.MapPath(appointment.transcriptFilePath);
+                if (!File.Exists(fullPath))
+                {
+                    return ApiResponse<byte[]>.Fail("Transcript file missing on server.");
+                }
+
+                // 🔑 Verify integrity
+                var transcriptContent = File.ReadAllText(fullPath);
+                var recomputedHash = ComputeStringHash(transcriptContent);
+
+                if (!string.Equals(recomputedHash, appointment.transcriptHash, StringComparison.OrdinalIgnoreCase))
+                {
+                    return ApiResponse<byte[]>.Fail("Transcript integrity check failed.");
+                }
+
+                // ✅ Return file as byte[]
+                var fileBytes = await Task.Run(() => File.ReadAllBytes(fullPath));
+                return ApiResponse<byte[]>.Ok(fileBytes, "Transcript download ready.");
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<byte[]>.Fail("Error during transcript download" + ex.Message);
+            }
+        }
+
+        public static string ComputeFileHash(string filePath)
+        {
+            using (var sha256 = SHA256.Create())
+            using (var stream = File.OpenRead(filePath))
+            {
+                return BitConverter.ToString(sha256.ComputeHash(stream))
+                    .Replace("-", "")
+                    .ToLowerInvariant();
+            }
+        }
+
+        public static string ComputeStringHash(string text)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                var bytes = Encoding.UTF8.GetBytes(text);
+                return BitConverter.ToString(sha256.ComputeHash(bytes))
+                    .Replace("-", "")
+                    .ToLowerInvariant();
             }
         }
     }

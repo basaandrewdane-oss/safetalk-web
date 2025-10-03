@@ -58,6 +58,9 @@ namespace SafeTalkApp
             container.RegisterType<IPaymentService, PaymentService>();
             container.RegisterType<IPayPalService, PayPalService>();
             container.RegisterType<ITranscriptionService, TranscriptionService>();
+            container.RegisterType<IReportsService, ReportsService>();
+            container.RegisterType<IDashboardService, DashboardService>();
+            container.RegisterType<IResourceService, ResourceService>();
 
             var httpClient = new HttpClient();
             container.RegisterInstance<HttpClient>(httpClient);
