@@ -25,6 +25,12 @@
                             <div class="center" ng-switch="consult.status">
                                 <button ng-switch-when="3" class="btn teal lighten-2 center-align" ng-click="goToConsultation(consult.appointmentID)">Join</button>
                                 <button ng-switch-when="6" class="waves-effect waves-light btn teal lighten-2" ng-click="downloadTranscript(consult.appointmentID)">Download Transcript</button>
+                                <button class="waves-effect waves-light btn pink lighten-2"
+                                        ng-click="openReferralModal(consult)"
+                                        ng-disabled="consult.hasReferral"
+                                        ng-switch-when="6">
+                                    {{ consult.hasReferral ? 'Referred' : 'Refer' }}
+                                </button>
                             </div>
                         </td>
                         <td>{{consult.patientName}}</td>
@@ -32,11 +38,55 @@
                         <td>{{consult.startTime | timespanToTime}}</td>
                         <td>{{consult.endTime | timespanToTime}}</td>
                         <td ng-switch="consult.status">
+                            <span ng-switch-when="3" class="green-text">Available</span>
                             <span ng-switch-when="6" class="green-text">Completed</span>
                         </td>
                     </tr>
                 </tbody>
             </table>
+            <!-- Referral Modal -->
+            <div id="referralModal" class="modal">
+                <div class="modal-content">
+                    <h5 class="pink-text text-lighten-2">Issue Referral</h5>
+
+                    <!-- Reason -->
+                    <div class="input-field">
+                        <input type="text" id="reason" ng-model="referral.reason" required />
+                        <label for="reason">Reason for Referral</label>
+                    </div>
+
+                    <!-- Urgency Level -->
+                    <div class="input-field">
+                        <select ng-model="referral.urgencyLevel" required>
+                            <option value="" disabled selected>Choose urgency</option>
+                            <option value="1">Low</option>
+                            <option value="2">Medium</option>
+                            <option value="3">High</option>
+                            <option value="4">Emergency</option>
+                        </select>
+                        <label>Urgency Level</label>
+                    </div>
+
+                    <!-- Sent To -->
+                    <div class="input-field">
+                        <input type="text" id="sentTo" ng-model="referral.sentTo" required />
+                        <label for="sentTo">Sent To (Clinic / Doctor / Partner)</label>
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="input-field">
+                        <textarea id="notes" class="materialize-textarea" ng-model="referral.notes"></textarea>
+                        <label for="notes">Additional Notes</label>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn teal lighten-2" ng-click="submitReferral(selectedConsult)">
+                        Submit
+                    </button>
+                    <button class="modal-close btn-flat">Cancel</button>
+                </div>
+            </div>
         </div>
         <div class="center-align" ng-if="verifiedAppointments.length === 0">
             <p class="grey-text">No consultations available at this time.</p>

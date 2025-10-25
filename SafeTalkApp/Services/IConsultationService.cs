@@ -12,5 +12,9 @@ namespace SafeTalkApp.Services
     {
         ApiResponse<AppointmentResultDTO> GetAppointment(int appointmentID);
         ApiResponse<IEnumerable<ChatMessageDTO>> GetChatMessages(int appointmentID);
+        ApiResponse<IEnumerable<AppointmentResultDTO>> GetPatientConsultations(int userID);
+        ApiResponse<IEnumerable<AppointmentResultDTO>> GetDoctorConsultations(int userID);
+        ApiResponse<bool> CreateReferral(ReferralDTO model);
+        ApiResponse<ReferralDTO> GetReferralDetails(int referralID);
     }
 }

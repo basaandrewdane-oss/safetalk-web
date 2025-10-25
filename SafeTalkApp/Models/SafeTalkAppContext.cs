@@ -24,8 +24,10 @@ namespace SafeTalkApp.Models
         public virtual DbSet<GenderTblModel> gender_tbl { get; set; }
         public virtual DbSet<PaymentTblModel> payment_tbl { get; set; }
         public virtual DbSet<PromptsTblModel> prompts_tbl { get; set; }
+        public virtual DbSet<ReferralTblModel> referrals_tbl { get; set; }
         public virtual DbSet<ResourceTblModel> resource_tbl { get; set; }
         public virtual DbSet<RoleTblModel> role_tbl { get; set; }
+        public virtual DbSet<TermsTblModel> terms_tbl { get; set; }
         public virtual DbSet<UserAvailabilityTblModel> user_availability_tbl { get; set; }
         public virtual DbSet<UserRoleTblModel> user_role_tbl { get; set; }
         public virtual DbSet<UserTblModel> user_tbl { get; set; }
@@ -40,8 +42,10 @@ namespace SafeTalkApp.Models
             modelBuilder.Configurations.Add(new GenderTblMap());
             modelBuilder.Configurations.Add(new PaymentTblMap());
             modelBuilder.Configurations.Add(new PromptsTblMap());
+            modelBuilder.Configurations.Add(new ReferralTblMap());
             modelBuilder.Configurations.Add(new ResourceTblMap());
             modelBuilder.Configurations.Add(new RoleTblMap());
+            modelBuilder.Configurations.Add(new TermsTblMap());
             modelBuilder.Configurations.Add(new UserAvailabilityTblMap());
             modelBuilder.Configurations.Add(new UserRoleTblMap());
             modelBuilder.Configurations.Add(new UserTblMap());

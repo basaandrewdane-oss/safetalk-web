@@ -9,7 +9,7 @@
     $scope.chatDisabled = false;
     $scope.callDisabled = false;
     $scope.remainingTime = 0;
-    $scope.currentUserRole = window.currentUserRole === "Doctor";
+    $scope.currentUserRole = window.currentUserRole === "Doctor" || "User";
     $scope.timerDisplay = "";
 
     let callRequestActive = false;
@@ -270,6 +270,7 @@
             $scope.$apply(() => {
                 $scope.showVideoUI = true;
                 startWebRTCAsCaller();
+                startRecording(); // ✅ move this here instead
             });
         } else {
             Swal.fire({ icon: 'info', title: 'Call Rejected' });
@@ -321,19 +322,41 @@
         }
     };
 
-    $scope.startCall = () => {
+    chat.client.addSystemMessage = function (message) {
+        $scope.$apply(function () {
+            $scope.messages.push({
+                name: 'System',
+                message: message,
+                isSystem: true
+            });
+        });
+    };
+
+    $scope.startCall = async () => {
+        // ✅ Get both video + audio first (triggers full permission prompt)
+        if (!localStream) {
+            try {
+                localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                document.getElementById('localVideo').srcObject = localStream;
+            } catch (err) {
+                console.error('Media access denied', err);
+                Swal.fire('Error', 'Camera and microphone access are required to start the call.', 'error');
+                return;
+            }
+        }
+
+        // ✅ Continue with signaling *after* permission granted
         chat.server.sendCallRequest($scope.appointmentID, $scope.user);
         startLiveTranscription();
-        startRecording();
+
+        // ⚠ Optional: don’t startRecording() yet, wait until call is accepted
         Swal.fire({
             title: 'Calling...',
             icon: 'info',
             showConfirmButton: false,
             allowOutsideClick: false,
             allowEscapeKey: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
+            didOpen: () => Swal.showLoading()
         });
     };
 

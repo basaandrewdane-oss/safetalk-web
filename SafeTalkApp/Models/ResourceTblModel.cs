@@ -13,6 +13,8 @@ namespace SafeTalkApp.Models
         public string category { get; set; }
         public string type { get; set; }
         public string url { get; set; }
+
+        public string source { get; set; }
         public DateTime publishedDate { get; set; }
         public DateTime dateCreated { get; set; }
         public DateTime dateUpdated { get; set; }

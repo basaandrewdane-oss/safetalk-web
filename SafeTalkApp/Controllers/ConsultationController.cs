@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNet.Identity;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using SafeTalkApp.DTOs.Consultation;
 using SafeTalkApp.Models;
 using SafeTalkApp.Services;
 using System;
@@ -9,7 +12,7 @@ namespace SafeTalkApp.Controllers
 {
     public class ConsultationController : Controller
     {
-        private readonly ConsultationService _consultationService;
+        private readonly IConsultationService _consultationService;
 
         public ConsultationController(ConsultationService consultationService)
         {
@@ -117,6 +120,13 @@ namespace SafeTalkApp.Controllers
             }
         }
 
+        public ContentResult GetReferralDetails(int referralID)
+        {
+            var response = _consultationService.GetReferralDetails(referralID);
+            var json = JsonConvert.SerializeObject(response, new StringEnumConverter());
+            return Content(json, "application/json");
+        }
+
         // === Doctor Consultation Actions ===
         public JsonResult GetDoctorConsultations()
         {
@@ -130,6 +140,12 @@ namespace SafeTalkApp.Controllers
             {
                 return Json(new { success = false, message = ex.Message }, JsonRequestBehavior.AllowGet);
             }
+        }
+
+        public JsonResult CreateReferral(ReferralDTO model)
+        {
+            var response = _consultationService.CreateReferral(model);
+            return Json(response);
         }
     }
 }

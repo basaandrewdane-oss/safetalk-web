@@ -16,6 +16,7 @@
                     <option selected value="active">Active Only</option>
                     <option value="includeRejected">Include Rejected</option>
                     <option value="includeCanceled">Include Canceled</option>
+                    <option value="includeMissed">Include Missed</option>
                 </select>
                 <label>Filter Appointments</label>
             </div>
@@ -54,13 +55,34 @@
                         <span ng-switch-when="1" class="blue-text">Approved - Awaiting Payment</span>
                         <span ng-switch-when="2" class="orange-text">Payment Submitted</span>
                         <span ng-switch-when="3" class="green-text">Paid</span>
-                        <span ng-switch-when="4" class="red-text">Rejected</span>
+                        <span ng-switch-when="4" class="red-text">
+                            Rejected
+                            <br />
+                            <small><i>{{appt.rejectReason}}</i></small>
+                        </span>
                         <span ng-switch-when="5" class="grey-text">Canceled</span>
                         <span ng-switch-when="6" class="green-text">Completed</span>
+                        <span ng-switch-when="7" class="deep-orange-text">Missed</span>
                         <span ng-switch-default class="grey-text">Unknown</span>
                     </td>
                 </tr>
             </tbody>
         </table>
+        <!-- Reject Reason Modal -->
+        <div id="rejectModal" class="modal">
+            <div class="modal-content">
+                <h5>Reject Appointment</h5>
+                <p>Please provide a reason for rejecting this appointment:</p>
+                <div class="input-field">
+                    <textarea id="rejectReason" class="materialize-textarea" ng-model="rejectReason" required></textarea>
+                    <label for="rejectReason">Reason</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn grey lighten-1" ng-click="cancelReject()">Cancel</button>
+                <button class="btn red" ng-click="confirmReject()">Confirm Reject</button>
+            </div>
+        </div>
+
     </div>
 </main>

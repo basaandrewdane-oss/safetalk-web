@@ -1,0 +1,55 @@
+﻿@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+
+<div ng-controller="ProfileController" class="container">
+    <h4>My Profile</h4>
+
+    <div class="profile-section" style="display: flex; align-items: center; gap: 20px;">
+        <!-- Profile Picture -->
+        <img ng-src="{{ previewUrl || user.profilePictureUrl || '/Uploads/ProfilePictures/default-avatar.png' }}"
+             class="circle responsive-img"
+             style="width: 150px; height: 150px; object-fit: cover; border: 2px solid #ccc;" />
+
+        <!-- Upload Button & Input -->
+        <div class="file-field input-field" style="flex: 1;">
+            <div class="btn purple">
+                <span>Upload Profile Pic</span>
+                <input type="file" id="profilePic" file-model="profilePicture" accept="image/*">
+            </div>
+            <div class="file-path-wrapper">
+                <input class="file-path validate" type="text" placeholder="Upload profile picture">
+            </div>
+        </div>
+    </div>
+
+    <form ng-submit="updateProfile()">
+        <div class="input-field">
+            <label>Email</label>
+            <input type="email" ng-model="user.email" disabled />
+        </div>
+
+        <div class="input-field">
+            <label>First Name</label>
+            <input type="text" ng-model="user.firstName" required />
+        </div>
+
+        <div class="input-field">
+            <label>Last Name</label>
+            <input type="text" ng-model="user.lastName" required />
+        </div>
+
+        <div class="input-field" ng-if="user.role == 'Doctor'">
+            <label>Specialization</label>
+            <input type="text" ng-model="user.specialization" />
+        </div>
+
+        <div class="input-field" ng-if="user.role == 'User'">
+            <label>Contact Number</label>
+            <input type="text" ng-model="user.contactNumber" />
+        </div>
+
+        <button class="btn" type="submit">Update Profile</button>
+    </form>
+</div>

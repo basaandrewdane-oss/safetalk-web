@@ -41,4 +41,16 @@
             $http.get("/Admin/GetPayments")
         )
     }
+
+    this.getTerms = function () {
+        return ApiHelper.handleApiResponse(
+            $http.get("/Admin/GetTerms")
+        )
+    }
+
+    this.updateTerms = function (content) {
+        return ApiHelper.handleApiResponse(
+            $http.post("/Admin/UpdateTerms", { content: content })
+        )
+    }
 });

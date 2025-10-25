@@ -1,4 +1,5 @@
-﻿using SafeTalkApp.DTOs.Admin;
+﻿using Ganss.Xss;
+using SafeTalkApp.DTOs.Admin;
 using SafeTalkApp.DTOs.Shared;
 using SafeTalkApp.Models;
 using System;
@@ -202,5 +203,45 @@ namespace SafeTalkApp.Services
             }
         }
 
+        public ApiResponse<string> GetTerms()
+        {
+
+            try
+            {
+                var terms = _db.terms_tbl.FirstOrDefault();
+                if (terms != null)
+                {
+                    return ApiResponse<string>.Ok(terms.content);
+                }
+                return ApiResponse<string>.Fail("Terms not found.");
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<string>.Fail("Error retrieving terms: " + ex.Message);
+            }
+        }
+
+        public ApiResponse<bool> UpdateTerms(string content)
+        {
+            try
+            {
+                var sanitizer = new HtmlSanitizer();
+                content = sanitizer.Sanitize(content);
+
+                var terms = _db.terms_tbl.FirstOrDefault();
+                if (terms != null)
+                {
+                    terms.content = content;
+                    terms.dateUpdated = DateTime.Now;
+                    _db.SaveChanges();
+                    return ApiResponse<bool>.Ok(true, "Terms updated successfully.");
+                }
+                return ApiResponse<bool>.Fail("Terms not found.");
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<bool>.Fail("Error updating terms: " + ex.Message);
+            }
+        }
     }
 }

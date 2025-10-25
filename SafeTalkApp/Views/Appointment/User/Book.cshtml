@@ -11,11 +11,11 @@
         <div class="divider"></div>
 
         <div class="row">
-            <form class="col s12 m12 l12" name="bookingForm" ng-submit="bookAppointment()" novalidate>
+            <form class="col s12 m12 l12" name="bookingForm" ng-submit="confirmBooking()" novalidate>
 
                 <!-- Doctor Section -->
                 <div class="row">
-                    <h5 class="pink-text text-lighten-2">Select Doctor</h5>
+                    <h5 class="pink-text text-lighten-2">Doctor</h5>
                 </div>
                 <div class="row" ng-init="getDoctors()">
                     <div class="input-field col s12 m6 l6">
@@ -25,7 +25,8 @@
                                 ng-options="d as (d.fullName) for d in doctors"
                                 material-select
                                 watch-collection="doctors"
-                                form-name="bookingForm">
+                                form-name="bookingForm"
+                                required>
                             <option value="" disabled selected>Choose your doctor</option>
                         </select>
                         <label for="doctors" class="grey-text text-darken-2">Doctors</label>
@@ -40,99 +41,111 @@
                     </div>
                 </div>
 
+                <div class="row">
+                    <h5 class="pink-text text-lighten-2">Date & Time Slot</h5>
+                </div>
+                <div class="row">
+                    <div class="col s12 m4 l4">
+                        <div class="input-field">
+                            <input id="appointmentDate"
+                                   type="text"
+                                   class="datepicker"
+                                   ng-model="selectedDate"
+                                   placeholder="Choose a date"
+                                   readonly
+                                   required>
+                            <label for="appointmentDate" class="active grey-text text-darken-2">Select Date</label>
+                        </div>
+                    </div>
+
+                    <div class="col s12 m4 l4">
+                        <div class="input-field">
+                            <select id="timeSlot"
+                                    ng-model="selectedSlot"
+                                    ng-options="slot as (('1970-01-01T' + slot.start) | date:'hh:mm a' ) + ' - ' + (('1970-01-01T' + slot.end) | date:'hh:mm a') for slot in selectedAvailability.slots"
+                                    ng-change="updateSelectedSlot(selectedSlot)"
+                                    material-select
+                                    watch-collection="selectedAvailability.slots"
+                                    required>
+                                <option value="" disabled selected>Choose a time slot</option>
+                            </select>
+                            <label for="timeSlot" class="grey-text text-darken-2">Select Time Slot</label>
+                        </div>
+                    </div>
+
+                    <div class="input-field col s12 m4 l4">
+                        <input type="text"
+                               id="fee"
+                               name="fee"
+                               ng-model="selectedAvailability.fee"
+                               readonly>
+                        <label for="specialization" class="grey-text text-darken-2">Fee</label>
+                    </div>
+                </div>
+
+                <!-- If doctor has no schedule on that day -->
+                <div class="center grey-text" ng-if="selectedDate && !selectedAvailability">
+                    No available schedule for this date.
+                </div>
+
                 <!-- Chief Complaint Section -->
                 <div class="row">
                     <h5 class="pink-text text-lighten-2">Chief Complaint</h5>
                 </div>
                 <div class="row">
-                    <div class="input-field col s12">
-                        <textarea id="chiefComplaint"
-                                  name="chiefComplaint"
-                                  class="materialize-textarea"
-                                  ng-model="appointment.chiefComplaint"
-                                  placeholder="Briefly describe your main concern"
-                                  required>
-                        </textarea>
-                        <label for="chiefComplaint" class="grey-text text-darken-2">Enter Chief Complaint</label>
-                    </div>
-                </div>
-
-                <!-- Schedule Section -->
-                <div class="row">
-                    <h5 class="pink-text text-lighten-2">Pick a Schedule</h5>
-                </div>
-
-                <div class="row" ng-if="doctorAvailability.length">
-
-                    <!-- Each Day Card -->
-                    <div class="col s12 m4 l3" ng-repeat="availability in doctorAvailability">
-                        <div class="card hoverable" style="border-radius: 20px;">
-                            <div class="card-content center">
-                                <h6 class="deep-purple-text text-lighten-2">{{availability.day}}</h6>
-                                <p class="grey-text">Fee: ₱{{availability.fee | number:2}}</p>
-
-                                <div class="slot-list" style="margin-top: 15px;">
-                                    <div ng-repeat="slot in availability.slots" style="margin-bottom: 8px;">
-                                        <label>
-                                            <input type="radio"
-                                                   name="slot"
-                                                   ng-click="selectSlot(slot, availability.dayID, availability.fee)" />
-                                            <span class="chip grey lighten-3 grey-text text-darken-2">{{ ('1970-01-01T' + slot.start) | date:'hh:mm a' }}-{{ ('1970-01-01T' + slot.end) | date:'hh:mm a' }}</span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="col s12 m6 l6">
+                        <div class="input-field">
+                            <textarea id="chiefComplaint"
+                                      name="chiefComplaint"
+                                      class="materialize-textarea"
+                                      ng-model="appointment.chiefComplaint"
+                                      placeholder="Briefly describe your main concern"
+                                      required>
+                            </textarea>
+                            <label for="chiefComplaint" class="grey-text text-darken-2">Enter Chief Complaint</label>
+                            <span class="helper-text red-text left"
+                                  ng-show="(bookingForm.chiefComplaint.$touched || bookingForm.$submitted) && bookingForm.chiefComplaint.$error.required">
+                                This field is required
+                            </span>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Date Picker (only when slot is selected) -->
-                <div class="row" ng-if="selectedSlot">
-                    <div class="input-field col s12 m6">
-                        <input id="appointmentDate"
-                               type="text"
-                               class="datepicker"
-                               ng-model="selectedDate"
-                               placeholder="Choose a date"
-                               readonly>
-                        <label for="appointmentDate" class="active grey-text text-darken-2">Select Date</label>
                     </div>
                 </div>
 
                 <!-- Submit Button -->
                 <div class="row center">
                     <div class="col s12">
-                        <button class="btn waves-effect waves-light teal lighten-2 modal-trigger"
+                        <button class="btn waves-effect waves-light teal lighten-2"
                                 type="button"
-                                data-target="reviewModal"
+                                ng-click="checkSlotAndReview()"
                                 style="border-radius:30px;">
                             Submit
                             <i class="material-icons right">send</i>
                         </button>
                     </div>
                 </div>
+                <!-- Review Modal -->
+                <div id="reviewModal" class="modal" style="border-radius:20px; width: 40%">
+                    <div class="modal-content">
+                        <h5 class="pink-text text-lighten-2">Review Your Booking</h5>
+                        <p><strong>Doctor:</strong> {{selectedDoctor.fullName}}</p>
+                        <p><strong>Specialization:</strong> {{selectedDoctor.specialization}}</p>
+                        <p><strong>Date:</strong> {{selectedDate | date:'fullDate'}}</p>
+                        <p>
+                            <strong>Time:</strong>
+                            {{ ('1970-01-01T' + selectedSlot.start) | date:'hh:mm a' }} -
+                            {{ ('1970-01-01T' + selectedSlot.end) | date:'hh:mm a' }}
+                        </p>
+                        <p><strong>Fee:</strong> ₱{{fee | number:2}}</p>
+                        <p ng-if="appointment.chiefComplaint"><strong>Chief Complaint:</strong> {{appointment.chiefComplaint}}</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn waves-effect teal lighten-2" type="submit">Confirm</button>
+                        <button class="btn-flat modal-close">Cancel</button>
+                    </div>
+                </div>
             </form>
 
-            <!-- Review Modal -->
-            <div id="reviewModal" class="modal" style="border-radius:20px; width: 40%">
-                <div class="modal-content">
-                    <h5 class="pink-text text-lighten-2">Review Your Booking</h5>
-                    <p><strong>Doctor:</strong> {{selectedDoctor.fullName}}</p>
-                    <p><strong>Specialization:</strong> {{selectedDoctor.specialization}}</p>
-                    <p><strong>Date:</strong> {{selectedDate | date:'fullDate'}}</p>
-                    <p>
-                        <strong>Time:</strong>
-                        {{ ('1970-01-01T' + selectedSlot.start) | date:'hh:mm a' }} -
-                        {{ ('1970-01-01T' + selectedSlot.end) | date:'hh:mm a' }}
-                    </p>
-                    <p><strong>Fee:</strong> ₱{{fee | number:2}}</p>
-                    <p ng-if="appointment.chiefComplaint"><strong>Chief Complaint:</strong> {{appointment.chiefComplaint}}</p>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn waves-effect teal lighten-2" ng-click="confirmBooking()">Confirm</button>
-                    <button class="btn-flat modal-close">Cancel</button>
-                </div>
-            </div>
+            
         </div>
     </div>
 </main>

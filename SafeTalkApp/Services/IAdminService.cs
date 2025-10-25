@@ -17,5 +17,7 @@ namespace SafeTalkApp.Services
         ApiResponse<IEnumerable<DoctorDTO>> GetPendingDoctors();
         ApiResponse<bool> VerifyDoctor(int userID);
         ApiResponse<IEnumerable<PaymentDTO>> GetPayments();
+        ApiResponse<string> GetTerms();
+        ApiResponse<bool> UpdateTerms(string content);
     }
 }

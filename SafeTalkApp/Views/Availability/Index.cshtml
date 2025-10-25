@@ -1,0 +1,53 @@
+﻿@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<main class="grey lighten-5" ng-controller="AvailabilityController">
+    <div class="container">
+        <h4 class="pink-text text-lighten-2">Manage Availability</h4>
+        <div class="divider"></div>
+
+        <table class="striped">
+            <thead>
+                <tr>
+                    <th>Day</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Slot Duration (min)</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="a in availabilities track by $index">
+                    <td>
+                        <select ng-model="a.dayID"
+                                material-select
+                                ng-options="d.dayID as d.day for d in daysOfWeek"
+                                class="browser-default">
+                            <option value="">-- Select Day --</option>
+                        </select>
+                    </td>
+                    <td><input type="time" ng-model="a.availabilityStart" /></td>
+                    <td><input type="time" ng-model="a.availabilityEnd" /></td>
+                    <td>
+                        <select ng-model="a.slotDuration" class="browser-default">
+                            <option value="">Slot Duration</option>
+                            <option ng-value="15">15 minutes</option>
+                            <option ng-value="30">30 minutes</option>
+                            <option ng-value="45">45 minutes</option>
+                            <option ng-value="60">1 hour</option>
+                            <option ng-value="90">1 hour and 30 minutes</option>
+                            <option ng-value="120">2 hours</option>
+                        </select>
+                    </td>
+                    <td><button class="btn-flat red-text" ng-click="removeAvailability($index)">✖</button></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="section">
+            <button class="btn pink lighten-2" ng-click="addAvailability()">Add Row</button>
+            <button class="btn teal" ng-click="saveAvailability()">Save Changes</button>
+        </div>
+    </div>
+</main>

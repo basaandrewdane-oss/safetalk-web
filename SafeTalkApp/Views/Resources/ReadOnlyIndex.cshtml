@@ -1,0 +1,163 @@
+﻿@{
+    Layout = "~/Views/Shared/_HomeLayout.cshtml";
+}
+<!-- Admin Resources View -->
+<main ng-controller="ResourcesController">
+    <div class="container">
+        <h4 class="pink-text text-lighten-2">Resources</h4>
+        <div class="divider"></div>
+        <br />
+        @if (User.IsInRole("Admin") || User.IsInRole("Doctor"))
+        {
+
+            <a class="btn teal lighten-2 waves-effect waves-light" ng-click="openAddForm()">Add Resource</a>
+        }
+    </div>
+    <br />
+    <div class="container">
+        <div class="row valign-wrapper">
+            <div class="input-field col s12 m6">
+                <input type="text" ng-model="searchQuery" placeholder="Search by title, category, or type...">
+                <i class="material-icons prefix">search</i>
+            </div>
+            <div class="input-field col s12 m4">
+                <select ng-model="selectedCategory" ng-options="c for c in categories">
+                    <option value="">All Categories</option>
+                </select>
+                <label>Filter by Category</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col s12 m6 l4" ng-repeat="res in filteredResources = (resources | filter:searchFilter)">
+                <div class="card hover-card">
+                    <div class="card-image waves-effect waves-block waves-light">
+                        <img class="activator" src="~/Content/Images/firstSlide.jpeg">
+                    </div>
+                    <div class="card-content">
+                        <span class="card-title activator">{{res.title}}</span>
+                        <p>{{res.category}} • {{res.type}}</p>
+                        <p class="grey-text">{{res.publishedDate | date: 'yyyy-MM-dd'}}</p>
+                    </div>
+                    <div class="card-action">
+                        <a href="#" ng-if="res.source === 'Internal'" ng-click="viewInternal(res)">View</a>
+                        <!-- External Resource -->
+                        <a ng-if="res.source === 'External'" ng-href="{{res.url}}" target="_blank">Learn More</a>
+                        @if (User.IsInRole("Doctor") || User.IsInRole("Admin"))
+                        {
+                            <a href="#" ng-click="openEditForm(res)">Edit</a>
+                            <a href="#" class="red-text" ng-click="deleteResource(res.resourceID)">Delete</a>
+                        }
+                    </div>
+                    <!-- Hover Content -->
+                    <div class="hover-content">
+                        <!-- If internal: render HTML -->
+                        <div ng-if="res.source === 'Internal'" ng-bind-html="res.trustedContent"></div>
+
+                        <!-- If external: show plain text -->
+                        <p ng-if="res.source === 'External'">{{res.content}}</p>
+                        <a class="hover-link"
+                           ng-if="res.source === 'External'"
+                           ng-href="{{res.url}}"
+                           target="_blank">
+                            Read More
+                        </a>
+
+                        <a class="hover-link"
+                           ng-if="res.source === 'Internal'"
+                           href="#"
+                           ng-click="viewInternal(res)">
+                            Read More
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <ul class="pagination center-align">
+            <li ng-class="{disabled: currentPage === 1}">
+                <a ng-click="currentPage = currentPage - 1"><i class="material-icons">chevron_left</i></a>
+            </li>
+            <li ng-repeat="n in [].constructor(pageCount()) track by $index"
+                ng-class="{active: currentPage === ($index + 1)}">
+                <a ng-click="currentPage = $index + 1">{{$index + 1}}</a>
+            </li>
+            <li ng-class="{disabled: currentPage === pageCount()}">
+                <a ng-click="currentPage = currentPage + 1"><i class="material-icons">chevron_right</i></a>
+            </li>
+        </ul>
+    </div>
+
+
+    <!-- Add/Edit Modal Structure -->
+    <div id="resourceModal" class="modal">
+        <div class="modal-content">
+            <h5 class="pink-text text-lighten-2">{{formMode}} Resource</h5>
+            <form name="resourceForm" novalidate>
+                <div class="input-field">
+                    <select name="source" ng-model="resource.source" ng-change="onSourceChange()" required>
+                        <option value="" disabled>Choose Resource Type</option>
+                        <option value="Internal">Internal</option>
+                        <option value="External">External</option>
+                    </select>
+                    <label>Resource Type</label>
+                    <span class="helper-text left-align red-text text-lighten-2"
+                          ng-show="(resourceForm.source.$touched || resourceForm.$submitted) && resourceForm.source.$error.required">
+                        Source is required
+                    </span>
+                </div>
+
+                <div class="input-field">
+                    <input type="text" ng-model="resource.title" required>
+                    <label class="active">Title</label>
+                </div>
+
+                <div class="input-field">
+                    <label class="active">Content</label>
+                    <textarea id="editorArea"></textarea>
+                </div>
+
+                <div class="input-field">
+                    <input type="text" ng-model="resource.category">
+                    <label class="active">Category</label>
+                </div>
+
+                <!-- EXTERNAL Resource Fields -->
+                <div ng-if="resource.source === 'External'">
+                    <div class="input-field">
+                        <input type="text" ng-model="resource.type">
+                        <label class="active">Type</label>
+                    </div>
+
+                    <div class="input-field">
+                        <input type="url" ng-model="resource.url">
+                        <label class="active">URL</label>
+                    </div>
+                </div>
+
+                <div class="input-field">
+                    <input type="date" ng-model="resource.publishedDate">
+                    <label class="active">Published Date</label>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn red" ng-click="closeModal()">Close</button>
+                    <button type="submit" class="btn green" ng-click="saveResource()">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Internal Resource Modal -->
+    <div id="viewResourceModal" class="modal">
+        <div class="modal-content">
+            <h5 class="pink-text text-lighten-2">{{selectedResource.title}}</h5>
+            <div class="grey-text">{{selectedResource.category}} • {{selectedResource.type}}</div>
+            <div class="divider"></div>
+            <br />
+            <div ng-bind-html="selectedResource.content"></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn grey" ng-click="closeViewModal()">Close</button>
+        </div>
+    </div>
+</main>

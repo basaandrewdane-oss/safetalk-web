@@ -18,20 +18,12 @@ namespace SafeTalkApp.Controllers
 
         public ActionResult Index()
         {
-            if (User.IsInRole("Doctor"))
+            if (User?.Identity != null && User.Identity.IsAuthenticated)
             {
-                return View("~/Views/Resources/Doctor/Index.cshtml");
-            }
-            else if (User.IsInRole("User") || User.IsInRole("Patient"))
-            {
-                return View("~/Views/Resources/User/Index.cshtml");
-            }
-            else if (User.IsInRole("Admin"))
-            {
-                return View("~/Views/Resources/Admin/Index.cshtml");
+                return View("~/Views/Resources/Index.cshtml");
             }
 
-            return View("~/Views/Resources/Public/Index.cshtml");
+            return View("~/Views/Resources/ReadOnlyIndex.cshtml");
         }
 
         public JsonResult GetResources()

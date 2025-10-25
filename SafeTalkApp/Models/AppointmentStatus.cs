@@ -14,5 +14,6 @@ namespace SafeTalkApp.Models
         public const int Rejected = 4; // doctor rejected
         public const int Canceled = 5; // patient canceled
         public const int Completed = 6; // consultation completed
+        public const int Missed = 7;
     }
 }

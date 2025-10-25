@@ -27,11 +27,12 @@ namespace SafeTalkApp
                       "~/Content/site.css"));
 
             bundles.Add(new ScriptBundle("~/bundles/directives").Include(
+                    "~/Scripts/Holy-Scripts/Directives/endAfterStart.js",
+                    "~/Scripts/Holy-Scripts/Directives/fileModel.js",
                     "~/Scripts/Holy-Scripts/Directives/materialSelect.js",
-                    "~/Scripts/Holy-Scripts/Directives/passwordValidator.js",
-                    "~/Scripts/Holy-Scripts/Directives/validateAge.js",
                     "~/Scripts/Holy-Scripts/Directives/materialTimepicker24.js",
-                    "~/Scripts/Holy-Scripts/Directives/fileModel.js"));
+                    "~/Scripts/Holy-Scripts/Directives/passwordValidator.js",
+                    "~/Scripts/Holy-Scripts/Directives/validateAge.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/safetalkapp").Include(
                 "~/Scripts/Holy-Scripts/Module.js",
@@ -39,21 +40,25 @@ namespace SafeTalkApp
                 "~/Scripts/Holy-Scripts/controllers/accountController.js",
                 "~/Scripts/Holy-Scripts/controllers/adminController.js",
                 "~/Scripts/Holy-Scripts/controllers/appointmentsController.js",
+                "~/Scripts/Holy-Scripts/controllers/availabilityController.js",
                 "~/Scripts/Holy-Scripts/controllers/chatBotController.js",
                 "~/Scripts/Holy-Scripts/controllers/consultationController.js",
                 "~/Scripts/Holy-Scripts/controllers/dashboardController.js",
                 "~/Scripts/Holy-Scripts/controllers/homeController.js",
                 "~/Scripts/Holy-Scripts/controllers/paymentController.js",
+                "~/Scripts/Holy-Scripts/controllers/profileController.js",
                 "~/Scripts/Holy-Scripts/controllers/reportsController.js",
                 "~/Scripts/Holy-Scripts/controllers/resourceController.js",
                 "~/Scripts/Holy-Scripts/services/accountService.js",
                 "~/Scripts/Holy-Scripts/services/adminService.js",
                 "~/Scripts/Holy-Scripts/services/appointmentService.js",
+                "~/Scripts/Holy-Scripts/services/availabilityService.js",
                 "~/Scripts/Holy-Scripts/services/chatBotService.js",
                 "~/Scripts/Holy-Scripts/services/consultationService.js",
                 "~/Scripts/Holy-Scripts/services/dashboardService.js",
                 "~/Scripts/Holy-Scripts/services/homeService.js",
                 "~/Scripts/Holy-Scripts/services/paymentService.js",
+                "~/Scripts/Holy-Scripts/services/profileService.js",
                 "~/Scripts/Holy-Scripts/services/reportsService.js",
                 "~/Scripts/Holy-Scripts/services/resourceService.js"));
         }

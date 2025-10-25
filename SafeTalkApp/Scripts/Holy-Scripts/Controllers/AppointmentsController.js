@@ -1,5 +1,6 @@
 ﻿app.controller("AppointmentsController", function ($scope, $timeout, AppointmentService) {
     $scope.appointmentFilter = "active";
+    var instance;
     // ===== User Appointments =====
     $scope.getDoctors = function () {
         var getDoctors = AppointmentService.getDoctors();
@@ -11,22 +12,26 @@
         });
     }
 
-    $scope.$watch('selectedDoctor', function (newVal) {
+    $scope.$watch('selectedDoctor', function (newVal, oldVal) {
+        // Reset dependent data
+        $scope.selectedDate = null;
+        $scope.selectedSlot = null;
+        $scope.selectedAvailability = null;
+        $scope.fee = null;
+
+        $scope.clearDatepicker();
+
         if (newVal && newVal.userID) {
             $scope.getDoctorsAvailability(newVal.userID);
-            $timeout(function () {
-                if (window.M && M.updateTextFields) {
-                    M.updateTextFields(); // Materialize 1.x
-                }
-            });
         } else {
             $scope.doctorAvailability = [];
-            $timeout(function () {
-                if (window.M && M.updateTextFields) {
-                    M.updateTextFields();
-                }
-            });
         }
+
+        $timeout(function () {
+            if (window.M && M.updateTextFields) {
+                M.updateTextFields();
+            }
+        });
     });
 
     $scope.getDoctorsAvailability = function (userID) {
@@ -36,48 +41,81 @@
             if ($scope.doctorAvailability.length > 0) {
                 $scope.selectedSlotIndex = null; // no default selected yet
             }
+            $timeout(function () {
+                var tabs = document.querySelectorAll('.tabs');
+                M.Tabs.init(tabs);
+            }, 0);
         }).catch(function (error) {
             console.error("Error fetching availability", error);
         });
     }
 
-    $scope.selectSlot = function (slot, dayID, fee) {
-        $scope.selectedSlot = slot;
-        $scope.selectedDayID = dayID;
-        $scope.fee = fee;
-    };
-
-    $scope.$watch('selectedDayID', function (dayID) {
-        if (typeof dayID === 'number') {
-            $scope.selectedDate = null;
-
-            // Clear the input text
-            var dateInput = document.getElementById('appointmentDate');
-            if (dateInput) {
-                dateInput.value = '';
-            }
-            // Delay to allow DOM to render the input
-            setTimeout(function () {
-                var elems = document.querySelectorAll('.datepicker');
-                var dayOfWeek = dayID; // 0 = Sunday, 1 = Monday, etc.
-
-                M.Datepicker.init(elems, {
-                    format: 'yyyy-mm-dd',
-                    minDate: new Date(),
-                    autoClose: true,
-                    disableDayFn: function (date) {
-                        return date.getDay() !== dayOfWeek;
-                    },
-                    onSelect: function (date) {
-                        // Update Angular model manually since Materialize doesn't trigger digest
-                        $scope.$apply(function () {
-                            $scope.selectedDate = date;
-                        });
-                    }
-                });
-            }, 100);
+    // Watch doctors loaded
+    $scope.$watch('doctorAvailability', function (avail) {
+        if (avail && avail.length > 0) {
+            $scope.initDatepicker();
         }
     });
+
+    // Initialize datepicker once doctors’ availability is loaded
+    $scope.initDatepicker = function () {
+        $timeout(function () {
+            const elems = document.querySelectorAll('.datepicker');
+            // Collect valid dayIDs (0=Sun, 1=Mon, ...)
+            const validDays = $scope.doctorAvailability.map(a => a.dayID);
+            M.Datepicker.init(elems, {
+                format: 'yyyy-mm-dd',
+                minDate: new Date(),
+                autoClose: true,
+                // Disable days not in doctor's availability
+                disableDayFn: function (date) {
+                    return !validDays.includes(date.getDay());
+                },
+                onSelect: function (date) {
+                    $scope.$apply(function () {
+                        $scope.selectedDate = date;
+                        $scope.updateAvailabilityByDate(date);
+                    });
+                }
+            });
+        }, 200);
+    };
+
+    $scope.clearDatepicker = function () {
+        const elems = document.querySelectorAll('.datepicker');
+        elems.forEach(e => e.value = '');
+    };
+
+    // When date changes, show slots for that day
+    $scope.updateAvailabilityByDate = function (date) {
+        const dayID = date.getDay(); // 0 = Sunday, 1 = Monday, ...
+        $scope.selectedAvailability = $scope.doctorAvailability.find(a => a.dayID === dayID) || null;
+        $scope.selectedSlot = null;
+        $scope.selectedDayID = null;
+        $scope.fee = null;
+    };
+
+    $scope.$watch('selectedAvailability.slots', function (newSlots) {
+        $timeout(function () {
+            if (window.M && M.FormSelect) {
+                M.FormSelect.init(document.querySelectorAll('select'));
+            }
+            if (window.M && M.updateTextFields) {
+                M.updateTextFields();
+            }
+        }, 100);
+    });
+
+    $scope.updateSelectedSlot = function (slot) {
+        if (slot) {
+            $scope.selectedSlot = slot;
+            $scope.selectedDayID = $scope.selectedAvailability.dayID;
+            $scope.fee = $scope.selectedAvailability.fee;
+        } else {
+            $scope.selectedSlot = null;
+            $scope.fee = null;
+        }
+    };
 
     $scope.confirmBooking = function () {
         $('#reviewModal').modal('close'); // close modal
@@ -85,8 +123,8 @@
     };
 
     $scope.bookAppointment = function () {
-        if (!$scope.selectedSlot || !$scope.selectedDate) {
-            Swal.fire("Error", "Please select a date and time slot.", "error");
+        if ($scope.bookingForm && $scope.bookingForm.$invalid) {
+            Swal.fire("Error", "Please check required fields", "error");
             return;
         }
         var appointmentData = {
@@ -114,6 +152,34 @@
             Swal.fire("Error", "Unable to book appointment. Please try again.", "error");
         });
     }
+
+    $scope.checkSlotAndReview = function () {
+        if (!$scope.selectedDoctor || !$scope.selectedSlot || !$scope.selectedDate) {
+            M.toast({ html: 'Please select doctor, date, and time slot first.', classes: 'red' });
+            return;
+        }
+
+        const payload = {
+            doctorID: $scope.selectedDoctor.userID,
+            date: $scope.selectedDate,
+            startTime: $scope.selectedSlot.start,
+            endTime: $scope.selectedSlot.end
+        };
+
+        // Call the backend check endpoint
+        AppointmentService.checkSlotAvailability(payload).then(function (result) {
+            if (result.success) {
+                // Slot available → open review modal
+                const modal = M.Modal.getInstance(document.getElementById('reviewModal'));
+                modal.open();
+            } else {
+                // Slot booked → show message
+                M.toast({ html: result.message || 'This slot is already booked.', classes: 'red' });
+            }
+        }, function () {
+            M.toast({ html: 'Error checking slot availability.', classes: 'red' });
+        });
+    };
 
     $scope.getPatientAppointments = function () {
         if ($.fn.DataTable.isDataTable('#appointmentsTable')) {
@@ -175,11 +241,13 @@
                 case "all":
                     return appt.status !== 6; // all except completed
                 case "active":
-                    return appt.status !== 4 && appt.status !== 5 && appt.status !== 6;
+                    return appt.status !== 4 && appt.status !== 5 && appt.status !== 6 && appt.status !== 7;
                 case "includeRejected":
-                    return appt.status !== 5 && appt.status !== 6;
+                    return appt.status !== 5 && appt.status !== 6 && appt.status !== 7;
                 case "includeCanceled":
-                    return appt.status !== 4 && appt.status !== 6;
+                    return appt.status !== 4 && appt.status !== 6 && appt.status !== 7;
+                case "includeMissed":
+                    return appt.status !== 4 && appt.status !== 5 && appt.status !== 6;
                 default:
                     return true;
             }
@@ -236,29 +304,47 @@
     }
 
     $scope.rejectAppointment = function (appointmentID) {
-        Swal.fire({
-            title: "Reject Appointment",
-            text: "Are you sure you want to reject this appointment?",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonText: "Yes, reject",
-            cancelButtonText: "No, cancel"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                AppointmentService.rejectAppointment(appointmentID).then(function (result) {
-                    if (result.success) {
-                        Swal.fire("Success", "Appointment rejected successfully.", "success");
-                        $timeout(function () {
-                            $scope.getDoctorAppointments(); // Refresh the list
-                        });
-                    } else {
-                        Swal.fire("Error", result.message, "error");
-                    }
-                }, function (error) {
-                    console.error("Rejection error", error);
-                    Swal.fire("Error", "Unable to reject appointment. Please try again.", "error");
-                });
-            }
-        });
+        $scope.selectedAppointmentID = appointmentID;
+        $scope.rejectReason = "";
+        instance.open();
     }
+
+    // Cancel the rejection
+    $scope.cancelReject = function () {
+        $scope.rejectReason = "";
+        $scope.selectedAppointmentID = null;
+        instance.close();
+    };
+
+    // Confirm and send to backend
+    $scope.confirmReject = function () {
+        if (!$scope.rejectReason.trim()) {
+            M.toast({ html: 'Please provide a reason before rejecting.', classes: 'red' });
+            return;
+        }
+
+        var data = {
+            appointmentID: $scope.selectedAppointmentID,
+            rejectReason: $scope.rejectReason
+        }
+
+        AppointmentService.rejectAppointment(data).then(function (result) {
+            if (result.success) {
+                M.toast({ html: 'Appointment rejected.', classes: 'green' });
+                $scope.getDoctorAppointments(); // refresh list
+            } else {
+                M.toast({ html: 'Failed to reject appointment.', classes: 'red' });
+            }
+        }).catch(function () {
+            M.toast({ html: 'Error processing request.', classes: 'red' });
+        }).finally(function () {
+            instance.close();
+        });
+    };
+
+    // Init
+    angular.element(document).ready(function () {
+        var modal = document.getElementById('rejectModal');
+        instance = M.Modal.init(modal);
+    });
 });

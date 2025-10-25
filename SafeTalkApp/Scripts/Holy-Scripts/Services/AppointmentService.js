@@ -25,6 +25,12 @@
         )
     }
 
+    this.checkSlotAvailability = function (payload) {
+        return ApiHelper.handleApiResponse(
+            $http.post("/Appointment/CheckSlotAvailability", payload)
+        )
+    }
+
     this.getPatientAppointments = function () {
         return ApiHelper.handleApiResponse(
             $http.get("/Appointment/GetPatientAppointments")
@@ -50,9 +56,9 @@
         )
     }
 
-    this.rejectAppointment = function (appointmentID) {
+    this.rejectAppointment = function (data) {
         return ApiHelper.handleApiResponse(
-            $http.post("/Appointment/RejectAppointment", { appointmentID: appointmentID })
+            $http.post("/Appointment/RejectAppointment", data)
         )
     }
 });

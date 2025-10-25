@@ -61,6 +61,8 @@ namespace SafeTalkApp
             container.RegisterType<IReportsService, ReportsService>();
             container.RegisterType<IDashboardService, DashboardService>();
             container.RegisterType<IResourceService, ResourceService>();
+            container.RegisterType<IProfileService, ProfileService>();
+            container.RegisterType<IAvailabilityService, AvailabilityService>();
 
             var httpClient = new HttpClient();
             container.RegisterInstance<HttpClient>(httpClient);

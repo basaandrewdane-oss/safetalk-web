@@ -16,8 +16,10 @@ namespace SafeTalkApp.Models
         public string phoneNumber { get; set; }
         public string licenseNumber { get; set; }
         public string specialization { get; set; }
+        public int? slotDuration { get; set; } // in minutes, nullable for non-doctors
         public string email { get; set; }
         public string password { get; set; }
+        public string profilePictureUrl { get; set; }
         public bool isVerified { get; set; }
         public string emailVerificationToken { get; set; }
         public DateTime? emailVerificationExpiry { get; set; }

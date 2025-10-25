@@ -46,6 +46,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AngleSharp, Version=0.17.1.0, Culture=neutral, PublicKeyToken=e83494dcdc6d31ea, processorArchitecture=MSIL">
+      <HintPath>..\packages\AngleSharp.0.17.1\lib\net472\AngleSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="AngleSharp.Css, Version=0.17.0.0, Culture=neutral, PublicKeyToken=e83494dcdc6d31ea, processorArchitecture=MSIL">
+      <HintPath>..\packages\AngleSharp.Css.0.17.0\lib\net472\AngleSharp.Css.dll</HintPath>
+    </Reference>
     <Reference Include="BCrypt.Net-Next, Version=4.0.0.0, Culture=neutral, PublicKeyToken=1e11be04b6288443, processorArchitecture=MSIL">
       <HintPath>..\packages\BCrypt.Net-Next.4.0.0\lib\net48\BCrypt.Net-Next.dll</HintPath>
     </Reference>
@@ -60,6 +66,9 @@
     </Reference>
     <Reference Include="Google.Protobuf, Version=3.30.0.0, Culture=neutral, PublicKeyToken=a7d26565bac4d604, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Protobuf.3.30.0\lib\net45\Google.Protobuf.dll</HintPath>
+    </Reference>
+    <Reference Include="HtmlSanitizer, Version=9.0.0.0, Culture=neutral, PublicKeyToken=61c49a1a9e79cc28, processorArchitecture=MSIL">
+      <HintPath>..\packages\HtmlSanitizer.9.0.886\lib\net47\HtmlSanitizer.dll</HintPath>
     </Reference>
     <Reference Include="K4os.Compression.LZ4, Version=1.3.8.0, Culture=neutral, PublicKeyToken=2186fa9121ef231d, processorArchitecture=MSIL">
       <HintPath>..\packages\K4os.Compression.LZ4.1.3.8\lib\net462\K4os.Compression.LZ4.dll</HintPath>
@@ -126,6 +135,9 @@
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
     </Reference>
+    <Reference Include="System.Collections.Immutable, Version=9.0.0.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.Immutable.9.0.1\lib\net462\System.Collections.Immutable.dll</HintPath>
+    </Reference>
     <Reference Include="System.Collections.Specialized, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Collections.Specialized.4.3.0\lib\net46\System.Collections.Specialized.dll</HintPath>
       <Private>True</Private>
@@ -160,6 +172,9 @@
     </Reference>
     <Reference Include="System.Security" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Text.Encoding.CodePages, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Encoding.CodePages.6.0.0\lib\net461\System.Text.Encoding.CodePages.dll</HintPath>
+    </Reference>
     <Reference Include="System.Text.Encodings.Web, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Text.Encodings.Web.8.0.0\lib\net462\System.Text.Encodings.Web.dll</HintPath>
     </Reference>
@@ -264,6 +279,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\AppointmentController.cs" />
+    <Compile Include="Controllers\AvailabilityController.cs" />
     <Compile Include="Controllers\ChatBotController.cs" />
     <Compile Include="Controllers\ConsultationController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
@@ -279,15 +295,20 @@
     <Compile Include="DTOs\Account\SignUpDTO.cs" />
     <Compile Include="DTOs\Account\VerifyEmailResultDTO.cs" />
     <Compile Include="DTOs\Admin\PaymentDTO.cs" />
+    <Compile Include="DTOs\Admin\TermsUpdateDTO.cs" />
     <Compile Include="DTOs\Appointment\AppointmentResultDTO.cs" />
     <Compile Include="DTOs\Appointment\BookAppointmentDTO.cs" />
     <Compile Include="DTOs\Appointment\DoctorAppointmentDTO.cs" />
     <Compile Include="DTOs\Appointment\DoctorAvailabilityDTO.cs" />
     <Compile Include="DTOs\Appointment\PatientAppointmentDTO.cs" />
     <Compile Include="DTOs\Consultation\ChatMessageDTO.cs" />
+    <Compile Include="DTOs\Consultation\ReferralDTO.cs" />
+    <Compile Include="DTOs\Dashboard\ConsultationTrendDTO.cs" />
     <Compile Include="DTOs\Dashboard\DashboardStatsDTO.cs" />
     <Compile Include="DTOs\Payment\PaymentProcessingDTO.cs" />
     <Compile Include="DTOs\Payment\PaymentReviewDTO.cs" />
+    <Compile Include="DTOs\Profile\ProfileUpdateDTO.cs" />
+    <Compile Include="DTOs\Profile\UserDTO.cs" />
     <Compile Include="DTOs\Reports\ConsultationReportDTO.cs" />
     <Compile Include="DTOs\Reports\PatientHistoryDTO.cs" />
     <Compile Include="DTOs\Resources\ResourcesDTO.cs" />
@@ -312,16 +333,25 @@
     <Compile Include="Models\FAQsTblModel.cs" />
     <Compile Include="Models\GenderTblMap.cs" />
     <Compile Include="Models\GenderTblModel.cs" />
+    <Compile Include="Models\ReferralStatus.cs" />
+    <Compile Include="Models\ReferralTblMap.cs" />
+    <Compile Include="Models\ReferralTblModel.cs" />
+    <Compile Include="Models\TermsTblMap.cs" />
+    <Compile Include="Models\TermsTblModel.cs" />
+    <Compile Include="Models\UrgencyLevel.cs" />
     <Compile Include="Services\AppointmentService.cs" />
+    <Compile Include="Services\AvailabilityService.cs" />
     <Compile Include="Services\ChatBotService.cs" />
     <Compile Include="Services\ConsultationService.cs" />
     <Compile Include="Services\DashboardService.cs" />
     <Compile Include="Services\IAppointmentService.cs" />
+    <Compile Include="Services\IAvailabilityService.cs" />
     <Compile Include="Services\IChatBotService.cs" />
     <Compile Include="Services\IConsultationService.cs" />
     <Compile Include="Services\IDashboardService.cs" />
     <Compile Include="Services\IPaymentService.cs" />
     <Compile Include="Services\IPayPalService.cs" />
+    <Compile Include="Services\IProfileService.cs" />
     <Compile Include="Services\IReportsService.cs" />
     <Compile Include="Services\IResourceService.cs" />
     <Compile Include="Services\ISafeTalkAppContext.cs" />
@@ -356,6 +386,7 @@
     <Compile Include="Services\ITranscriptionService.cs" />
     <Compile Include="Services\PaymentService.cs" />
     <Compile Include="Services\PayPalService.cs" />
+    <Compile Include="Services\ProfileService.cs" />
     <Compile Include="Services\ReportsService.cs" />
     <Compile Include="Services\ResourceService.cs" />
     <Compile Include="Services\TranscriptionService.cs" />
@@ -437,6 +468,7 @@
     <Content Include="Scripts\Holy-Scripts\ApiHelper.js" />
     <Content Include="Scripts\Holy-Scripts\controllers\adminController.js" />
     <Content Include="Scripts\Holy-Scripts\controllers\accountController.js" />
+    <Content Include="Scripts\Holy-Scripts\controllers\availabilityController.js" />
     <Content Include="Scripts\Holy-Scripts\controllers\chatBotController.js" />
     <Content Include="Scripts\Holy-Scripts\controllers\chatRoomController.js" />
     <Content Include="Scripts\Holy-Scripts\controllers\consultationController.js" />
@@ -444,8 +476,10 @@
     <Content Include="Scripts\Holy-Scripts\controllers\dashboardController.js" />
     <Content Include="Scripts\Holy-Scripts\controllers\homeController.js" />
     <Content Include="Scripts\Holy-Scripts\controllers\paymentController.js" />
+    <Content Include="Scripts\Holy-Scripts\controllers\profileController.js" />
     <Content Include="Scripts\Holy-Scripts\controllers\reportsController.js" />
     <Content Include="Scripts\Holy-Scripts\controllers\resourceController.js" />
+    <Content Include="Scripts\Holy-Scripts\directives\endAfterStart.js" />
     <Content Include="Scripts\Holy-Scripts\directives\fileModel.js" />
     <Content Include="Scripts\Holy-Scripts\directives\materialSelect.js" />
     <Content Include="Scripts\Holy-Scripts\directives\materialTimepicker24.js" />
@@ -455,11 +489,13 @@
     <Content Include="Scripts\Holy-Scripts\services\accountService.js" />
     <Content Include="Scripts\Holy-Scripts\services\adminService.js" />
     <Content Include="Scripts\Holy-Scripts\services\appointmentService.js" />
+    <Content Include="Scripts\Holy-Scripts\services\availabilityService.js" />
     <Content Include="Scripts\Holy-Scripts\services\chatBotService.js" />
     <Content Include="Scripts\Holy-Scripts\services\consultationService.js" />
     <Content Include="Scripts\Holy-Scripts\services\dashboardService.js" />
     <Content Include="Scripts\Holy-Scripts\services\homeService.js" />
     <Content Include="Scripts\Holy-Scripts\services\paymentService.js" />
+    <Content Include="Scripts\Holy-Scripts\services\profileService.js" />
     <Content Include="Scripts\Holy-Scripts\services\reportsService.js" />
     <Content Include="Scripts\Holy-Scripts\services\resourceService.js" />
     <Content Include="Scripts\i18n\angular-locale_af-na.js" />
@@ -1256,9 +1292,6 @@
     <Content Include="Views\Profile\Admin\Index.cshtml" />
     <Content Include="Views\Profile\Doctor\Index.cshtml" />
     <Content Include="Views\Profile\User\Index.cshtml" />
-    <Content Include="Views\Resources\Admin\Index.cshtml" />
-    <Content Include="Views\Resources\Doctor\Index.cshtml" />
-    <Content Include="Views\Resources\User\Index.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_AccountLayout.cshtml" />
     <Content Include="Views\Shared\_DashboardLayout.cshtml" />
@@ -1267,9 +1300,14 @@
     <Content Include="Views\User\Resources.cshtml" />
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
-    <Content Include="Views\Resources\Public\Index.cshtml" />
     <Content Include="Views\Reports\ConsultationReport.cshtml" />
     <Content Include="Views\Reports\PatientHistory.cshtml" />
+    <Content Include="Views\Admin\ManageTerms.cshtml" />
+    <Content Include="Views\Profile\ProfileView.cshtml" />
+    <Content Include="Views\Resources\Index.cshtml" />
+    <Content Include="Views\Resources\ReadOnlyIndex.cshtml" />
+    <Content Include="Views\Home\DoctorsView.cshtml" />
+    <Content Include="Views\Availability\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

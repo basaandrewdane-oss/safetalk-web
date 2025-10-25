@@ -1,4 +1,9 @@
-﻿using System;
+﻿using Microsoft.AspNet.Identity;
+using Microsoft.Owin.Security;
+using SafeTalkApp.DTOs.Profile;
+using SafeTalkApp.DTOs.Shared;
+using SafeTalkApp.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -8,7 +13,14 @@ namespace SafeTalkApp.Controllers
 {
     public class ProfileController : Controller
     {
-        // GET: Profile
+        private readonly IProfileService _profileService;
+        private readonly IAccountService _accountService;
+
+        public ProfileController(IProfileService profileService, IAccountService accountService)
+        {
+            _profileService = profileService;
+            _accountService = accountService;
+        }
         public ActionResult Index()
         {
             if (User.IsInRole("Doctor"))
@@ -27,10 +39,36 @@ namespace SafeTalkApp.Controllers
             return RedirectToAction("Index", "SafeTalk");
         }
 
-        // Admin Profile
+        public ActionResult ProfileView()
+        {
+            return View();
+        }
 
-        // Doctor Profile
+        public JsonResult GetProfile()
+        {
+            var userId = User.Identity.GetUserId();
+            var result = _profileService.GetProfile(userId);
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
 
-        // User Profile
+        public JsonResult UpdateProfile(ProfileUpdateDTO dto)
+        {
+            var userId = User.Identity.GetUserId();
+            var response = _profileService.UpdateProfile(dto, userId);
+            if (response.success)
+            {
+                // Re-fetch updated user info to rebuild claims
+                var updatedUser = _profileService.GetUserById(userId);
+                if (updatedUser != null)
+                {
+                    var identity = _accountService.GenerateUserIdentity(updatedUser);
+
+                    var authManager = HttpContext.GetOwinContext().Authentication;
+                    authManager.SignOut(); // Remove old claims
+                    authManager.SignIn(new AuthenticationProperties { IsPersistent = false }, identity);
+                }
+            }
+            return Json(response);
+        }
     }
 }

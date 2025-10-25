@@ -1,4 +1,4 @@
-﻿app.controller("AccountController", function ($scope, AccountService) {
+﻿app.controller("AccountController", function ($scope, AccountService, AdminService) {
     $scope.emailExists = false;
 
     window.addEventListener('pageshow', function (event) {
@@ -98,86 +98,111 @@
             Swal.fire("Error", "Please check required fields", "error");
             return;
         }
-        Swal.fire({
-            title: "Terms and Conditions",
-            input: "checkbox",
-            inputPlaceholder: `I agree with the <a href="https://example.com/terms" target="_blank" style="color: #3085d6;">terms and conditions</a>`,
-            confirmButtonText: `Continue&nbsp;<i class="fa fa-arrow-right"></i>`,
-            inputValidator: (result) => {
-                if (!result) {
-                    return "You need to agree with T&C";
-                }
-            }
-        }).then(({ value: accept }) => {
-            if (accept) {
-                // show loading
+        // Fetch latest Terms & Privacy Policy
+        var getTerms = AdminService.getTerms();
+        getTerms.then(function (result) {
+            if (result.success) {
+                const termsHtml = result.data;
+
                 Swal.fire({
-                    title: "Creating account...",
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
+                    title: "Terms and Conditions",
+                    html: `
+                    <div style="text-align:left; max-height:300px; overflow-y:auto; border:1px solid #ddd; padding:10px;">
+                        ${termsHtml}
+                    </div>
+                    <br>
+                    <label style="display:flex; align-items:center; gap:5px;">
+                        <input type="checkbox" id="agreeTerms" />
+                        <span>I have read and agree to the Terms & Privacy Policy</span>
+                    </label>
+                `,
+                    showCancelButton: true,
+                    confirmButtonText: "Continue",
+                    preConfirm: () => {
+                        const checked = document.getElementById('agreeTerms').checked;
+                        if (!checked) {
+                            Swal.showValidationMessage("You need to agree before continuing.");
+                            return false;
+                        }
+                    }
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        $scope.createAccount(); // call your existing create account logic
                     }
                 });
-                $scope.selectedRole = parseInt(sessionStorage.getItem("selectedRole"));
+            } else {
+                Swal.fire("Error", "Could not load terms and conditions.", "error");
+            }
+        });
+    }
 
-                if ($scope.selectedRole == 2) {
-                    var availability = $scope.selectedDays
-                        .map(day => {
-                            const startDate = new Date($scope.availabilityTimes[day].start);
-                            const endDate = new Date($scope.availabilityTimes[day].end);
+    $scope.createAccount = function () {
+        Swal.fire({
+            title: "Creating account...",
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+        $scope.selectedRole = parseInt(sessionStorage.getItem("selectedRole"));
 
-                            const pad = n => n.toString().padStart(2, '0');
+        if ($scope.selectedRole == 2) {
+            var availability = $scope.selectedDays
+                .map(day => {
+                    const startDate = new Date($scope.availabilityTimes[day].start);
+                    const endDate = new Date($scope.availabilityTimes[day].end);
 
-                            return {
-                                dayID: day,
-                                availabilityStart: `${pad(startDate.getHours())}:${pad(startDate.getMinutes())}`,
-                                availabilityEnd: `${pad(endDate.getHours())}:${pad(endDate.getMinutes())}`,
-                                fee: $scope.availabilityTimes[day].fee
-                            };
-                        })
-                        .filter(a => a.availabilityStart && a.availabilityEnd);
-                }
+                    const pad = n => n.toString().padStart(2, '0');
 
-                var userData = {
-                    roleID: $scope.selectedRole,
-                    firstName: $scope.firstName,
-                    middleName: $scope.middleName,
-                    lastName: $scope.lastName,
-                    birthDate: $scope.birthDate,
-                    genderID: $scope.selectedGender,
-                    phoneNumber: $scope.phoneNumber,
-                    licenseNumber: $scope.licenseNumber,
-                    specialization: $scope.specialization,
-                    availability: availability,
-                    email: $scope.email,
-                    password: $scope.password
-                }
+                    return {
+                        dayID: day,
+                        availabilityStart: `${pad(startDate.getHours())}:${pad(startDate.getMinutes())}`,
+                        availabilityEnd: `${pad(endDate.getHours())}:${pad(endDate.getMinutes())}`,
+                        fee: $scope.availabilityTimes[day].fee
+                    };
+                })
+                .filter(a => a.availabilityStart && a.availabilityEnd);
+        }
 
-                var createAccount = AccountService.registerUser(userData);
-                createAccount.then(function (result) {
-                    if (result.success) {
-                        Swal.fire({
-                            title: `Account created successfully!`,
-                            icon: "success",
-                            allowOutsideClick: false,
-                            showCancelButton: false,
-                            confirmButtonText: "Proceed to Login"
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                setTimeout(() => {
-                                    window.location.href = "/Account/Login"; // Redirect to login page
-                                }, 200); // Redirect after 1 second
-                                sessionStorage.removeItem("selectedRole"); // Clear the session storage
-                            }
-                        });
+        var userData = {
+            roleID: $scope.selectedRole,
+            firstName: $scope.firstName,
+            middleName: $scope.middleName,
+            lastName: $scope.lastName,
+            birthDate: $scope.birthDate,
+            genderID: $scope.selectedGender,
+            phoneNumber: $scope.phoneNumber,
+            licenseNumber: $scope.licenseNumber,
+            specialization: $scope.specialization,
+            availability: availability,
+            slotDuration: $scope.slotDuration,
+            email: $scope.email,
+            password: $scope.password
+        }
+
+        var createAccount = AccountService.registerUser(userData);
+        createAccount.then(function (result) {
+            if (result.success) {
+                Swal.fire({
+                    title: `Account created successfully!`,
+                    icon: "success",
+                    allowOutsideClick: false,
+                    showCancelButton: false,
+                    confirmButtonText: "Proceed to Login"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        setTimeout(() => {
+                            window.location.href = "/Account/Login"; // Redirect to login page
+                        }, 200); // Redirect after 1 second
+                        sessionStorage.removeItem("selectedRole"); // Clear the session storage
                     }
-                    else {
-                        Swal.fire("Error", result.message, "error");
-                    }
-                }, function (error) {
-                    Swal.fire("Something went wrong.", error, "error");
                 });
             }
+            else {
+                Swal.fire("Error", result.message, "error");
+            }
+        }, function (error) {
+            Swal.fire("Something went wrong.", error, "error");
         });
     }
 

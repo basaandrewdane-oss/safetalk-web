@@ -144,7 +144,7 @@ namespace SafeTalkApp.Tests.Services
 
             // Assert
             Assert.IsFalse(result.success);
-            Assert.AreEqual("Invalid email or password.", result.message);
+            Assert.AreEqual("Invalid email.", result.message);
         }
 
         [TestMethod]

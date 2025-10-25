@@ -1,7 +1,9 @@
 ﻿using SafeTalkApp.DTOs.Account;
+using SafeTalkApp.DTOs.Profile;
 using SafeTalkApp.DTOs.Shared;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace SafeTalkApp.Services
 {
@@ -9,7 +11,8 @@ namespace SafeTalkApp.Services
     {
         ApiResponse<object> RegisterUser(SignUpDTO signUp);
         ApiResponse<bool> EmailExists(string email);
-        ApiResponse<LoginDTO> AuthenticateUser(LoginDTO login);
+        ApiResponse<UserDTO> AuthenticateUser(LoginDTO login);
+        ClaimsIdentity GenerateUserIdentity(UserDTO user);
         ApiResponse<VerifyEmailResultDTO> VerifyEmail(string token);
         ApiResponse<ResendVerficationResultDTO> ResendVerificationEmail(string email);
         ApiResponse<IEnumerable<object>> GetRoles();

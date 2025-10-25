@@ -70,6 +70,9 @@ namespace SafeTalkApp.Services
         {
             try
             {
+                var user = _db.user_tbl.FirstOrDefault(u => u.userID == userID);
+                var slotDuration = user?.slotDuration ?? 30; // fallback to 30 mins
+
                 var availability = (from a in _db.user_availability_tbl
                                     join d in _db.days_of_week_tbl on a.dayID equals d.dayID
                                     where a.userID == userID
@@ -91,7 +94,7 @@ namespace SafeTalkApp.Services
                     dayID = a.dayID,
                     day = a.day,
                     fee = a.fee,
-                    slots = GenerateTimeSlots(a.availabilityStart, a.availabilityEnd)
+                    slots = GenerateTimeSlots(a.availabilityStart, a.availabilityEnd, slotDuration)
                 }).ToList();
 
                 return ApiResponse<IEnumerable<DoctorAvailabilityDTO>>.Ok(result);
@@ -102,7 +105,7 @@ namespace SafeTalkApp.Services
             }
         }
 
-        private IEnumerable<TimeSlotDTO> GenerateTimeSlots(TimeSpan start, TimeSpan end, int intervalMinutes = 30)
+        private IEnumerable<TimeSlotDTO> GenerateTimeSlots(TimeSpan start, TimeSpan end, int intervalMinutes)
         {
             var slots = new List<TimeSlotDTO>();
 
@@ -195,10 +198,35 @@ namespace SafeTalkApp.Services
             }
         }
 
+        public ApiResponse<bool> CheckSlotAvailability(BookAppointmentDTO model)
+        {
+            try
+            {
+                var overlappingAppointment = _db.appointments_tbl.FirstOrDefault(a =>
+                    a.doctorID == model.doctorID &&
+                    a.date == model.date &&
+                    !(model.endTime <= a.startTime || model.startTime >= a.endTime)
+                );
+
+                if (overlappingAppointment != null)
+                {
+                    return ApiResponse<bool>.Fail("This time slot is already booked.");
+                }
+
+                return ApiResponse<bool>.Ok(true, "Slot available.");
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<bool>.Fail("Error checking slot: " + ex.Message);
+            }
+        }
+
         public ApiResponse<IEnumerable<PatientAppointmentDTO>> GetPatientAppointments(int patientID)
         {
             try
             {
+                UpdateMissedAppointments();
+
                 var appointments = (from a in _db.appointments_tbl
                                     join d in _db.user_tbl on a.doctorID equals d.userID
                                     where a.patientID == patientID
@@ -211,6 +239,7 @@ namespace SafeTalkApp.Services
                                         endTime = a.endTime,
                                         fee = a.fee,
                                         status = a.status,
+                                        rejectReason = a.rejectReason,
                                         doctorName = d.firstName + " " + d.lastName,
                                         doctorEmail = d.email,
                                         phoneNumber = d.phoneNumber
@@ -259,6 +288,8 @@ namespace SafeTalkApp.Services
         {
             try
             {
+                UpdateMissedAppointments();
+
                 var appointments = (from a in _db.appointments_tbl
                                     join d in _db.user_tbl on a.patientID equals d.userID
                                     join p in _db.payment_tbl on a.appointmentID equals p.appointmentID into pay
@@ -272,6 +303,7 @@ namespace SafeTalkApp.Services
                                         startTime = a.startTime,
                                         endTime = a.endTime,
                                         status = a.status,
+                                        rejectReason = a.rejectReason,
                                         patientName = d.firstName + " " + d.lastName,
                                         patientEmail = d.email,
                                         paymentImage = p.imagePath,
@@ -317,16 +349,17 @@ namespace SafeTalkApp.Services
             }
         }
 
-        public ApiResponse<bool> RejectAppointment(int appointmentID)
+        public ApiResponse<bool> RejectAppointment(AppointmentResultDTO data)
         {
             try
             {
-                var appointment = _db.appointments_tbl.Find(appointmentID);
+                var appointment = _db.appointments_tbl.Find(data.appointmentID);
                 if (appointment == null)
                 {
                     return ApiResponse<bool>.Fail("Appointment not found.");
                 }
                 appointment.status = AppointmentStatus.Rejected;
+                appointment.rejectReason = data.rejectReason;
                 appointment.dateUpdated = DateTime.Now;
                 _db.SaveChanges();
                 // Send rejection email to patient
@@ -341,6 +374,42 @@ namespace SafeTalkApp.Services
             catch (Exception ex)
             {
                 return ApiResponse<bool>.Fail("Error rejecting appointment: " + ex.Message);
+            }
+        }
+
+        public ApiResponse<bool> UpdateMissedAppointments()
+        {
+            try
+            {
+                var today = DateTime.Now.Date;
+
+                // Get appointments before today that are still unpaid or pending
+                // Join appointments with payments
+                var pastAppointments = (from a in _db.appointments_tbl
+                                        join p in _db.payment_tbl
+                                            on a.appointmentID equals p.appointmentID into ap
+                                        from payment in ap.DefaultIfEmpty() // left join
+                                        where a.date < today &&
+                                              (a.status == AppointmentStatus.Pending ||
+                                               a.status == AppointmentStatus.Approved) &&
+                                              (
+                                                  payment == null /*|| */// no payment
+                                                  /*payment.status == PaymentStatus.Rejected*/ // explicitly rejected
+                                              )
+                                        select a).ToList();
+
+                // Mark them as missed
+                foreach (var appt in pastAppointments)
+                {
+                    appt.status = AppointmentStatus.Missed;
+                }
+
+                _db.SaveChanges();
+                return ApiResponse<bool>.Ok(true);
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<bool>.Fail($"Error updating missed appointments: {ex.Message}");
             }
         }
     }

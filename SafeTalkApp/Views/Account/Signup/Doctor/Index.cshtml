@@ -167,7 +167,7 @@
 
                             <div ng-show="currentStep === 3">
                                 <div class="row">
-                                    <h5 class="deep-purple-text text-lighten-3 left">Credentials and Availability</h5>
+                                    <h4 class="deep-purple-text text-lighten-3 center">Credentials and Availability</h4>
                                 </div>
                                 <div class="row">
                                     <div class="input-field col s12 m6 l6">
@@ -199,6 +199,8 @@
                                             Specialization is required
                                         </span>
                                     </div>
+                                </div>
+                                <div class="row">
                                     <div class="input-field col s12 m6 l6" ng-init="getDaysOfWeek()">
                                         <select multiple
                                                 id="days"
@@ -217,37 +219,97 @@
                                             Select at least one day.
                                         </span>
                                     </div>
+                                </div>
+                                <div class="row">
                                     <div ng-repeat="day in selectedDays">
-                                        <div class="input-field col s12 m6 l6">
+                                        <!-- Start Time -->
+                                        <div class="input-field col s12 m6 l3">
                                             <input id="timeStart{{day}}"
                                                    name="timeStart{{day}}"
                                                    type="time"
                                                    ng-model="availabilityTimes[day].start"
                                                    placeholder="Start Time"
+                                                   min="08:00" max="20:00"
                                                    required>
                                             <label for="timeStart{{day}}" class="active">
                                                 <b class="teal-text text-lighten-2">Start Time</b> for
                                                 <b class="deep-purple-text text-lighten-3">{{getDayName(day)}}</b>
                                             </label>
+
+                                            <!-- Required validation -->
                                             <span class="helper-text left-align red-text text-lighten-2"
                                                   ng-show="(doctorForm['timeStart' + day].$touched || doctorForm.$submitted) && doctorForm['timeStart' + day].$error.required">
                                                 This field is required
                                             </span>
+
+                                            <!-- Min validation -->
+                                            <span class="helper-text left-align red-text text-lighten-2"
+                                                  ng-show="(doctorForm['timeStart' + day].$touched || doctorForm.$submitted) && doctorForm['timeStart' + day].$error.min">
+                                                Start time cannot be earlier than 08:00 AM
+                                            </span>
+
+                                            <!-- Max validation -->
+                                            <span class="helper-text left-align red-text text-lighten-2"
+                                                  ng-show="(doctorForm['timeStart' + day].$touched || doctorForm.$submitted) && doctorForm['timeStart' + day].$error.max">
+                                                Start time cannot be later than 08:00 PM
+                                            </span>
                                         </div>
-                                        <div class="input-field col s12 m6 l6">
+                                        <!-- End Time -->
+                                        <div class="input-field col s12 m6 l3">
                                             <input id="timeEnd{{day}}"
                                                    name="timeEnd{{day}}"
+                                                   end-after-start="availabilityTimes[day].start"
                                                    type="time"
                                                    ng-model="availabilityTimes[day].end"
                                                    placeholder="End Time"
+                                                   min="08:00" max="20:00"
                                                    required>
                                             <label><b class="pink-text text-lighten-2">End Time</b> for <b class="deep-purple-text text-lighten-3">{{getDayName(day)}}</b></label>
+
+                                            <!-- Required validation -->
                                             <span class="helper-text left-align red-text text-lighten-2"
                                                   ng-show="(doctorForm['timeEnd' + day].$touched || doctorForm.$submitted) && doctorForm['timeEnd' + day].$error.required">
                                                 This field is required
                                             </span>
+                                            <!-- Min validation -->
+                                            <span class="helper-text left-align red-text text-lighten-2"
+                                                  ng-show="(doctorForm['timeEnd' + day].$touched || doctorForm.$submitted) && doctorForm['timeEnd' + day].$error.min">
+                                                End time cannot be earlier than 08:00 AM
+                                            </span>
+
+                                            <!-- Max validation -->
+                                            <span class="helper-text left-align red-text text-lighten-2"
+                                                  ng-show="(doctorForm['timeEnd' + day].$touched || doctorForm.$submitted) && doctorForm['timeEnd' + day].$error.max">
+                                                End time cannot be later than 08:00 PM
+                                            </span>
+
+                                            <!-- Custom directive validation (End > Start) -->
+                                            <span ng-show="doctorForm['timeEnd' + day].$error.endAfterStart"
+                                                  class="helper-text left-align red-text text-lighten-2">
+                                                End time must be later than start time
+                                            </span>
                                         </div>
-                                        <div class="input-field col s12 m6 l6">
+                                        <div class="input-field col s12 m6 l3">
+                                            <select id="slotDuration"
+                                                    ng-model="slotDuration"
+                                                    material-select
+                                                    required>
+                                                <option value="" disabled selected>Slot Duration</option>
+                                                <option value="15">15 minutes</option>
+                                                <option value="30">30 minutes</option>
+                                                <option value="45">45 minutes</option>
+                                                <option value="60">1 hour</option>
+                                                <option value="90">1 hour and 30 minutes</option>
+                                                <option value="120">2 hour</option>
+                                            </select>
+                                            <label>Consultation Slot Duration</label>
+                                            <span class="helper-text left-align red-text text-lighten-2"
+                                                  ng-show="(doctorForm.slotDuration.$touched || doctorForm.$submitted) && !slotDuration">
+                                                Slot duration is required
+                                            </span>
+                                        </div>
+
+                                        <div class="input-field col s12 m6 l3">
                                             <input id="fee{{day}}"
                                                    name="fee{{day}}"
                                                    type="number"
@@ -256,7 +318,7 @@
                                                    ng-model="availabilityTimes[day].fee"
                                                    placeholder="Fee"
                                                    required>
-                                            <label for="fee{{day}}"><b class="teal-text text-lighten-2">Consultation Fee</b> for <b class="deep-purple-text text-lighten-3">{{getDayName(day)}}</b></label>
+                                            <label for="fee{{day}}"><b class="teal-text text-lighten-2">Fee</b> for <b class="deep-purple-text text-lighten-3">{{getDayName(day)}}</b></label>
 
                                             <span class="helper-text left-align red-text text-lighten-2"
                                                   ng-show="(doctorForm['fee' + day].$touched || doctorForm.$submitted) && doctorForm['fee' + day].$error.required">
@@ -281,7 +343,7 @@
                                        ng-show="currentStep > 1"
                                        ng-click="prevStep()">← Back</a>
                                     <a class="waves-effect waves-teal btn-large white teal-text text-lighten-2"
-                                       ng-show="currentStep === 1">Cancel</a>
+                                       ng-show="currentStep === 1" ng-click="cancelSignUp()">Cancel</a>
                                 </div>
                                 <div class="col s12 m6 l6">
                                     <button class="waves-effect waves-light btn-large pink lighten-2 white-text"

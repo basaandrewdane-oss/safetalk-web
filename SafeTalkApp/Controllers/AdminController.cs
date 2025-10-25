@@ -85,5 +85,22 @@ namespace SafeTalkApp.Controllers
             var response = _adminService.GetPayments();
             return Json(response, JsonRequestBehavior.AllowGet);
         }
+
+        public JsonResult GetTerms()
+        {
+            var response = _adminService.GetTerms();
+            return Json(response, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult UpdateTerms(TermsUpdateDTO dto)
+        {
+            var response = _adminService.UpdateTerms(dto.content);
+            return Json(response);
+        }
+
+        public ActionResult ManageTerms()
+        {
+            return View();
+        }
     }
 }

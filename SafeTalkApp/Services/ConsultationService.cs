@@ -88,6 +88,8 @@ namespace SafeTalkApp.Services
                                          transcriptFilePath = a.transcriptFilePath,
                                          doctorName = d.firstName + " " + d.lastName,
                                          doctorEmail = d.email,
+                                         hasReferral = _db.referrals_tbl.Any(r => r.appointmentID == a.appointmentID),
+                                         referralID = _db.referrals_tbl.Where(r => r.appointmentID == a.appointmentID).Select(r => r.referralID).FirstOrDefault()
                                      }).ToList();
                 return ApiResponse<IEnumerable<AppointmentResultDTO>>.Ok(consultations);
             }
@@ -116,12 +118,67 @@ namespace SafeTalkApp.Services
                                          transcriptFilePath = a.transcriptFilePath,
                                          patientName = p.firstName + " " + p.lastName,
                                          patientEmail = p.email,
+                                         doctorID = a.doctorID,
+                                         patientID = a.patientID,
+                                         hasReferral = _db.referrals_tbl.Any(r => r.appointmentID == a.appointmentID)
                                      }).ToList();
                 return ApiResponse<IEnumerable<AppointmentResultDTO>>.Ok(consultations);
             }
             catch (Exception ex)
             {
                 return ApiResponse<IEnumerable<AppointmentResultDTO>>.Fail("An error occurred while retrieving consultations: " + ex.Message);
+            }
+        }
+
+        public ApiResponse<bool> CreateReferral(ReferralDTO model)
+        {
+            try
+            {
+                var referral = new ReferralTblModel
+                {
+                    appointmentID = model.appointmentID,
+                    doctorID = model.doctorID,
+                    patientID = model.patientID,
+                    reason = model.reason,
+                    notes = model.notes,
+                    urgencyLevel = (int)model.urgencyLevel,
+                    status = model.status,
+                    dateCreated = DateTime.Now,
+                    sentTo = model.sentTo
+                };
+                _db.referrals_tbl.Add(referral);
+                _db.SaveChanges();
+                return ApiResponse<bool>.Ok(true);
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<bool>.Fail("An error occurred while creating the referral: " + ex.Message);
+            }
+        }
+
+        public ApiResponse<ReferralDTO> GetReferralDetails(int referralID)
+        {
+            try
+            {
+                var referral = _db.referrals_tbl
+                    .Where(r => r.referralID == referralID)
+                    .Select(r => new ReferralDTO
+                    {
+                        appointmentID = r.appointmentID,
+                        doctorID = r.doctorID,
+                        patientID = r.patientID,
+                        reason = r.reason,
+                        notes = r.notes,
+                        urgencyLevel = (UrgencyLevel)r.urgencyLevel,
+                        status = r.status,
+                        dateCreated = r.dateCreated,
+                        sentTo = r.sentTo
+                    }).FirstOrDefault();
+                return ApiResponse<ReferralDTO>.Ok(referral);
+            }
+            catch (Exception)
+            {
+                return ApiResponse<ReferralDTO>.Fail("An error occurred while retrieving the referral details.");
             }
         }
     }

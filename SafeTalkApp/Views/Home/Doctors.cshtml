@@ -22,7 +22,7 @@
             <div class="card @*teal lighten-2 white-text*@ z-depth-2">
                 <div class="card-content">
                     <!-- Circular avatar -->
-                    <img src="~/Content/Images/firstSlide.jpeg" alt="Doctor 1"
+                    <img src="{{d.profilePictureUrl}}" alt="Doctor 1"
                          class="circle responsive-img"
                          style="width:100px; height:100px; object-fit:cover; margin-bottom:15px;">
                     <!-- Doctor Name -->
@@ -30,23 +30,39 @@
 
                     <!-- Specialization -->
                     <p class="grey-text text-darken-2">{{d.specialization}}</p>
+
+                    <!-- Availability -->
+                    <div ng-if="d.availabilities && d.availabilities.length > 0" style="margin-top:10px;">
+                        <p class="grey-text text-darken-3"><strong>Availability:</strong></p>
+                        <ul class="collection" style="border:none;">
+                            <li class="collection-item" ng-repeat="a in d.availabilities" style="border:none; padding:4px 0;">
+                                <span class="grey-text text-darken-2">
+                                    {{a.day}}: {{a.startTime | timespanToTime}} - {{a.endTime | timespanToTime}}
+                                    <span class="right teal-text">₱{{a.fee | number:2}}</span>
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div ng-if="!d.availabilities || d.availabilities.length === 0">
+                        <p class="grey-text">No available schedule</p>
+                    </div>
                     <!-- Years of Experience -->
                     @*<p class="grey-text">Experience: {{d.experience}} years</p>*@
                     <!-- Rating -->
                     <!--<p>
-                        <i class="material-icons yellow-text">star</i>
-                        <i class="material-icons yellow-text">star</i>
-                        <i class="material-icons yellow-text">star</i>
-                        <i class="material-icons yellow-text">star_half</i>
-                        <i class="material-icons grey-text">star</i>
-                        <span class="grey-text text-darken-1">(45 reviews)</span>
-                    </p>-->
+        <i class="material-icons yellow-text">star</i>
+        <i class="material-icons yellow-text">star</i>
+        <i class="material-icons yellow-text">star</i>
+        <i class="material-icons yellow-text">star_half</i>
+        <i class="material-icons grey-text">star</i>
+        <span class="grey-text text-darken-1">(45 reviews)</span>
+    </p>-->
                 </div>
                 <!-- Neutral background for action -->
                 <div class="card-action grey lighten-5">
                     <!-- Accent link -->
-                    <a href="#" class="grey-text text-darken-2">Book Consultation</a>
-                    <a href="#" class="grey-text text-darken-2">View Profile</a>
+                    <a href="@Url.Action("Book", "Appointment")" class="grey-text text-darken-2">Book Consultation</a>
                 </div>
             </div>
         </div>

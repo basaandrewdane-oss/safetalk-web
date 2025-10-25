@@ -24,6 +24,10 @@ namespace SafeTalkApp.Controllers
         {
             return View();
         }
+        public ActionResult DoctorsView()
+        {
+            return View();
+        }
 
         public ActionResult Contact()
         {

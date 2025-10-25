@@ -3,6 +3,11 @@
 @{
     var claimsPrincipal = User as ClaimsPrincipal;
     var fullName = claimsPrincipal?.FindFirst(ClaimTypes.GivenName)?.Value;
+    var profilePicClaim = claimsPrincipal?.FindFirst("ProfilePictureUrl")?.Value;
+
+    var profilePic = string.IsNullOrEmpty(profilePicClaim)
+        ? Url.Content("~/Uploads/ProfilePictures/default-avatar.png")
+        : Url.Content(profilePicClaim);
 }
 <!DOCTYPE html>
 
@@ -72,7 +77,7 @@
             left: 0;
             right: 0;
             /* Set bottom offset to match the height of .card-action */
-            bottom: 53.8px; /* Adjust this based on your .card-action height */
+            bottom: 83.8px; /* Adjust this based on your .card-action height */
             background-color: rgba(255, 255, 255, 0.95);
             padding: 20px;
             opacity: 0;
@@ -93,9 +98,18 @@
             color: #b39ddb;
             text-decoration: underline;
         }
+
+        .pagination a {
+            cursor: pointer !important;
+        }
+
+        [ng-cloak], [data-ng-cloak], [x-ng-cloak],
+        .ng-cloak, .x-ng-cloak {
+            display: none !important;
+        }
     </style>
 </head>
-<body ng-app="SafeTalkApp">
+<body ng-app="SafeTalkApp" ng-cloak>
     <!-- Topbar -->
     <div class="navbar-fixed">
         <nav>
@@ -125,13 +139,23 @@
 
     <!-- Sidebar -->
     <ul class="sidenav z-depth-1" id="mobile_sidenav">
+        <li>
+            <div class="user-view">
+                <div class="background">
+                    <img src="~/Content/Images/fourthSlide.jpg">
+                </div>
+                <a href="#user"><img class="circle" src="@profilePic" alt="Profile Picture"></a>
+                <a href="#name"><span class="white-text name">@fullName</span></a>
+                <a href="#email"><span class="white-text email">@User.Identity.Name</span></a>
+            </div>
+        </li>
         <li><a href="#" class="teal-text text-lighten-2">Welcome, @fullName!</a></li>
         <li><a href="@Url.Action("Index", "Dashboard")"><i class="material-icons accent-text">dashboard</i>Dashboard</a></li>
 
         @if (User.IsInRole("Doctor"))
         {
             <li><a href="@Url.Action("Appointments", "Appointment")"><i class="material-icons teal-text">event</i>Appointments</a></li>
-            <li><a href="@Url.Action("Availability", "Doctor")"><i class="material-icons teal-text">access_time</i>Availability</a></li>
+            <li><a href="@Url.Action("Index", "Availability")"><i class="material-icons teal-text">access_time</i>Availability</a></li>
             <li><a href="@Url.Action("Consultations", "Consultation")"><i class="material-icons accent-text">chat</i>Consultations</a></li>
             <li><a href="@Url.Action("Index", "Resources")"><i class="material-icons teal-text">library_books</i>Resources</a></li>
         }
@@ -140,7 +164,7 @@
             <li><a href="@Url.Action("Book", "Appointment")"><i class="material-icons teal-text">event_available</i>Book Consultation</a></li>
             <li><a href="@Url.Action("Appointments", "Appointment")"><i class="material-icons teal-text">event</i>Appointments</a></li>
             <li><a href="@Url.Action("Consultations", "Consultation")"><i class="material-icons accent-text">chat</i>Consultations</a></li>
-            <li><a href="@Url.Action("Doctors", "User")"><i class="material-icons teal-text">groups</i>Doctors</a></li>
+            <li><a href="@Url.Action("DoctorsView", "Home")"><i class="material-icons teal-text">groups</i>Doctors</a></li>
             <li><a href="@Url.Action("Index", "Resources")"><i class="material-icons teal-text">library_books</i>Resources</a></li>
         }
         else if (User.IsInRole("Admin"))
@@ -152,7 +176,7 @@
             <li><a href="@Url.Action("FAQs", "Admin")"><i class="material-icons teal-text">question_mark</i>FAQs</a></li>
         }
 
-        <li><a href="@Url.Action("UserProfile", "Account")"><i class="material-icons teal-text">person</i>Profile</a></li>
+        <li><a href="@Url.Action("ProfileView", "Profile")"><i class="material-icons teal-text">person</i>Profile</a></li>
         <li ng-controller="AccountController" ng-click="logout()"><a href=""><i class="material-icons red-text">exit_to_app</i>Logout</a></li>
     </ul>
 
@@ -162,6 +186,7 @@
 
     <script src="~/Scripts/jquery-3.7.0.min.js"></script>
     <script src="~/Scripts/angular.min.js"></script>
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.2.1/classic/ckeditor.js"></script>
     @Scripts.Render("~/bundles/safetalkapp")
     @Scripts.Render("~/bundles/directives")
     @RenderSection("Scripts", required: false)
@@ -169,10 +194,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             M.Sidenav.init(document.querySelectorAll('.sidenav'));
-            M.FormSelect.init(document.querySelectorAll('select'));
+            //M.FormSelect.init(document.querySelectorAll('select'));
             M.Datepicker.init(document.querySelectorAll('.datepicker'));
             M.Modal.init(document.querySelectorAll('.modal'));
         });

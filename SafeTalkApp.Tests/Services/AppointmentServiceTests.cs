@@ -192,6 +192,12 @@ namespace SafeTalkApp.Tests.Services
                 new DaysOfWeekTblModel { dayID = 1, day = "Monday" }
             }.AsQueryable();
 
+            var users = new List<UserTblModel>
+            {
+                new UserTblModel { userID = 10, slotDuration = 30 }
+            }.AsQueryable();
+
+            _mockContext.Setup(c => c.user_tbl).Returns(MockDbSetHelper.BuildMockDbSet(users).Object);
             _mockContext.Setup(c => c.user_availability_tbl).Returns(MockDbSetHelper.BuildMockDbSet(availabilities).Object);
             _mockContext.Setup(c => c.days_of_week_tbl).Returns(MockDbSetHelper.BuildMockDbSet(days).Object);
 
@@ -219,6 +225,12 @@ namespace SafeTalkApp.Tests.Services
                 new DaysOfWeekTblModel { dayID = 1, day = "Monday" }
             }.AsQueryable();
 
+            var users = new List<UserTblModel>
+            {
+                new UserTblModel { userID = 99, slotDuration = 30 }
+            }.AsQueryable();
+
+            _mockContext.Setup(c => c.user_tbl).Returns(MockDbSetHelper.BuildMockDbSet(users).Object);
             _mockContext.Setup(c => c.user_availability_tbl).Returns(MockDbSetHelper.BuildMockDbSet(availabilities).Object);
             _mockContext.Setup(c => c.days_of_week_tbl).Returns(MockDbSetHelper.BuildMockDbSet(days).Object);
 

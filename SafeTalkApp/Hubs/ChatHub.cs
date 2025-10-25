@@ -16,14 +16,31 @@ namespace SafeTalkApp.Hubs
 
         // Stores connection IDs for each appointment
         private static readonly ConcurrentDictionary<string, HashSet<string>> AppointmentGroups =
-    new ConcurrentDictionary<string, HashSet<string>>();
+        new ConcurrentDictionary<string, HashSet<string>>();
         // ----------------------
         // Connection Handling
         // ----------------------
         public override Task OnDisconnected(bool stopCalled)
         {
-            foreach (var group in AppointmentGroups.Values)
-                group.Remove(Context.ConnectionId);
+            string appointmentId = null;
+
+            foreach (var kvp in AppointmentGroups)
+            {
+                if (kvp.Value.Remove(Context.ConnectionId))
+                {
+                    appointmentId = kvp.Key;
+                    break;
+                }
+            }
+
+            if (appointmentId != null)
+            {
+                var senderName = ((ClaimsIdentity)Context.User.Identity)
+                    .FindFirst(ClaimTypes.GivenName)?.Value ?? Context.User.Identity.Name;
+
+                Clients.Group($"appointment_{appointmentId}")
+                       .addSystemMessage($"{senderName} has left the chat.");
+            }
 
             return base.OnDisconnected(stopCalled);
         }
@@ -55,7 +72,7 @@ namespace SafeTalkApp.Hubs
         // ----------------------
         // Group Joining
         // ----------------------
-        public Task JoinAppointment(string appointmentId)
+        public async Task JoinAppointment(string appointmentId)
         {
             var userId = Context.User.Identity.GetUserId<int>();
             if (!IsUserInAppointment(userId, appointmentId))
@@ -78,14 +95,14 @@ namespace SafeTalkApp.Hubs
             {
                 // ❌ Too early
                 Clients.Caller.notifyJoinBlocked("early", appointmentStart.ToString("f"));
-                return Task.CompletedTask;
+                return;
             }
 
             if (nowPh > appointmentEnd || appointment.status == 6)
             {
                 // ❌ Already ended
                 Clients.Caller.notifyJoinBlocked("ended", appointmentEnd.ToString("f"));
-                return Task.CompletedTask;
+                return;
             }
 
             // ✅ Valid join
@@ -101,7 +118,14 @@ namespace SafeTalkApp.Hubs
                 return set;
             });
 
-            return Groups.Add(Context.ConnectionId, $"appointment_{appointmentId}");
+            await Groups.Add(Context.ConnectionId, $"appointment_{appointmentId}");
+
+            // ✅ Send "user joined" message to everyone in the same appointment
+            var senderName = ((ClaimsIdentity)Context.User.Identity)
+                .FindFirst(ClaimTypes.GivenName)?.Value ?? Context.User.Identity.Name;
+
+            Clients.Group($"appointment_{appointmentId}")
+                   .addSystemMessage($"{senderName} has joined the chat.");
         }
 
         private bool IsOtherUserInRoom(string appointmentId) =>
@@ -170,6 +194,7 @@ namespace SafeTalkApp.Hubs
                 throw new HubException("Only the doctor can end the appointment early");
 
             appointment.status = 6; // Completed
+            appointment.dateUpdated = DateTime.Now;
             db.SaveChanges();
 
             Clients.Group($"appointment_{appointmentId}").appointmentEnded();
@@ -191,6 +216,7 @@ namespace SafeTalkApp.Hubs
                 throw new HubException("Cannot complete appointment before end time");
 
             appointment.status = 6; // Completed
+            appointment.dateUpdated = DateTime.Now;
             db.SaveChanges();
 
             Clients.Group($"appointment_{appointmentId}").appointmentEnded();

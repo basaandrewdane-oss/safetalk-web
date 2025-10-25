@@ -29,6 +29,7 @@ namespace SafeTalkApp.Services
                     category = r.category,
                     type = r.type,
                     url = r.url,
+                    source = r.source,
                     publishedDate = r.publishedDate,
                     dateCreated = r.dateCreated,
                     dateUpdated = r.dateUpdated
@@ -53,6 +54,7 @@ namespace SafeTalkApp.Services
                     category = model.category,
                     type = model.type,
                     url = model.url,
+                    source = model.source,
                     publishedDate = model.publishedDate,
                     dateCreated = DateTime.Now,
                     dateUpdated = DateTime.Now

@@ -39,35 +39,57 @@
                 Here’s a quick overview of your activities and tools.
             </p>
 
+            <!-- Chart Section -->
+            <div class="row">
+                <!-- User and Doctor Charts-->
+                @if (User.IsInRole("User") || User.IsInRole("Doctor"))
+                {
+                    <div class="col s12 m8 offset-m2 l4">
+                        <div class="card-panel white center">
+                            <canvas id="appointmentChart" height="150"></canvas>
+                        </div>
+                    </div>
+                    <div class="col s12 m8 offset-m2 l8">
+                        <div class="card-panel white center">
+                            <canvas id="consultationTrendChart" height="150"></canvas>
+                        </div>
+                    </div>
+                }
+
+            </div>
+
             <!-- Quick Stats Row -->
-            <div ng-controller="DashboardController" ng-init="loadStats()">
-                <div class="row">
-                    <div class="col s6 m4 l4">
-                        <div class="card-panel teal lighten-4 center stat-card">
-                            <h6>Appointments</h6>
-                            <p class="flow-text">{{stats.appointments}}</p> <!-- Replace with dynamic count -->
+            @if (User.IsInRole("User") || User.IsInRole("Doctor"))
+            {
+                <div ng-controller="DashboardController" ng-init="loadStats()">
+                    <div class="row">
+                        <div class="col s12 m4 l3">
+                            <div class="card-panel teal lighten-4 center stat-card">
+                                <h6>Upcoming Appointments</h6>
+                                <p class="flow-text">{{stats.UpcomingAppointments}}</p> <!-- Replace with dynamic count -->
+                            </div>
                         </div>
-                    </div>
-                    <div class="col s6 m4 l4">
-                        <div class="card-panel deep-purple lighten-4 center stat-card">
-                            <h6>Consultations</h6>
-                            <p class="flow-text">{{stats.consultations}}</p> <!-- Replace with dynamic count -->
+                        <div class="col s12 m4 l3">
+                            <div class="card-panel deep-purple lighten-4 center stat-card">
+                                <h6>Active Consultations</h6>
+                                <p class="flow-text">{{stats.ActiveConsultations}}</p> <!-- Replace with dynamic count -->
+                            </div>
                         </div>
-                    </div>
-                    <!--<div class="col s6 m3">
-                        <div class="card-panel pink lighten-4 center stat-card">
-                            <h6>Messages</h6>
-                            <p class="flow-text">5</p>--> <!-- Replace with dynamic count -->
-                        <!--</div>
-                    </div>-->
-                    <div class="col s6 m4 l4">
-                        <div class="card-panel grey lighten-4 center stat-card">
-                            <h6>Resources</h6>
-                            <p class="flow-text">{{stats.resources}}</p> <!-- Replace with dynamic count -->
+                        <div class="col s12 m4 l3">
+                            <div class="card-panel light-blue lighten-4 center stat-card">
+                                <h6>Completed Consultations</h6>
+                                <p class="flow-text">{{stats.CompletedConsultations}}</p>
+                            </div>
+                        </div>
+                        <div class="col s12 m4 l3">
+                            <div class="card-panel grey lighten-4 center stat-card">
+                                <h6>Resources</h6>
+                                <p class="flow-text">{{stats.Resources}}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            }
 
             <!-- Dashboard Tools -->
             <div class="row">
@@ -132,7 +154,7 @@
                                 <p class="grey-text text-darken-2">Set your consultation schedule.</p>
                             </div>
                             <div class="card-action center deep-purple lighten-5">
-                                <a href="@Url.Action("Availability", "Doctor")" class="btn-small deep-purple lighten-3">View</a>
+                                <a href="@Url.Action("Index", "Availability")" class="btn-small deep-purple lighten-3">View</a>
                             </div>
                         </div>
                     </div>
@@ -212,7 +234,7 @@
                                 <p class="grey-text text-darken-2">View available professionals.</p>
                             </div>
                             <div class="card-action center deep-purple lighten-5">
-                                <a href="@Url.Action("Doctors", "User")" class="btn-small deep-purple lighten-3">View</a>
+                                <a href="@Url.Action("DoctorsView", "Home")" class="btn-small deep-purple lighten-3">View</a>
                             </div>
                         </div>
                     </div>
@@ -271,6 +293,19 @@
                             </div>
                             <div class="card-action center deep-purple lighten-5">
                                 <a href="@Url.Action("Payments", "Admin")" class="btn-small deep-purple lighten-3">View</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col s12 m6 l6">
+                        <div class="card hoverable">
+                            <div class="card-content center">
+                                <i class="material-icons medium teal-text text-lighten-2">description</i>
+                                <h6 class="grey-text text-darken-4">Manage Terms</h6>
+                                <p class="grey-text text-darken-2">Review and update terms</p>
+                            </div>
+                            <div class="card-action center deep-purple lighten-5">
+                                <a href="@Url.Action("ManageTerms", "Admin")" class="btn-small deep-purple lighten-3">View</a>
                             </div>
                         </div>
                     </div>

@@ -1,9 +1,12 @@
-﻿using SafeTalkApp.DTOs.Account;
+﻿using MySqlX.XDevAPI.Common;
+using SafeTalkApp.DTOs.Account;
+using SafeTalkApp.DTOs.Profile;
 using SafeTalkApp.DTOs.Shared;
 using SafeTalkApp.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Web;
 using System.Web.UI.WebControls;
 
@@ -36,6 +39,7 @@ namespace SafeTalkApp.Services
                     phoneNumber = signUp.phoneNumber,
                     licenseNumber = signUp.roleID == 2 ? signUp.licenseNumber : null,
                     specialization = signUp.roleID == 2 ? signUp.specialization : null,
+                    slotDuration = signUp.roleID == 2 ? signUp.slotDuration : null,
                     email = signUp.email,
                     password = BCrypt.Net.BCrypt.HashPassword(signUp.password),
                     isVerified = signUp.roleID == 2 ? false : true, // Doctors are not verified by default
@@ -101,7 +105,7 @@ namespace SafeTalkApp.Services
             }
         }
 
-        public ApiResponse<LoginDTO> AuthenticateUser(LoginDTO login)
+        public ApiResponse<UserDTO> AuthenticateUser(LoginDTO login)
         {
             try
             {
@@ -109,44 +113,63 @@ namespace SafeTalkApp.Services
 
                 if (user == null)
                 {
-                    return ApiResponse<LoginDTO>.Fail("Invalid email or password.");
+                    return ApiResponse<UserDTO>.Fail("Invalid email.");
                 }
 
                 if (!user.isEmailVerified)
                 {
-                    return ApiResponse<LoginDTO>.Fail("Please verify your email before logging in.");
+                    return ApiResponse<UserDTO>.Fail("Please verify your email before logging in.");
                 }
 
                 if (user.isVerified == false)
                 {
-                    return ApiResponse<LoginDTO>.Fail("Your account is pending verification. Please wait for an administrator to verify your account.");
+                    return ApiResponse<UserDTO>.Fail("Your account is pending verification. Please wait for an administrator to verify your account.");
                 }
 
-                if (user != null && BCrypt.Net.BCrypt.Verify(login.password, user.password))
+                if (!BCrypt.Net.BCrypt.Verify(login.password, user.password))
                 {
-                    return ApiResponse<LoginDTO>.Ok(new LoginDTO
-                    {
-                        success = true,
-                        message = "Login successful.",
-                        userID = user.userID,
-                        firstName = user.firstName,
-                        lastName = user.lastName,
-                        email = user.email,
-                        role = _db.user_role_tbl.Where(ur => ur.userID == user.userID).Join(_db.role_tbl, ur => ur.roleID, r => r.roleID, (ur, r) => r.roleName).FirstOrDefault(),
-                    });
+                    return ApiResponse<UserDTO>.Fail("Wrong password.");
                 }
-                else
+
+                // Get role name
+                var roleName = (from ur in _db.user_role_tbl
+                                join r in _db.role_tbl on ur.roleID equals r.roleID
+                                where ur.userID == user.userID
+                                select r.roleName).FirstOrDefault();
+
+                // Create DTO
+                var userDto = new UserDTO
                 {
-                    // Invalid credentials
-                    return ApiResponse<LoginDTO>.Fail("Invalid email or password.");
-                }
+                    userID = user.userID,
+                    email = user.email,
+                    firstName = user.firstName,
+                    lastName = user.lastName,
+                    role = roleName,
+                    profilePictureUrl = user.profilePictureUrl
+                };
+
+                return ApiResponse<UserDTO>.Ok(userDto);
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Login Error: {ex.Message}\n{ex.StackTrace}");
                 Console.WriteLine("EXCEPTION: " + ex.Message);
-                return ApiResponse<LoginDTO>.Fail("An unexpected error occurred. Please try again.");
+                return ApiResponse<UserDTO>.Fail("An unexpected error occurred. Please try again.");
             }
+        }
+
+        public ClaimsIdentity GenerateUserIdentity(UserDTO user)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.userID.ToString()),
+                new Claim(ClaimTypes.Name, user.email),
+                new Claim(ClaimTypes.GivenName, user.firstName + " " + user.lastName),
+                new Claim(ClaimTypes.Role, user.role ?? "User"),
+                new Claim("ProfilePictureUrl", user.profilePictureUrl ?? "/Uploads/ProfilePictures/default-avatar.png")
+            };
+
+            return new ClaimsIdentity(claims, "ApplicationCookie");
         }
 
         public ApiResponse<VerifyEmailResultDTO> VerifyEmail(string token)
@@ -206,7 +229,7 @@ namespace SafeTalkApp.Services
             {
                 Email = user.email,
                 Expiry = user.emailVerificationExpiry
-            }, 
+            },
             "A new verification email has been sent. Please check your inbox.");
         }
 

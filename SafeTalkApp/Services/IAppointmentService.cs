@@ -17,6 +17,7 @@ namespace SafeTalkApp.Services
         ApiResponse<bool> CancelAppointment(int appointmentID);
         ApiResponse<IEnumerable<DoctorAppointmentDTO>> GetDoctorAppointments(int doctorId);
         ApiResponse<bool> ApproveAppointment(int appointmentID);
-        ApiResponse<bool> RejectAppointment(int appointmentID);
+        ApiResponse<bool> RejectAppointment(AppointmentResultDTO data);
+        ApiResponse<bool> CheckSlotAvailability(BookAppointmentDTO model);
     }
 }

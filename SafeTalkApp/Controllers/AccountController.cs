@@ -1,4 +1,5 @@
 ﻿using Microsoft.Owin.Security;
+using MySqlX.XDevAPI.Common;
 using SafeTalkApp.DTOs.Account;
 using SafeTalkApp.Models;
 using SafeTalkApp.Services;
@@ -24,8 +25,15 @@ namespace SafeTalkApp.Controllers
             _accountService = accountService;
         }
 
+        [AllowAnonymous]
+        [OutputCache(NoStore = true, Duration = 0, VaryByParam = "*")]
         public ActionResult Login()
         {
+            if (User?.Identity != null && User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Dashboard");
+            }
+
             return View();
         }
 
@@ -75,25 +83,17 @@ namespace SafeTalkApp.Controllers
 
         public JsonResult AuthenticateUser(LoginDTO login)
         {
-            var result = _accountService.AuthenticateUser(login);
+            var response = _accountService.AuthenticateUser(login);
 
-            if (result.success)
+            if (response.success)
             {
-                var claims = new List<Claim>
-                        {
-                            new Claim(ClaimTypes.NameIdentifier, result.data.userID.ToString()),
-                            new Claim(ClaimTypes.Name, result.data.email),
-                            new Claim(ClaimTypes.GivenName, result.data.firstName + " " + result.data.lastName),
-                            new Claim(ClaimTypes.Role, result.data.role ?? "User")
-                        };
-
-                var identity = new ClaimsIdentity(claims, "ApplicationCookie");
+                var identity = _accountService.GenerateUserIdentity(response.data);
 
                 var authManager = HttpContext.GetOwinContext().Authentication;
                 authManager.SignIn(new AuthenticationProperties { IsPersistent = false }, identity);
             }
 
-            return Json(result);
+            return Json(response);
         }
 
         public ActionResult VerifyEmail(string token)
@@ -142,44 +142,43 @@ namespace SafeTalkApp.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
+        public ActionResult CreateAdmin()
+        {
+            using (var db = new SafeTalkAppContext())
+            {
+                var email = "admin@safetalk.com";
 
-        //public ActionResult CreateAdmin()
-        //{
-        //    using (var db = new SafeTalkAppContext())
-        //    {
-        //        var email = "admin@safetalk.com";
+                if (db.user_tbl.Any(u => u.email == email))
+                    return Content("Admin already exists.");
 
-        //        if (db.user_tbl.Any(u => u.email == email))
-        //            return Content("Admin already exists.");
+                var adminUser = new UserTblModel
+                {
+                    firstName = "System",
+                    lastName = "Admin",
+                    birthDate = new DateTime(1990, 1, 1),
+                    genderID = 1, // or any valid gender ID
+                    phoneNumber = "09940063174",
+                    email = email,
+                    password = BCrypt.Net.BCrypt.HashPassword("tfsqxoe2B!"),
+                    dateCreated = DateTime.Now,
+                    dateUpdated = DateTime.Now,
+                    isVerified = true
+                };
+                db.user_tbl.Add(adminUser);
+                db.SaveChanges();
 
-        //        var adminUser = new UserTblModel
-        //        {
-        //            firstName = "System",
-        //            lastName = "Admin",
-        //            birthDate = new DateTime(1990, 1, 1),
-        //            genderID = 1, // or any valid gender ID
-        //            phoneNumber = "09940063174",
-        //            email = email,
-        //            password = BCrypt.Net.BCrypt.HashPassword("tfsqxoe2B!"),
-        //            dateCreated = DateTime.Now,
-        //            dateUpdated = DateTime.Now,
-        //            isVerified = true
-        //        };
-        //        db.user_tbl.Add(adminUser);
-        //        db.SaveChanges();
+                var adminRole = new UserRoleTblModel
+                {
+                    userID = adminUser.userID,
+                    roleID = 3, // Admin role ID
+                    dateCreated = DateTime.Now,
+                    dateUpdated = DateTime.Now
+                };
+                db.user_role_tbl.Add(adminRole);
+                db.SaveChanges();
 
-        //        var adminRole = new UserRoleTblModel
-        //        {
-        //            userID = adminUser.userID,
-        //            roleID = 3, // Admin role ID
-        //            dateCreated = DateTime.Now,
-        //            dateUpdated = DateTime.Now
-        //        };
-        //        db.user_role_tbl.Add(adminRole);
-        //        db.SaveChanges();
-
-        //        return Content("Admin account created.");
-        //    }
-        //}
+                return Content("Admin account created.");
+            }
+        }
     }
 }

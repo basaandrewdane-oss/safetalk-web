@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SafeTalkApp.DTOs.Account;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -14,5 +15,7 @@ namespace SafeTalkApp.DTOs.Shared
         public string phoneNumber { get; set; }
         public string licenseNumber { get; set; }
         public string specialization { get; set; }
+        public string profilePictureUrl { get; set; }
+        public List<AvailabilityDTO> availabilities { get; set; }
     }
 }

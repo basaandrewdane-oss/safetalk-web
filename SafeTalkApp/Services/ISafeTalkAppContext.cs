@@ -15,8 +15,10 @@ namespace SafeTalkApp.Models
         DbSet<GenderTblModel> gender_tbl { get; set; }
         DbSet<PaymentTblModel> payment_tbl { get; set; }
         DbSet<PromptsTblModel> prompts_tbl { get; set; }
+        DbSet<ReferralTblModel> referrals_tbl { get; set; }
         DbSet<ResourceTblModel> resource_tbl { get; set; }
         DbSet<RoleTblModel> role_tbl { get; set; }
+        DbSet<TermsTblModel> terms_tbl { get; set; }
         DbSet<UserAvailabilityTblModel> user_availability_tbl { get; set; }
         DbSet<UserRoleTblModel> user_role_tbl { get; set; }
         DbSet<UserTblModel> user_tbl { get; set; }

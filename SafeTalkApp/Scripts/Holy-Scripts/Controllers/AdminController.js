@@ -1,8 +1,9 @@
-﻿app.controller("AdminController", function ($scope, $timeout, AdminService) {
+﻿app.controller("AdminController", function ($scope, $timeout, AdminService, $sce) {
     $scope.pendingDoctors = [];
     $scope.faqs = [];
     $scope.newFaq = {};
     $scope.editFaq = null;
+    $scope.termsContent = "";
 
     $scope.loadFaqs = function () {
         if ($.fn.DataTable.isDataTable('#faqsTable')) {
@@ -179,4 +180,72 @@
             Swal.fire("Error", "Unable to load payments.", "error");
         });
     }
+
+    $scope.getTerms = function () {
+        var getTerms = AdminService.getTerms();
+        getTerms.then(function (result) {
+            if (result.success) {
+                $scope.termsContent = result.data;
+
+                $timeout(function () {
+                    if (window.termsEditorInstance) {
+                        window.termsEditorInstance.destroy()
+                            .then(() => initEditor());
+                    } else {
+                        initEditor();
+                    }
+
+                    function initEditor() {
+                        ClassicEditor
+                            .create(document.querySelector('#termsEditor'), {
+                                toolbar: [
+                                    'heading', '|',
+                                    'bold', 'italic', 'link', 'bulletedList', 'numberedList', '|',
+                                    'undo', 'redo'
+                                ]
+                            })
+                            .then(editor => {
+                                window.termsEditorInstance = editor;
+                                editor.setData($scope.termsContent);
+                            })
+                            .catch(error => {
+                                console.error('Error initializing CKEditor 5:', error);
+                            });
+                    }
+                }, 300)
+            }
+        })
+    }
+
+    $scope.updateTerms = function () {
+        Swal.fire({
+            title: "Update Terms",
+            text: "Are you sure you want to update the terms?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, update",
+            cancelButtonText: "No, cancel"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var updatedContent = window.termsEditorInstance.getData();
+
+                var saveTerms = AdminService.updateTerms(updatedContent);
+                saveTerms.then(function (result) {
+                    if (result.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Saved!',
+                            text: 'Terms and Conditions updated successfully.'
+                        });
+                    } else {
+                        Swal.fire('Error', 'Failed to update terms.', 'error');
+                    }
+                });
+            }
+        });
+    }
+
+    $scope.trustedHtml = function () {
+        return $sce.trustAsHtml($scope.termsContent);
+    };
 });

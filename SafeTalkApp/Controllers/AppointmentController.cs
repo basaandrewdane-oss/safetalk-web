@@ -73,6 +73,12 @@ namespace SafeTalkApp.Controllers
             return Json(response);
         }
 
+        public JsonResult CheckSlotAvailability(BookAppointmentDTO model)
+        {
+            var response = _appointmentService.CheckSlotAvailability(model);
+            return Json(response);
+        }
+
         public JsonResult GetPatientAppointments()
         {
             int userID = User.Identity.GetUserId<int>();
@@ -85,8 +91,6 @@ namespace SafeTalkApp.Controllers
             var response = _appointmentService.CancelAppointment(appointmentID);
             return Json(response);
         }
-
-
 
         // Doctor Appointment Actions
         public JsonResult GetDoctorAppointments()
@@ -102,9 +106,9 @@ namespace SafeTalkApp.Controllers
             return Json(response);
         }
 
-        public JsonResult RejectAppointment(int appointmentID)
+        public JsonResult RejectAppointment(AppointmentResultDTO data)
         {
-            var response = _appointmentService.RejectAppointment(appointmentID);
+            var response = _appointmentService.RejectAppointment(data);
             return Json(response);
         }
 

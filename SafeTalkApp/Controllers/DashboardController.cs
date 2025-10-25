@@ -16,7 +16,7 @@ namespace SafeTalkApp.Controllers
         {
             _dashboardService = dashboardService;
         }
-        //[Authorize]
+        [Authorize]
         public ActionResult Index()
         {
             return View();

@@ -18,6 +18,7 @@ namespace SafeTalkApp.DTOs.Account
         public string email { get; set; }
         public string password { get; set; }
         public int roleID { get; set; }
+        public int? slotDuration { get; set; } // in minutes, nullable for non-doctors
         public List<AvailabilityDTO> availability { get; set; }
     }
 }

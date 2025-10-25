@@ -53,8 +53,9 @@
                             <div ng-switch-when="3">
                                 <a href="@Url.Action("Consultations", "Consultation")" class="btn purple">Proceed</a>
                             </div>
-                            <button ng-switch-when="4" class="btn grey" ng-click="rebookAppointment(appt)">Rebook</button>
+                            <button ng-switch-when="4" class="btn orange" ng-click="rebookAppointment(appt)">Rebook</button>
                             <button ng-switch-when="5" class="btn grey" disabled>Canceled</button>
+                            <button ng-switch-when="7" class="btn orange" ng-click="rebookAppointment(appt)">Rebook</button>
                         </div>
                     </td>
                     <td>{{appt.doctorName}}</td>
@@ -68,6 +69,7 @@
                         <span ng-switch-when="3" class="green-text">Paid</span>
                         <span ng-switch-when="4" class="red-text">Rejected</span>
                         <span ng-switch-when="5" class="grey-text">Canceled</span>
+                        <span ng-switch-when="7" class="deep-orange-text">Missed</span>
                         <span ng-switch-default class="grey-text">Unknown</span>
                     </td>
                 </tr>
