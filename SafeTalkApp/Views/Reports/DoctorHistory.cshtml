@@ -3,12 +3,12 @@
 }
 
 
-<div class="container row" ng-controller="ReportsController" ng-init="getPatientHistory()">
+<div class="container row" ng-controller="ReportsController" ng-init="getDoctorHistory()">
 
     <!-- Patients -->
-    <div ng-if="!selectedPatient" class="col s12">
+    <div ng-if="!selectedDoctor" class="col s12">
         <h4 class="center-align">Patients</h4>
-        <table id="patientsTable" class="highlight responsive-table">
+        <table id="doctorsTable" class="highlight responsive-table">
             <thead>
                 <tr>
                     <th>Full Name</th>
@@ -18,13 +18,13 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="patient in patientHistory">
-                    <td>{{patient.FullName}}</td>
-                    <td>{{patient.Email}}</td>
-                    <td>{{patient.Phone}}</td>
+                <tr ng-repeat="doctor in doctorHistory">
+                    <td>{{doctor.FullName}}</td>
+                    <td>{{doctor.Email}}</td>
+                    <td>{{doctor.Phone}}</td>
                     <td>
                         <button class="btn-small teal lighten-1 waves-effect"
-                                ng-click="loadHistory(patient.PatientID)">
+                                ng-click="loadDoctorHistory(doctor.DoctorID)">
                             View History
                         </button>
                     </td>
@@ -34,9 +34,9 @@
     </div>
 
     <!-- Patient History -->
-    <div ng-if="selectedPatient" class="col s12">
-        <h4 class="center-align">History for {{selectedPatient.FullName}}</h4>
-        <table id="historyTable" class="highlight responsive-table">
+    <div ng-if="selectedDoctor" class="col s12">
+        <h4 class="center-align">History for {{selectedDoctor.FullName}}</h4>
+        <table id="doctorHistoryTable" class="highlight responsive-table">
             <thead>
                 <tr>
                     <th>Date</th>
@@ -45,7 +45,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="h in patientHistory">
+                <tr ng-repeat="h in doctorHistory">
                     <td>{{h.Date | dotNetDate | date:'mediumDate'}}</td>
                     <td>{{h.Time}}</td>
                     <td>
@@ -66,7 +66,7 @@
         </table>
 
         <div class="center-align" style="margin-top:20px;">
-            <button class="btn grey waves-effect" ng-click="backToPatients()">
+            <button class="btn grey waves-effect" ng-click="backToDoctors()">
                 Back to Patients
             </button>
         </div>

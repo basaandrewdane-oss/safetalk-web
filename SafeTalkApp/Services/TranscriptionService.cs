@@ -18,14 +18,16 @@ namespace SafeTalkApp.Services
     public class TranscriptionService : ITranscriptionService
     {
         private readonly ISafeTalkAppContext _db;
+        private readonly IEmailService _emailService;
         private readonly HttpClient _httpClient;
         private readonly string _apiKey;
 
-        public TranscriptionService(ISafeTalkAppContext db, HttpClient httpClient, [Dependency("AssemblyAIKey")] string apiKey)
+        public TranscriptionService(ISafeTalkAppContext db, HttpClient httpClient, [Dependency("AssemblyAIKey")] string apiKey, IEmailService emailService)
         {
             _db = db;
             _httpClient = httpClient;
             _apiKey = apiKey;
+            _emailService = emailService;
         }
 
         private async Task<ApiResponse<string>> TranscribeWithAssemblyAI(string filePath)
@@ -150,6 +152,21 @@ namespace SafeTalkApp.Services
                         appointment.transcriptHash = transcriptHash;
                     }
                     _db.SaveChanges();
+
+                    //try
+                    //{
+                    //    var patient = _db.user_tbl.FirstOrDefault(u => u.userID == appointment.patientID);
+                    //    var doctor = _db.user_tbl.FirstOrDefault(u => u.userID == appointment.doctorID);
+                    //    if (patient != null && doctor != null)
+                    //    {
+                    //        _emailService.SendTranscriptionReadyToPatient(patient, doctor, appointment, transcriptFileName);
+                    //        _emailService.SendTranscriptionReadyToDoctor(doctor, patient, appointment, transcriptFileName);
+                    //    }
+                    //}
+                    //catch (Exception emailEx)
+                    //{
+                    //    System.Diagnostics.Debug.WriteLine("Error sending transcription emails: " + emailEx.Message);
+                    //}
 
                     // Optional: Broadcast immediately to clients in the appointment
                     var hubContext = GlobalHost.ConnectionManager.GetHubContext<ChatHub>();

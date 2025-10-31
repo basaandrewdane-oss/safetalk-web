@@ -11,7 +11,7 @@ namespace SafeTalkApp.Services
     public class ReportsService : IReportsService
     {
         private readonly ISafeTalkAppContext _db;
-        
+
         public ReportsService(ISafeTalkAppContext db)
         {
             _db = db;
@@ -23,7 +23,8 @@ namespace SafeTalkApp.Services
             {
                 var consultations = _db.appointments_tbl
                 .Where(a => a.doctorID == userID && a.status == 6)
-                .Select(a => new {
+                .Select(a => new
+                {
                     Year = a.date.Year,
                     Month = a.date.Month
                 })
@@ -48,33 +49,6 @@ namespace SafeTalkApp.Services
                 );
             }
         }
-
-        //public ApiResponse<IEnumerable<PatientsDTO>> GetPatients(int doctorID)
-        //{
-        //    try
-        //    {
-        //        var patients = _db.appointments_tbl
-        //            .Where(a => a.doctorID == doctorID && a.status == 6)
-        //            .Select(a => a.patient_tbl)
-        //            .Distinct()
-        //            .Select(p => new PatientsDTO
-        //            {
-        //                PatientID = p.patientID,
-        //                FullName = p.firstName + " " + p.lastName,
-        //                Email = p.email,
-        //                Phone = p.phone
-        //            })
-        //            .ToList();
-        //        return ApiResponse<IEnumerable<PatientsDTO>>.Ok(patients, "Patients retrieved successfully.");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        var innerMessage = ex.InnerException?.Message ?? string.Empty;
-        //        return ApiResponse<IEnumerable<PatientsDTO>>.Fail(
-        //            "An error occurred while retrieving patients. " + ex.Message + " " + innerMessage
-        //        );
-        //    }
-        //}
 
         public ApiResponse<IEnumerable<PatientHistoryDTO>> GetPatientHistory(int? patientID, int doctorID)
         {
@@ -121,6 +95,80 @@ namespace SafeTalkApp.Services
                 return ApiResponse<IEnumerable<PatientHistoryDTO>>.Fail(
                     "An error occurred while retrieving patient history. " + ex.Message + " " + innerMessage
                 );
+            }
+        }
+
+        public ApiResponse<IEnumerable<DoctorHistoryDTO>> GetDoctorHistory(int? doctorID, int patientID)
+        {
+            try
+            {
+                if (doctorID == null)
+                {
+                    var doctors = _db.appointments_tbl
+                        .Where(a => a.patientID == patientID)
+                        .Join(_db.user_tbl, a => a.doctorID, d => d.userID, (a, d) => d)
+                        .Distinct()
+                        .Select(d => new DoctorHistoryDTO
+                        {
+                            DoctorID = d.userID,
+                            FullName = d.firstName + " " + d.lastName,
+                            Email = d.email,
+                            Phone = d.phoneNumber
+                        })
+                        .ToList();
+                    return ApiResponse<IEnumerable<DoctorHistoryDTO>>.Ok(doctors, "Doctors retrieved successfully.");
+                }
+                var history = _db.appointments_tbl
+                    .Where(a => a.patientID == patientID && a.doctorID == doctorID)
+                    .Join(_db.user_tbl, a => a.doctorID, d => d.userID, (a, d) => new { appointment = a, doctor = d })
+                    .Select(x => new DoctorHistoryDTO
+                    {
+                        DoctorID = x.doctor.userID,
+                        FullName = x.doctor.firstName + " " + x.doctor.lastName,
+                        Email = x.doctor.email,
+                        Phone = x.doctor.phoneNumber,
+                        Date = x.appointment.date,
+                        Time = x.appointment.startTime + "-" + x.appointment.endTime,
+                        Status = x.appointment.status
+                    })
+                    .OrderByDescending(h => h.Date)
+                    .ThenByDescending(h => h.Time)
+                    .ToList();
+                return ApiResponse<IEnumerable<DoctorHistoryDTO>>.Ok(history, "Doctor history retrieved successfully.");
+            }
+            catch (Exception ex)
+            {
+                var innerMessage = ex.InnerException?.Message ?? string.Empty;
+                return ApiResponse<IEnumerable<DoctorHistoryDTO>>.Fail(
+                    "An error occurred while retrieving doctor history. " + ex.Message + " " + innerMessage
+                );
+            }
+        }
+
+        public ApiResponse<IEnumerable<MissedAppointmentsDTO>> GetMissedAppointments(int userID)
+        {
+            try
+            {
+                var appointments = (from a in _db.appointments_tbl
+                                    join p in _db.user_tbl on a.patientID equals p.userID
+                                    join d in _db.user_tbl on a.doctorID equals d.userID
+                                    where a.status == 7 && (a.patientID == userID || a.doctorID == userID)
+                                    select new MissedAppointmentsDTO
+                                    {
+                                        patientName = p.firstName + " " + p.lastName,
+                                        doctorName = d.firstName + " " + d.lastName,
+                                        date = a.date,
+                                        startTime = a.startTime,
+                                        endTime = a.endTime,
+                                        status = a.status
+                                    }).ToList();
+
+                return ApiResponse<IEnumerable<MissedAppointmentsDTO>>.Ok(appointments, "Missed appointments retrieved successfully.");
+
+            }
+            catch (Exception)
+            {
+                return ApiResponse<IEnumerable<MissedAppointmentsDTO>>.Fail("An error occurred while retrieving missed appointments.");
             }
         }
     }

@@ -17,6 +17,7 @@ using System.Web.Mvc;
 
 namespace SafeTalkApp.Controllers
 {
+    [Authorize(Roles = "User,Patient,Doctor")]
     public class AppointmentController : Controller
     {
         private readonly IAppointmentService _appointmentService;
@@ -30,10 +31,12 @@ namespace SafeTalkApp.Controllers
         {
             if (User.IsInRole("Doctor"))
             {
+                ViewBag.Title = "My Appointments";
                 return View("~/Views/Appointment/Doctor/Index.cshtml");
             }
             else if (User.IsInRole("User") || User.IsInRole("Patient"))
             {
+                ViewBag.Title = "My Appointments";
                 return View("~/Views/Appointment/User/Index.cshtml");
             }
 
@@ -51,6 +54,7 @@ namespace SafeTalkApp.Controllers
         [Authorize(Roles = "User")]
         public ActionResult Book()
         {
+            ViewBag.Title = "Book Appointment";
             return View("~/Views/Appointment/User/Book.cshtml");
         }
 

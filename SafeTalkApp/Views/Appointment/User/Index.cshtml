@@ -9,72 +9,77 @@
         </div>
         <div class="divider"></div>
         <br />
-        <div class="row">
-            <div class="input-field col s12 m3 l3">
-                <select ng-model="appointmentFilter">
-                    <option value="all">Show All</option>
-                    <option selected value="active">Active Only</option>
-                    <option value="includeRejected">Include Rejected</option>
-                    <option value="includeCanceled">Include Canceled</option>
-                </select>
-                <label>Filter Appointments</label>
+        <div ng-if="filteredAppointments.length > 0">
+            <div class="row">
+                <div class="input-field col s12 m3 l3">
+                    <select ng-model="appointmentFilter">
+                        <option value="all">Show All</option>
+                        <option selected value="active">Active Only</option>
+                        <option value="includeRejected">Include Rejected</option>
+                        <option value="includeCanceled">Include Canceled</option>
+                    </select>
+                    <label>Filter Appointments</label>
+                </div>
             </div>
-        </div>
-        <table id="appointmentsTable" class="display responsive nowrap">
-            <thead>
-                <tr>
-                    <th>Action</th>
-                    <th>Doctor</th>
-                    <th>Date</th>
-                    <th>Start</th>
-                    <th>End</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="appt in filteredAppointments()">
-                    <td>
-                        <div class="center" ng-switch="appt.status">
-                            <button ng-switch-when="0" class="btn red" ng-click="cancelAppointment(appt.appointmentID)">Cancel</button>
-                            <div>
-                                <!-- PayPal Button with SVG logo -->
-                                <button ng-switch-when="1" class="btn blue darken-3 white-text waves-effect waves-light" ng-click="payWithPayPal(appt)">
-                                    <img src="~/Content/Images/paypal-logo.svg" alt="PayPal" style="height: 15px; margin-right: 8px;">
-                                    Pay with PayPal
-                                </button>
+            <table id="appointmentsTable" class="display responsive nowrap">
+                <thead>
+                    <tr>
+                        <th>Action</th>
+                        <th>Doctor</th>
+                        <th>Date</th>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="appt in filteredAppointments()">
+                        <td>
+                            <div class="center" ng-switch="appt.status">
+                                <button ng-switch-when="0" class="btn red" ng-click="cancelAppointment(appt.appointmentID)">Cancel</button>
+                                <div>
+                                    <!-- PayPal Button with SVG logo -->
+                                    <button ng-switch-when="1" class="btn blue darken-3 white-text waves-effect waves-light" ng-click="payWithPayPal(appt)">
+                                        <img src="~/Content/Images/paypal-logo.svg" alt="PayPal" style="height: 15px; margin-right: 8px;">
+                                        Pay with PayPal
+                                    </button>
 
-                                <!-- GCash Button with SVG logo -->
-                                <button ng-switch-when="1" class="btn grey lighten-4 blue-text text-darken-2 waves-effect" ng-click="openPaymentModal(appt)">
-                                    <img src="~/Content/Images/gcash-logo.png" alt="GCash" style="height: 15px; margin-right: 8px;">
-                                    Pay with GCash
-                                </button>
+                                    <!-- GCash Button with SVG logo -->
+                                    <button ng-switch-when="1" class="btn grey lighten-4 blue-text text-darken-2 waves-effect" ng-click="openPaymentModal(appt)">
+                                        <img src="~/Content/Images/gcash-logo.png" alt="GCash" style="height: 15px; margin-right: 8px;">
+                                        Pay with GCash
+                                    </button>
+                                </div>
+                                <button ng-switch-when="2" class="btn orange" disabled>Pending Verification</button>
+                                <div ng-switch-when="3">
+                                    <a href="@Url.Action("Consultations", "Consultation")" class="btn purple">Proceed</a>
+                                </div>
+                                <button ng-switch-when="4" class="btn orange" ng-click="rebookAppointment(appt)">Rebook</button>
+                                <button ng-switch-when="5" class="btn grey" disabled>Canceled</button>
+                                <button ng-switch-when="7" class="btn orange" ng-click="rebookAppointment(appt)">Rebook</button>
                             </div>
-                            <button ng-switch-when="2" class="btn orange" disabled>Pending Verification</button>
-                            <div ng-switch-when="3">
-                                <a href="@Url.Action("Consultations", "Consultation")" class="btn purple">Proceed</a>
-                            </div>
-                            <button ng-switch-when="4" class="btn orange" ng-click="rebookAppointment(appt)">Rebook</button>
-                            <button ng-switch-when="5" class="btn grey" disabled>Canceled</button>
-                            <button ng-switch-when="7" class="btn orange" ng-click="rebookAppointment(appt)">Rebook</button>
-                        </div>
-                    </td>
-                    <td>{{appt.doctorName}}</td>
-                    <td>{{appt.date | dotNetDate | date: 'yyyy-MM-dd'}}</td>
-                    <td>{{appt.startTime | timespanToTime}}</td>
-                    <td>{{appt.endTime | timespanToTime}}</td>
-                    <td ng-switch="appt.status">
-                        <span ng-switch-when="0" class="orange-text">Pending Approval</span>
-                        <span ng-switch-when="1" class="blue-text">Approved - Awaiting Payment</span>
-                        <span ng-switch-when="2" class="orange-text">Payment Submitted</span>
-                        <span ng-switch-when="3" class="green-text">Paid</span>
-                        <span ng-switch-when="4" class="red-text">Rejected</span>
-                        <span ng-switch-when="5" class="grey-text">Canceled</span>
-                        <span ng-switch-when="7" class="deep-orange-text">Missed</span>
-                        <span ng-switch-default class="grey-text">Unknown</span>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                        </td>
+                        <td>{{appt.doctorName}}</td>
+                        <td>{{appt.date | dotNetDate | date: 'yyyy-MM-dd'}}</td>
+                        <td>{{appt.startTime | timespanToTime}}</td>
+                        <td>{{appt.endTime | timespanToTime}}</td>
+                        <td ng-switch="appt.status">
+                            <span ng-switch-when="0" class="orange-text">Pending Approval</span>
+                            <span ng-switch-when="1" class="blue-text">Approved - Awaiting Payment</span>
+                            <span ng-switch-when="2" class="orange-text">Payment Submitted</span>
+                            <span ng-switch-when="3" class="green-text">Paid</span>
+                            <span ng-switch-when="4" class="red-text">Rejected</span>
+                            <span ng-switch-when="5" class="grey-text">Canceled</span>
+                            <span ng-switch-when="7" class="deep-orange-text">Missed</span>
+                            <span ng-switch-default class="grey-text">Unknown</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="center-align" ng-if="filteredAppointments.length === 0">
+            <h5 class="grey-text">No appointments available at this time.</h5>
+        </div>
         <!-- Payment Modal -->
         <div id="paymentModal" class="modal" ng-controller="PaymentController">
             <div class="modal-content">

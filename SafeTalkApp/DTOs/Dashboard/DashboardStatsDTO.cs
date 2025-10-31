@@ -17,6 +17,7 @@ namespace SafeTalkApp.DTOs.Dashboard
         public int ApprovedCount { get; set; }
         public int PaidCount { get; set; }
         public int CompletedCount { get; set; }
+        public int MissedCount { get; set; }
 
         // Line chart data
         public List<ConsultationTrendDTO> ConsultationTrends { get; set; }

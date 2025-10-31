@@ -53,4 +53,22 @@
             $http.post("/Admin/UpdateTerms", { content: content })
         )
     }
+
+    this.getUsers = function () {
+        return ApiHelper.handleApiResponse(
+            $http.get("/Admin/GetUsers")
+        )
+    }
+
+    this.verifyUser = function (userID) {
+        return ApiHelper.handleApiResponse(
+            $http.post("/Admin/VerifyUser", { userID: userID })
+        );
+    };
+
+    this.deleteUser = function (userID) {
+        return ApiHelper.handleApiResponse(
+            $http.post("/Admin/DeleteUser", { userID: userID })
+        );
+    };
 });

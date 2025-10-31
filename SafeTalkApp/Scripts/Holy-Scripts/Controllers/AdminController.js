@@ -248,4 +248,76 @@
     $scope.trustedHtml = function () {
         return $sce.trustAsHtml($scope.termsContent);
     };
+
+    $scope.getUsers = function () {
+        if ($.fn.DataTable.isDataTable('#usersTable')) {
+            $('#usersTable').DataTable().destroy();
+        }
+        AdminService.getUsers().then(function (result) {
+            if (result.success) {
+                $scope.users = result.data;
+                $timeout(function () {
+                    $('#usersTable').DataTable({
+                        responsive: true,
+                        language: {
+                            paginate: {
+                                next: 'Next ',
+                                previous: 'Previous'
+                            }
+                        },
+                        drawCallback: function () {
+                            $('#usersTable_length select').formSelect();
+                        }
+                    });
+                })
+            }
+        }).catch(function (error) {
+            console.error("Error loading users", error);
+            Swal.fire("Error", "Unable to load users.", "error");
+        });
+    }
+
+    // Verify user
+    $scope.verifyUser = function (user) {
+        Swal.fire({
+            title: "Verify user?",
+            text: "Do you want to verify this user?",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Yes, verify"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                AdminService.verifyUser(user.userID).then(function (response) {
+                    if (response.success) {
+                        Swal.fire("Verified!", "User has been verified.", "success");
+                        user.isVerified = true;
+                    } else {
+                        Swal.fire("Error", response.message, "error");
+                    }
+                });
+            }
+        });
+    };
+
+    // Delete user
+    $scope.deleteUser = function (user) {
+        Swal.fire({
+            title: "Delete user?",
+            text: "This cannot be undone.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, delete"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                AdminService.deleteUser(user.userID).then(function (response) {
+                    if (response.success) {
+                        Swal.fire("Deleted!", "User has been removed.", "success");
+                        $scope.users = $scope.users.filter(u => u.userID !== user.userID);
+                    } else {
+                        Swal.fire("Error", response.message, "error");
+                    }
+                });
+            }
+        });
+    };
 });

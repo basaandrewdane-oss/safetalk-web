@@ -11,5 +11,7 @@ namespace SafeTalkApp.Services
     {
         ApiResponse<IEnumerable<ConsultationReportDTO>> GetConsultationReport(int userID);
         ApiResponse<IEnumerable<PatientHistoryDTO>> GetPatientHistory(int? patientID, int doctorID);
+        ApiResponse<IEnumerable<DoctorHistoryDTO>> GetDoctorHistory(int? doctorID, int patientID);
+        ApiResponse<IEnumerable<MissedAppointmentsDTO>> GetMissedAppointments(int userID);
     }
 }

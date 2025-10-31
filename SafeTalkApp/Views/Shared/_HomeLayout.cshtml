@@ -222,7 +222,7 @@
         }
     </style>
 </head>
-<body ng-app="SafeTalkApp" ng-controller="AccountController">
+<body ng-app="SafeTalkApp" ng-controller="AccountController" ng-cloak>
     <div class="navbar-fixed">
         <nav class="pink lighten-2">
             <div class="nav-wrapper container">
@@ -259,16 +259,19 @@
                     <h5 class="">Give Us A Feedback</h5>
                     <p class="">Send us an email.</p>
                     <div class="row">
-                        <form class="col s12">
+                        <form class="col s12" name="feedbackForm" ng-submit="submitFeedback()" ng-controller="HomeController">
                             <div class="row">
                                 <div class="input-field col s12">
-                                    <input id="email" type="email" class="validate">
+                                    <input id="email" type="email" class="validate" ng-model="email">
                                     <label for="email">Email</label>
                                     <span class="helper-text" data-error="Invalid email" data-success="Looks good!">Enter email address.</span>
                                 </div>
                                 <div class="input-field col s12">
-                                    <textarea id="textarea1" class="materialize-textarea"></textarea>
+                                    <textarea id="textarea1" class="materialize-textarea" ng-model="feedback" data-length="1000"></textarea>
                                     <label for="textarea1">Share your feedback</label>
+                                </div>
+                                <div>
+                                    <button class="btn waves-effect waves-light" type="submit">Submit</button>
                                 </div>
                             </div>
                         </form>
@@ -281,6 +284,7 @@
                         <li><a class="grey-text text-darken-2" href="@Url.Action("Doctors", "Home")">Our Doctors</a></li>
                         <li><a class="grey-text text-darken-2" href="@Url.Action("Contact", "Home")">Contact</a></li>
                         <li><a class="grey-text text-darken-2" href="@Url.Action("About", "Home")">About</a></li>
+                        <li><a class="grey-text text-darken-2" href="@Url.Action("Terms", "Home")">Terms and Conditions</a></li>
                     </ul>
                 </div>
             </div>
@@ -345,6 +349,9 @@
             M.Sidenav.init(document.querySelectorAll('.sidenav'));
             M.Slider.init(document.querySelectorAll('.slider'));
             M.Parallax.init(document.querySelectorAll('.parallax'));
+        });
+        $(document).ready(function () {
+            $('input#input_text, textarea#textarea1').characterCounter();
         });
     </script>
 </body>

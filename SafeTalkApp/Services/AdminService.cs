@@ -164,6 +164,15 @@ namespace SafeTalkApp.Services
                     user.dateUpdated = DateTime.Now;
                     _db.SaveChanges();
 
+                    try
+                    {
+                        _emailService.SendDoctorVerifiedAccount(user);
+                    }
+                    catch (Exception emailEx)
+                    {
+                        System.Diagnostics.Debug.WriteLine("Error sending verification email: " + emailEx.Message);
+                    }
+
                     return ApiResponse<bool>.Ok(true, "Doctor verified successfully.");
                 }
                 return ApiResponse<bool>.Fail("Doctor not found.");
@@ -241,6 +250,63 @@ namespace SafeTalkApp.Services
             catch (Exception ex)
             {
                 return ApiResponse<bool>.Fail("Error updating terms: " + ex.Message);
+            }
+        }
+
+        public ApiResponse<IEnumerable<UsersDTO>> GetUsers()
+        {
+            try
+            {
+                var users = _db.user_tbl.Select(u => new UsersDTO
+                {
+                    userID = u.userID,
+                    firstName = u.firstName,
+                    lastName = u.lastName,
+                    email = u.email,
+                    isVerified = u.isVerified,
+                    dateCreated = u.dateCreated
+                }).ToList();
+                return ApiResponse<IEnumerable<UsersDTO>>.Ok(users);
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<IEnumerable<UsersDTO>>.Fail("Error retrieving users: " + ex.Message);
+            }
+        }
+
+        public ApiResponse<bool> VerifyUser(int userID)
+        {
+            try
+            {
+                var user = _db.user_tbl.FirstOrDefault(u => u.userID == userID);
+                if (user == null)
+                    return ApiResponse<bool>.Fail("User not found.");
+
+                user.isVerified = true;
+                _db.SaveChanges();
+                return ApiResponse<bool>.Ok(true, "User verified successfully.");
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<bool>.Fail("Error verifying user: " + ex.Message);
+            }
+        }
+
+        public ApiResponse<bool> DeleteUser(int userID)
+        {
+            try
+            {
+                var user = _db.user_tbl.FirstOrDefault(u => u.userID == userID);
+                if (user == null)
+                    return ApiResponse<bool>.Fail("User not found.");
+
+                _db.user_tbl.Remove(user);
+                _db.SaveChanges();
+                return ApiResponse<bool>.Ok(true, "User deleted successfully.");
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<bool>.Fail("Error deleting user: " + ex.Message);
             }
         }
     }

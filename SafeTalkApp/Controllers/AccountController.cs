@@ -33,7 +33,7 @@ namespace SafeTalkApp.Controllers
             {
                 return RedirectToAction("Index", "Dashboard");
             }
-
+            ViewBag.Title = "Login";
             return View();
         }
 
@@ -46,6 +46,7 @@ namespace SafeTalkApp.Controllers
 
         public ActionResult Waiting()
         {
+            ViewBag.Title = "Waiting for Approval";
             return View();
         }
 
@@ -61,8 +62,10 @@ namespace SafeTalkApp.Controllers
             switch (role)
             {
                 case "user":
+                    ViewBag.Title = "User Signup";
                     return View("~/Views/Account/Signup/User/index.cshtml");
                 case "doctor":
+                    ViewBag.Title = "Doctor Signup";
                     return View("~/Views/Account/Signup/Doctor/index.cshtml");
                 default:
                     return View("Error"); // Or return a not found message
@@ -98,6 +101,7 @@ namespace SafeTalkApp.Controllers
 
         public ActionResult VerifyEmail(string token)
         {
+            ViewBag.Title = "Verify Email";
             ViewBag.Token = token; // pass token to the view
             return View();         // returns a Razor page with AngularJS
         }
@@ -116,11 +120,13 @@ namespace SafeTalkApp.Controllers
 
         public ActionResult Error()
         {
+            ViewBag.Title = "Error";
             return View();
         }
 
         public ActionResult EmailVerified()
         {
+            ViewBag.Title = "Email Verified";
             return View();
         }
 

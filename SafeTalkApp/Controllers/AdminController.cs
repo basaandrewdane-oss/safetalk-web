@@ -9,6 +9,7 @@ using System.Web.Mvc;
 
 namespace SafeTalkApp.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
         private readonly IAdminService _adminService;
@@ -20,6 +21,7 @@ namespace SafeTalkApp.Controllers
 
         public ActionResult FAQs()
         {
+            ViewBag.Title = "Manage FAQs";
             return View();
         }
 
@@ -49,6 +51,7 @@ namespace SafeTalkApp.Controllers
 
         public ActionResult Prompts()
         {
+            ViewBag.Title = "Manage Prompts";
             return View();
         }
 
@@ -60,6 +63,7 @@ namespace SafeTalkApp.Controllers
 
         public ActionResult PendingDoctors()
         {
+            ViewBag.Title = "Pending Doctor Verifications";
             return View();
         }
 
@@ -77,6 +81,7 @@ namespace SafeTalkApp.Controllers
 
         public ActionResult Payments()
         {
+            ViewBag.Title = "Manage Payments";
             return View();
         }
 
@@ -100,7 +105,32 @@ namespace SafeTalkApp.Controllers
 
         public ActionResult ManageTerms()
         {
+            ViewBag.Title = "Manage Terms and Conditions";
             return View();
+        }
+
+        public ActionResult ManageUsers()
+        {
+            ViewBag.Title = "Manage Users";
+            return View();
+        }
+
+        public JsonResult GetUsers()
+        {
+            var response = _adminService.GetUsers();
+            return Json(response, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult VerifyUser(int userID)
+        {
+            var response = _adminService.VerifyUser(userID);
+            return Json(response);
+        }
+
+        public JsonResult DeleteUser(int userID)
+        {
+            var response = _adminService.DeleteUser(userID);
+            return Json(response);
         }
     }
 }

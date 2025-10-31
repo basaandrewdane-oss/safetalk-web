@@ -1,0 +1,8 @@
+﻿@{
+    Layout = "~/Views/Shared/_HomeLayout.cshtml";
+}
+
+
+<div class="container" ng-controller="HomeController" ng-init="getTerms()">
+    <div style="border:1px solid #ccc; border-radius:8px;" ng-bind-html="trustedTerms()"></div>
+</div>

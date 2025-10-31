@@ -9,6 +9,7 @@ using System.Web.Mvc;
 
 namespace SafeTalkApp.Controllers
 {
+    [Authorize(Roles = "Doctor")]
     public class AvailabilityController : Controller
     {
         private readonly IAvailabilityService _availabilityService;
@@ -20,6 +21,7 @@ namespace SafeTalkApp.Controllers
         // GET: Availability
         public ActionResult Index()
         {
+            ViewBag.Title = "My Availability";
             return View();
         }
 

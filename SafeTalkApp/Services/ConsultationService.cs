@@ -12,10 +12,12 @@ namespace SafeTalkApp.Services
     public class ConsultationService : IConsultationService
     {
         private readonly ISafeTalkAppContext _db;
+        private readonly IEmailService _emailService;
 
-        public ConsultationService(ISafeTalkAppContext db)
+        public ConsultationService(ISafeTalkAppContext db, IEmailService emailService)
         {
             _db = db;
+            _emailService = emailService;
         }
 
         public ApiResponse<AppointmentResultDTO> GetAppointment(int appointmentID)
@@ -148,6 +150,23 @@ namespace SafeTalkApp.Services
                 };
                 _db.referrals_tbl.Add(referral);
                 _db.SaveChanges();
+
+                // Send email to patient
+                //try
+                //{
+                //    var doctor = _db.user_tbl.Find(model.doctorID);
+                //    var patient = _db.user_tbl.Find(model.patientID);
+
+                //    if (doctor != null && patient != null)
+                //    {
+                //        _emailService.SendReferralCreatedEmail(patient, doctor, referral);
+                //    }
+                //}
+                //catch (Exception emailEx)
+                //{
+                //    System.Diagnostics.Debug.WriteLine("Error sending referral email: " + emailEx.Message);
+                //}
+
                 return ApiResponse<bool>.Ok(true);
             }
             catch (Exception ex)

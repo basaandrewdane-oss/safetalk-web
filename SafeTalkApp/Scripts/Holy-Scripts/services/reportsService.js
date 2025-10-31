@@ -15,4 +15,20 @@
             $http.get(url)
         );
     };
+
+    this.getDoctorHistory = function (doctorID) {
+        let url = "/Reports/GetDoctorHistory";
+        if (doctorID) {
+            url += "?doctorID=" + doctorID;
+        }
+        return ApiHelper.handleApiResponse(
+            $http.get(url)
+        );
+    };
+
+    this.getMissedAppointments = function () {
+        return ApiHelper.handleApiResponse(
+            $http.get('/Reports/GetMissedAppointments')
+        )
+    }
 })

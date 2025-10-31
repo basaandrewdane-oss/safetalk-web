@@ -15,6 +15,7 @@ using static SafeTalkApp.Controllers.AppointmentController;
 
 namespace SafeTalkApp.Controllers
 {
+    [Authorize(Roles = "Admin,User")]
     public class PaymentController : Controller
     {
         private readonly IPaymentService _paymentService;
@@ -64,7 +65,7 @@ namespace SafeTalkApp.Controllers
                 {
                     return RedirectToAction("Appointments", "Appointment");
                 }
-
+                ViewBag.Title = "Review PayPal Payment";
                 return View("PaymentReview", response.data);
             }
             catch (Exception ex)
@@ -78,6 +79,7 @@ namespace SafeTalkApp.Controllers
             try
             {
                 var response = _paymentService.CapturePayPalOrder(token, appointmentID);
+                ViewBag.Title = "Processing PayPal Payment";
                 return View("PaymentProcessing", response.data);
             }
             catch (Exception ex)

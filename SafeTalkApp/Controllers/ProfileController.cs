@@ -11,6 +11,7 @@ using System.Web.Mvc;
 
 namespace SafeTalkApp.Controllers
 {
+    [Authorize(Roles = "Admin,User,Doctor")]
     public class ProfileController : Controller
     {
         private readonly IProfileService _profileService;
@@ -25,14 +26,17 @@ namespace SafeTalkApp.Controllers
         {
             if (User.IsInRole("Doctor"))
             {
+                ViewBag.Title = "My Profile";
                 return View("~/Views/Profile/Doctor/Index.cshtml");
             }
             else if (User.IsInRole("User") || User.IsInRole("Patient"))
             {
+                ViewBag.Title = "My Profile";
                 return View("~/Views/Profile/User/Index.cshtml");
             }
             else if (User.IsInRole("Admin"))
             {
+                ViewBag.Title = "My Profile";
                 return View("~/Views/Profile/Admin/Index.cshtml");
             }
 
@@ -41,6 +45,7 @@ namespace SafeTalkApp.Controllers
 
         public ActionResult ProfileView()
         {
+            ViewBag.Title = "My Profile";
             return View();
         }
 

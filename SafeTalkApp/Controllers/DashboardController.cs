@@ -8,6 +8,7 @@ using System.Web.Mvc;
 
 namespace SafeTalkApp.Controllers
 {
+    [Authorize(Roles = "Admin,Doctor,User")]
     public class DashboardController : Controller
     {
         private readonly IDashboardService _dashboardService;
@@ -19,6 +20,7 @@ namespace SafeTalkApp.Controllers
         [Authorize]
         public ActionResult Index()
         {
+            ViewBag.Title = "Dashboard";
             return View();
         }
 
@@ -28,6 +30,12 @@ namespace SafeTalkApp.Controllers
             var role = User.IsInRole("Admin") ? "Admin" : User.IsInRole("Doctor") ? "Doctor" : "User";
 
             var response = _dashboardService.GetDashboardStats(userID, role);
+            return Json(response, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetAdminReports()
+        {
+            var response = _dashboardService.GetAdminReports();
             return Json(response, JsonRequestBehavior.AllowGet);
         }
     }

@@ -52,5 +52,46 @@ namespace SafeTalkApp.Services
                 return ApiResponse<IEnumerable<DoctorDTO>>.Fail($"An error occurred: {ex.Message}");
             }
         }
+
+        public ApiResponse<bool> SubmitFeedback(FeedbackDTO data)
+        {
+            try
+            {
+                var newFeedback = new FeedbackTblModel
+                {
+                    email = data.email,
+                    feedback = data.feedback,
+                    dateCreated = DateTime.Now
+                };
+                _db.feedback_tbl.Add(newFeedback);
+                _db.SaveChanges();
+                return ApiResponse<bool>.Ok(true, "Feedback submitted successfully.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("EXCEPTION: " + ex.StackTrace);
+                return ApiResponse<bool>.Fail($"An error occurred: {ex.Message}");
+            }
+        }
+
+        public ApiResponse<TermsDTO> GetTerms()
+        {
+            try
+            {
+                var terms = _db.terms_tbl
+                     .OrderByDescending(t => t.dateUpdated)
+                     .Select(t => new TermsDTO
+                     {
+                         content = t.content,
+                         dateUpdated = t.dateUpdated
+                     }).FirstOrDefault();
+                return ApiResponse<TermsDTO>.Ok(terms, "Terms retrieved successfully.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("EXCEPTION: " + ex.StackTrace);
+                return ApiResponse<TermsDTO>.Fail($"An error occurred: {ex.Message}");
+            }
+        }
     }
 }

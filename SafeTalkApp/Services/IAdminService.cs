@@ -19,5 +19,8 @@ namespace SafeTalkApp.Services
         ApiResponse<IEnumerable<PaymentDTO>> GetPayments();
         ApiResponse<string> GetTerms();
         ApiResponse<bool> UpdateTerms(string content);
+        ApiResponse<IEnumerable<UsersDTO>> GetUsers();
+        ApiResponse<bool> VerifyUser(int userID);
+        ApiResponse<bool> DeleteUser(int userID);
     }
 }

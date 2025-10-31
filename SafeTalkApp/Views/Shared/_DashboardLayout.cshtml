@@ -14,7 +14,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>@ViewBag.Title - Dashboard</title>
+    <title>@ViewBag.Title - SafeTalk</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
@@ -117,7 +117,7 @@
                 <a href="#" data-target="mobile_sidenav" class="sidenav-trigger show-on-medium-and-up">
                     <i class="material-icons white-text">menu</i>
                 </a>
-                <a href="@Url.Action("Index", "Dashboard")" class="brand-logo center">SafeTalk Dashboard</a>
+                <a href="@Url.Action("Index", "Dashboard")" class="brand-logo center">Dashboard</a>
                 <ul class="right hide-on-med-and-down">
                     @if (User.Identity.IsAuthenticated)
                     {

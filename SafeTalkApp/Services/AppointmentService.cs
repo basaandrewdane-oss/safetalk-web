@@ -181,14 +181,21 @@ namespace SafeTalkApp.Services
                     status = appointment.status
                 };
 
-                //var doctor = _db.user_tbl.Find(model.doctorID);
-                //var patient = _db.user_tbl.Find(patientID);
+                try
+                {
+                    var doctor = _db.user_tbl.Find(model.doctorID);
+                    var patient = _db.user_tbl.Find(patientID);
 
-                //if (doctor != null && patient != null)
-                //{
-                //    _emailService.SendDoctorAppointmentNotification(doctor, patient, appointment);
-                //    _emailService.SendPatientAppointmentConfirmation(patient, doctor, appointment);
-                //}
+                    if (doctor != null && patient != null)
+                    {
+                        _emailService.SendDoctorAppointmentNotification(doctor, patient, appointment);
+                        _emailService.SendPatientAppointmentConfirmation(patient, doctor, appointment);
+                    }
+                }
+                catch (Exception emailEx)
+                {
+                    System.Diagnostics.Debug.WriteLine("Error sending appointment emails: " + emailEx.Message);
+                }
 
                 return ApiResponse<AppointmentResultDTO>.Ok(dto, "Appointment booked successfully.");
             }
@@ -267,14 +274,21 @@ namespace SafeTalkApp.Services
                 appointment.dateUpdated = DateTime.Now;
                 _db.SaveChanges();
 
-                // 🔔 Optionally, notify doctor and patient here
-                // var doctor = _db.user_tbl.Find(appointment.doctorID);
-                // var patient = _db.user_tbl.Find(appointment.patientID);
-                // if (doctor != null && patient != null)
-                // {
-                //     _emailService.SendDoctorAppointmentCancellation(doctor, patient, appointment);
-                //     _emailService.SendPatientAppointmentCancellation(patient, doctor, appointment);
-                // }
+
+                //try
+                //{
+                //    var doctor = _db.user_tbl.Find(appointment.doctorID);
+                //    var patient = _db.user_tbl.Find(appointment.patientID);
+                //    if (doctor != null && patient != null)
+                //    {
+                //        _emailService.SendDoctorAppointmentCancellation(doctor, patient, appointment);
+                //        _emailService.SendPatientAppointmentCancellation(patient, doctor, appointment);
+                //    }
+                //}
+                //catch (Exception emailEx)
+                //{
+                //    System.Diagnostics.Debug.WriteLine("Error sending cancellation emails: " + emailEx.Message);
+                //}
 
                 return ApiResponse<bool>.Ok(true, "Appointment cancelled successfully.");
             }
@@ -332,13 +346,21 @@ namespace SafeTalkApp.Services
                 appointment.dateUpdated = DateTime.Now;
                 _db.SaveChanges();
 
-                //// Send confirmation email to patient
-                //var patient = _db.user_tbl.Find(appointment.patientID);
-                //var doctor = _db.user_tbl.Find(appointment.doctorID);
-
-                //if (patient != null && doctor != null)
+                // Send confirmation email to patient
+                //try
                 //{
-                //    _emailService.SendPatientAppointmentApproved(patient, doctor, appointment);
+                //    var patient = _db.user_tbl.Find(appointment.patientID);
+                //    var doctor = _db.user_tbl.Find(appointment.doctorID);
+
+                //    if (patient != null && doctor != null)
+                //    {
+                //        _emailService.SendPatientAppointmentApproved(patient, doctor, appointment);
+                //        _emailService.SendDoctorAppointmentApproved(doctor, patient, appointment);
+                //    }
+                //}
+                //catch (Exception emailEx)
+                //{
+                //    System.Diagnostics.Debug.WriteLine("Error sending approval emails: " + emailEx.Message);
                 //}
 
                 return ApiResponse<bool>.Ok(true, "Appointment approved and confirmation email sent.");
@@ -362,12 +384,20 @@ namespace SafeTalkApp.Services
                 appointment.rejectReason = data.rejectReason;
                 appointment.dateUpdated = DateTime.Now;
                 _db.SaveChanges();
-                // Send rejection email to patient
-                //var patient = _db.user_tbl.Find(appointment.patientID);
-                //var doctor = _db.user_tbl.Find(appointment.doctorID);
-                //if (patient != null && doctor != null)
+                // Send rejection email to patient and doctor
+                //try
                 //{
-                //    _emailService.SendPatientAppointmentRejected(patient, doctor, appointment);
+                //    var patient = _db.user_tbl.Find(appointment.patientID);
+                //    var doctor = _db.user_tbl.Find(appointment.doctorID);
+                //    if (patient != null && doctor != null)
+                //    {
+                //        _emailService.SendPatientAppointmentRejected(patient, doctor, appointment);
+                //        _emailService.SendDoctorAppointmentRejected(doctor, patient, appointment);
+                //    }
+                //}
+                //catch (Exception emailEx)
+                //{
+                //    System.Diagnostics.Debug.WriteLine("Error sending rejection emails: " + emailEx.Message);
                 //}
                 return ApiResponse<bool>.Ok(true, "Appointment rejected and notification email sent.");
             }
@@ -394,7 +424,7 @@ namespace SafeTalkApp.Services
                                                a.status == AppointmentStatus.Approved) &&
                                               (
                                                   payment == null /*|| */// no payment
-                                                  /*payment.status == PaymentStatus.Rejected*/ // explicitly rejected
+                                              /*payment.status == PaymentStatus.Rejected*/ // explicitly rejected
                                               )
                                         select a).ToList();
 

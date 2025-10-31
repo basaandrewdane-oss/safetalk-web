@@ -296,6 +296,7 @@
     <Compile Include="DTOs\Account\VerifyEmailResultDTO.cs" />
     <Compile Include="DTOs\Admin\PaymentDTO.cs" />
     <Compile Include="DTOs\Admin\TermsUpdateDTO.cs" />
+    <Compile Include="DTOs\Admin\UsersDTO.cs" />
     <Compile Include="DTOs\Appointment\AppointmentResultDTO.cs" />
     <Compile Include="DTOs\Appointment\BookAppointmentDTO.cs" />
     <Compile Include="DTOs\Appointment\DoctorAppointmentDTO.cs" />
@@ -303,13 +304,19 @@
     <Compile Include="DTOs\Appointment\PatientAppointmentDTO.cs" />
     <Compile Include="DTOs\Consultation\ChatMessageDTO.cs" />
     <Compile Include="DTOs\Consultation\ReferralDTO.cs" />
+    <Compile Include="DTOs\Dashboard\AdminReportsDTO.cs" />
     <Compile Include="DTOs\Dashboard\ConsultationTrendDTO.cs" />
     <Compile Include="DTOs\Dashboard\DashboardStatsDTO.cs" />
+    <Compile Include="DTOs\Dashboard\ResourceTrendDTO.cs" />
+    <Compile Include="DTOs\Dashboard\TrendDTO.cs" />
+    <Compile Include="DTOs\Dashboard\UserGrowthDTO.cs" />
     <Compile Include="DTOs\Payment\PaymentProcessingDTO.cs" />
     <Compile Include="DTOs\Payment\PaymentReviewDTO.cs" />
     <Compile Include="DTOs\Profile\ProfileUpdateDTO.cs" />
     <Compile Include="DTOs\Profile\UserDTO.cs" />
     <Compile Include="DTOs\Reports\ConsultationReportDTO.cs" />
+    <Compile Include="DTOs\Reports\DoctorHistoryDTO.cs" />
+    <Compile Include="DTOs\Reports\MissedAppointmentsDTO.cs" />
     <Compile Include="DTOs\Reports\PatientHistoryDTO.cs" />
     <Compile Include="DTOs\Resources\ResourcesDTO.cs" />
     <Compile Include="DTOs\Shared\DoctorDTO.cs" />
@@ -318,6 +325,8 @@
     <Compile Include="DTOs\Shared\ApiResponse.cs" />
     <Compile Include="DTOs\Shared\AppointmentStatusDTO.cs" />
     <Compile Include="DTOs\Shared\EmailMessageDTO.cs" />
+    <Compile Include="DTOs\Shared\FeedbackDTO.cs" />
+    <Compile Include="DTOs\Shared\TermsDTO.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -331,6 +340,8 @@
     <Compile Include="Models\DaysOfWeekTblModel.cs" />
     <Compile Include="Models\FAQsTblMap.cs" />
     <Compile Include="Models\FAQsTblModel.cs" />
+    <Compile Include="Models\FeedbackTblMap.cs" />
+    <Compile Include="Models\FeedbackTblModel.cs" />
     <Compile Include="Models\GenderTblMap.cs" />
     <Compile Include="Models\GenderTblModel.cs" />
     <Compile Include="Models\ReferralStatus.cs" />
@@ -1308,6 +1319,10 @@
     <Content Include="Views\Resources\ReadOnlyIndex.cshtml" />
     <Content Include="Views\Home\DoctorsView.cshtml" />
     <Content Include="Views\Availability\Index.cshtml" />
+    <Content Include="Views\Reports\DoctorHistory.cshtml" />
+    <Content Include="Views\Home\Terms.cshtml" />
+    <Content Include="Views\Reports\FollowUpReport.cshtml" />
+    <Content Include="Views\Admin\ManageUsers.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

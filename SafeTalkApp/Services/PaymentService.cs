@@ -17,11 +17,13 @@ namespace SafeTalkApp.Services
     {
         private readonly ISafeTalkAppContext _db;
         private readonly IPayPalService _payPalService;
+        private readonly IEmailService _emailService;
 
-        public PaymentService(ISafeTalkAppContext db, IPayPalService payPalService)
+        public PaymentService(ISafeTalkAppContext db, IPayPalService payPalService, IEmailService emailService)
         {
             _db = db;
             _payPalService = payPalService;
+            _emailService = emailService;
         }
 
         public ApiResponse<bool> SubmitPayment(int appointmentID, HttpPostedFileBase paymentProof)
@@ -74,6 +76,26 @@ namespace SafeTalkApp.Services
                 appointment.status = AppointmentStatus.PaymentSubmitted; // Update appointment status
                 appointment.dateUpdated = DateTime.Now;
                 _db.SaveChanges();
+
+                //try
+                //{
+                //    var admin = (from u in _db.user_tbl
+                //                 join r in _db.user_role_tbl on u.userID equals r.userID
+                //                 where r.roleID == 3
+                //                 select u).FirstOrDefault();
+                //    var patient = _db.user_tbl.FirstOrDefault(u => u.userID == appointment.patientID);
+                //    var doctor = _db.user_tbl.FirstOrDefault(u => u.userID == appointment.doctorID);
+
+                //    if (admin != null)
+                //    {
+                //        _emailService.SendPaymentSubmittedEmail(admin, appointment, payment, patient, doctor);
+                //    }
+                //}
+                //catch (Exception emailEx)
+                //{
+                //    System.Diagnostics.Debug.WriteLine("Error sending payment submitted email: " + emailEx.Message);
+                //}
+
                 return ApiResponse<bool>.Ok(true, "Payment Submitted");
             }
             catch (Exception ex)
@@ -174,7 +196,7 @@ namespace SafeTalkApp.Services
                 appointment.status = AppointmentStatus.Paid;
                 appointment.dateUpdated = DateTime.Now;
 
-                _db.payment_tbl.Add(new PaymentTblModel
+                var payment = new PaymentTblModel
                 {
                     appointmentID = appointmentID,
                     status = PaymentStatus.Completed,
@@ -183,9 +205,27 @@ namespace SafeTalkApp.Services
                     paymentDate = DateTime.Now,
                     dateCreated = DateTime.Now,
                     dateUpdated = DateTime.Now,
-                });
+                };
 
+                _db.payment_tbl.Add(payment);
                 _db.SaveChanges();
+
+                // Send emails after successful payment
+                //try
+                //{
+                //    var patient = _db.user_tbl.FirstOrDefault(u => u.userID == appointment.patientID);
+                //    var doctor = _db.user_tbl.FirstOrDefault(u => u.userID == appointment.doctorID);
+
+                //    if (patient != null && doctor != null)
+                //    {
+                //        _emailService.SendPayPalPaymentConfirmationToPatient(patient, doctor, appointment, payment);
+                //        _emailService.SendPayPalPaymentNotificationToDoctor(doctor, patient, appointment, payment);
+                //    }
+                //}
+                //catch (Exception emailEx)
+                //{
+                //    System.Diagnostics.Debug.WriteLine("Error sending payment confirmation emails: " + emailEx.Message);
+                //}
 
                 var dto = new PaymentProcessingDTO
                 {
@@ -225,6 +265,24 @@ namespace SafeTalkApp.Services
                     appointment.status = AppointmentStatus.Paid; // Update appointment status
                     appointment.dateUpdated = DateTime.Now;
                     _db.SaveChanges();
+
+                    // Retrieve patient and doctor for email
+                    //var patient = _db.user_tbl.FirstOrDefault(u => u.userID == appointment.patientID);
+                    //var doctor = _db.user_tbl.FirstOrDefault(u => u.userID == appointment.doctorID);
+
+                    //// Send notification emails
+                    //if (patient != null && doctor != null)
+                    //{
+                    //    try
+                    //    {
+                    //        _emailService.SendPaymentVerifiedEmailToPatient(patient, doctor, appointment, payment);
+                    //        _emailService.SendPaymentVerifiedEmailToDoctor(doctor, patient, appointment, payment);
+                    //    }
+                    //    catch (Exception emailEx)
+                    //    {
+                    //        System.Diagnostics.Debug.WriteLine("Error sending payment verified emails: " + emailEx.Message);
+                    //    }
+                    //}
                 }
 
                 return ApiResponse<bool>.Ok(true, "Payment Verified");

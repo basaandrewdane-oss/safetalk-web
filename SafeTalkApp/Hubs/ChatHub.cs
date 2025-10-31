@@ -17,6 +17,9 @@ namespace SafeTalkApp.Hubs
         // Stores connection IDs for each appointment
         private static readonly ConcurrentDictionary<string, HashSet<string>> AppointmentGroups =
         new ConcurrentDictionary<string, HashSet<string>>();
+
+        private static readonly ConcurrentDictionary<string, string> ConnectionUsers =
+        new ConcurrentDictionary<string, string>();
         // ----------------------
         // Connection Handling
         // ----------------------
@@ -35,13 +38,19 @@ namespace SafeTalkApp.Hubs
 
             if (appointmentId != null)
             {
-                var senderName = ((ClaimsIdentity)Context.User.Identity)
-                    .FindFirst(ClaimTypes.GivenName)?.Value ?? Context.User.Identity.Name;
+                var senderName = ConnectionUsers.TryGetValue(Context.ConnectionId, out var name)
+                ? name
+                : "A user";
 
-                Clients.Group($"appointment_{appointmentId}")
+                // Notify others
+                Clients.OthersInGroup($"appointment_{appointmentId}")
                        .addSystemMessage($"{senderName} has left the chat.");
-            }
 
+                // Notify self
+                Clients.Caller.addSystemMessage("You left the chat.");
+            }
+            // Clean up
+            ConnectionUsers.TryRemove(Context.ConnectionId, out _);
             return base.OnDisconnected(stopCalled);
         }
 
@@ -77,6 +86,9 @@ namespace SafeTalkApp.Hubs
             var userId = Context.User.Identity.GetUserId<int>();
             if (!IsUserInAppointment(userId, appointmentId))
                 throw new HubException("Unauthorized");
+            // ✅ Send "user joined" message to everyone in the same appointment
+            var senderName = ((ClaimsIdentity)Context.User.Identity)
+                .FindFirst(ClaimTypes.GivenName)?.Value ?? Context.User.Identity.Name;
 
             var appointment = db.appointments_tbl.FirstOrDefault(a => a.appointmentID.ToString() == appointmentId);
 
@@ -104,6 +116,8 @@ namespace SafeTalkApp.Hubs
                 Clients.Caller.notifyJoinBlocked("ended", appointmentEnd.ToString("f"));
                 return;
             }
+            // Track connection + username
+            ConnectionUsers[Context.ConnectionId] = senderName;
 
             // ✅ Valid join
             AppointmentGroups.AddOrUpdate(
@@ -120,12 +134,23 @@ namespace SafeTalkApp.Hubs
 
             await Groups.Add(Context.ConnectionId, $"appointment_{appointmentId}");
 
-            // ✅ Send "user joined" message to everyone in the same appointment
-            var senderName = ((ClaimsIdentity)Context.User.Identity)
-                .FindFirst(ClaimTypes.GivenName)?.Value ?? Context.User.Identity.Name;
+            // ✅ Notify others
+            await Clients.OthersInGroup($"appointment_{appointmentId}")
+                .addSystemMessage($"{senderName} has joined the chat.");
 
-            Clients.Group($"appointment_{appointmentId}")
-                   .addSystemMessage($"{senderName} has joined the chat.");
+            var existingNames = AppointmentGroups[appointmentId]
+            .Where(cid => cid != Context.ConnectionId)
+            .Select(cid => ConnectionUsers.TryGetValue(cid, out var name) ? name : "Unknown")
+            .ToList();
+
+            if (existingNames.Any())
+            {
+                await Clients.Caller.addSystemMessage(
+                    "Currently in chat: " + string.Join(", ", existingNames));
+            }
+
+            // ✅ Notify caller (self)
+            await Clients.Caller.addSystemMessage("You joined the chat.");
         }
 
         private bool IsOtherUserInRoom(string appointmentId) =>

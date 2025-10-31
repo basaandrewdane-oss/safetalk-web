@@ -10,9 +10,11 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Security;
 
 namespace SafeTalkApp.Controllers
 {
+    [System.Web.Mvc.Authorize(Roles = "User,Doctor")]
     public class TranscriptionController : Controller
     {
         private readonly ITranscriptionService _transcriptionService;

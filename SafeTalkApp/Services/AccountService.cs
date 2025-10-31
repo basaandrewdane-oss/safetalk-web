@@ -80,8 +80,16 @@ namespace SafeTalkApp.Services
                     }
                     _db.SaveChanges();
                 }
-                //var verificationLink = $"https://localhost:44338/Account/VerifyEmail?token={HttpUtility.UrlEncode(token)}";
-                //_emailService.SendVerificationEmail(signUp.email, verificationLink);
+
+                try
+                {
+                    //var verificationLink = $"https://localhost:44338/Account/VerifyEmail?token={HttpUtility.UrlEncode(token)}";
+                    //_emailService.SendVerificationEmail(signUp.email, verificationLink);
+                }
+                catch (Exception emailEx)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Email Sending Error: {emailEx.Message}\n{emailEx.StackTrace}");
+                }
                 return ApiResponse<object>.Ok("Registration successful! Please verify your email.");
             }
             catch (Exception ex)

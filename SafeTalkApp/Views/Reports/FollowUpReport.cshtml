@@ -1,0 +1,58 @@
+﻿@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+
+<div class="container" ng-controller="ReportsController" ng-init="getMissedAppointments()">
+    <h4 class="pink-text text-lighten-3">Missed Appointments</h4>
+    @if (User.IsInRole("User"))
+    {
+        <table id="patientMissed" class="highlight responsive-table">
+            <thead>
+                <tr>
+                    <th>Doctor</th>
+                    <th>Date</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="a in missedAppointments">
+                    <td>{{a.doctorName}}</td>
+                    <td>{{a.date | dotNetDate | date: 'mediumDate'}}</td>
+                    <td>{{a.startTime | timespanToTime}}</td>
+                    <td>{{a.endTime | timespanToTime}}</td>
+                    <td ng-switch="a.status">
+                        <span ng-switch-when="7" class="red-text">Missed</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    }
+    @if (User.IsInRole("Doctor"))
+    {
+        <table id="doctorMissed" class="highlight responsive-table">
+            <thead>
+                <tr>
+                    <th>Patient</th>
+                    <th>Date</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="a in missedAppointments">
+                    <td>{{a.patientName}}</td>
+                    <td>{{a.date | dotNetDate | date: 'mediumDate'}}</td>
+                    <td>{{a.startTime | timespanToTime}}</td>
+                    <td>{{a.endTime | timespanToTime}}</td>
+                    <td ng-switch="a.status">
+                        <span ng-switch-when="7" class="red-text">Missed</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    }
+</div>

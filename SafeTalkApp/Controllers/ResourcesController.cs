@@ -20,9 +20,10 @@ namespace SafeTalkApp.Controllers
         {
             if (User?.Identity != null && User.Identity.IsAuthenticated)
             {
+                ViewBag.Title = "Resources";
                 return View("~/Views/Resources/Index.cshtml");
             }
-
+            ViewBag.Title = "Resources";
             return View("~/Views/Resources/ReadOnlyIndex.cshtml");
         }
 
@@ -33,6 +34,7 @@ namespace SafeTalkApp.Controllers
         }
 
         // Add resource
+        [Authorize(Roles = "Admin,Doctor")]
         public JsonResult AddResource(ResourcesDTO model)
         {
             var response = _resourceService.AddResource(model);
@@ -40,6 +42,7 @@ namespace SafeTalkApp.Controllers
         }
 
         // Edit resource
+        [Authorize(Roles = "Admin,Doctor")]
         public JsonResult EditResource(ResourcesDTO model)
         {
             var response = _resourceService.EditResource(model);
@@ -47,6 +50,7 @@ namespace SafeTalkApp.Controllers
         }
 
         // Delete resource
+        [Authorize(Roles = "Admin,Doctor")]
         public JsonResult DeleteResource(int id)
         {
             var response = _resourceService.DeleteResource(id);

@@ -12,6 +12,7 @@ namespace SafeTalkApp.Models
         DbSet<ChatMessageTblModel> chat_message_tbl { get; set; }
         DbSet<DaysOfWeekTblModel> days_of_week_tbl { get; set; }
         DbSet<FAQsTblModel> faqs_tbl { get; set; }
+        DbSet<FeedbackTblModel> feedback_tbl { get; set; }
         DbSet<GenderTblModel> gender_tbl { get; set; }
         DbSet<PaymentTblModel> payment_tbl { get; set; }
         DbSet<PromptsTblModel> prompts_tbl { get; set; }

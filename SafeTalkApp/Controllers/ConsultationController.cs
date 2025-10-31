@@ -10,6 +10,7 @@ using System.Web.Mvc;
 
 namespace SafeTalkApp.Controllers
 {
+    [Authorize(Roles = "User,Patient,Doctor")]
     public class ConsultationController : Controller
     {
         private readonly IConsultationService _consultationService;
@@ -23,10 +24,12 @@ namespace SafeTalkApp.Controllers
         {
             if (User.IsInRole("Doctor"))
             {
+                ViewBag.Title = "My Consultations";
                 return View("~/Views/Consultation/Doctor/Index.cshtml");
             }
             else if (User.IsInRole("User") || User.IsInRole("Patient"))
             {
+                ViewBag.Title = "My Consultations";
                 return View("~/Views/Consultation/User/Index.cshtml");
             }
 
@@ -65,23 +68,26 @@ namespace SafeTalkApp.Controllers
 
                 var endDateTime = appointment.date + appointment.endTime;
                 ViewBag.AppointmentEndTime = endDateTime.ToString("o");
-
+                ViewBag.Title = "Consultation Chat Room";
                 return View(appointment);
             }
         }
 
         public ActionResult Unexisting()
         {
+            ViewBag.Title = "Consultation Not Found";
             return View();
         }
 
         public ActionResult Unauthorized()
         {
+            ViewBag.Title = "Unauthorized Access";
             return View();
         }
 
         public ActionResult Inactive()
         {
+            ViewBag.Title = "Inactive Consultation";
             return View();
         }
 

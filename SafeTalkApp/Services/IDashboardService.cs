@@ -10,5 +10,6 @@ namespace SafeTalkApp.Services
     public interface IDashboardService
     {
         ApiResponse<DashboardStatsDTO> GetDashboardStats(int userId, string role);
+        ApiResponse<AdminReportsDTO> GetAdminReports();
     }
 }

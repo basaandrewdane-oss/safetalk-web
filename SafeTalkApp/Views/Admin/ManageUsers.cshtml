@@ -1,0 +1,40 @@
+﻿@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+<div ng-controller="AdminController" ng-init="getUsers()" class="container">
+    <h4 class="">Manage Users</h4>
+    <!-- Table -->
+    <table id="usersTable" class="highlight responsive-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Verified</th>
+                <th>Date Created</th>
+                <th class="center-align">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="user in users">
+                <td>{{$index + 1}}</td>
+                <td>{{user.firstName}} {{user.lastName}}</td>
+                <td>{{user.email}}</td>
+                <td>
+                    <span ng-if="user.isVerified" class="green-text">Verified</span>
+                    <span ng-if="!user.isVerified" class="red-text">Unverified</span>
+                </td>
+                <td>{{user.dateCreated | dotNetDate | date:'medium'}}</td>
+                <td class="center-align">
+                    <button class="btn-small blue" ng-click="verifyUser(user)" ng-if="!user.isVerified">
+                        Verify
+                    </button>
+                    <button class="btn-small red" ng-click="deleteUser(user)">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
