@@ -9,7 +9,7 @@
         </div>
         <div class="divider"></div>
         <br />
-        <div ng-if="filteredAppointments.length > 0">
+        <div ng-show="appointments.length > 0">
             <div class="row">
                 <div class="input-field col s12 m3 l3">
                     <select ng-model="appointmentFilter">
@@ -17,6 +17,7 @@
                         <option selected value="active">Active Only</option>
                         <option value="includeRejected">Include Rejected</option>
                         <option value="includeCanceled">Include Canceled</option>
+                        <option value="includeMissed">Include Missed</option>
                     </select>
                     <label>Filter Appointments</label>
                 </div>
@@ -77,7 +78,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="center-align" ng-if="filteredAppointments.length === 0">
+        <div class="center-align" ng-show="appointments.length === 0">
             <h5 class="grey-text">No appointments available at this time.</h5>
         </div>
         <!-- Payment Modal -->

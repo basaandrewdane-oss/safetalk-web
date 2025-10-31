@@ -14,7 +14,7 @@
         }
     </div>
     <br />
-    <div ng-if="filteredResources.length > 0">
+    <div ng-show="resources.length > 0">
         <div class="container">
             <div class="row valign-wrapper">
                 <div class="input-field col s12 m6">
@@ -87,9 +87,10 @@
                 </li>
             </ul>
         </div>
-        <div ng-if="filteredResources.length === 0">
-            <h4 class="center-align grey-text">No available resources at this time.</h4>
-        </div>
+    </div>
+
+    <div ng-show="resources.length === 0">
+        <h4 class="center-align grey-text">No available resources at this time.</h4>
     </div>
 
 

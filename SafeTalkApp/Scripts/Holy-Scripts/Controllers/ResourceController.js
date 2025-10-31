@@ -1,5 +1,6 @@
 ﻿app.controller("ResourcesController", function ($scope, $filter, $timeout, $sce, ResourceService) {
     $scope.resources = [];
+    $scope.filteredResources = [];
     $scope.resource = {};
     $scope.formMode = "Add";
     $scope.categories = [];

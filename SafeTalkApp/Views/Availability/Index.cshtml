@@ -14,6 +14,7 @@
                     <th>Start</th>
                     <th>End</th>
                     <th>Slot Duration (min)</th>
+                    <th>Fee</th>
                     <th></th>
                 </tr>
             </thead>
@@ -40,6 +41,7 @@
                             <option ng-value="120">2 hours</option>
                         </select>
                     </td>
+                    <td><input type="number" ng-model="a.fee" /></td>
                     <td><button class="btn-flat red-text" ng-click="removeAvailability($index)">✖</button></td>
                 </tr>
             </tbody>
