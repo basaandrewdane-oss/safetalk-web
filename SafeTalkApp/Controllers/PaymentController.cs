@@ -100,5 +100,18 @@ namespace SafeTalkApp.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
+
+        public JsonResult RejectPayment(int appointmentID)
+        {
+            try
+            {
+                var response = _paymentService.RejectPayment(appointmentID);
+                return Json(response);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿app.controller("HomeController", function ($scope, $sce, HomeService) {
+﻿app.controller("HomeController", ["$scope", "$sce", "HomeService", function ($scope, $sce, HomeService) {
     $scope.doctors = {}
 
     $scope.getDoctors = function () {
@@ -53,4 +53,4 @@
     $scope.trustedTerms = function () {
         return $sce.trustAsHtml($scope.terms);
     }
-});
+}]);

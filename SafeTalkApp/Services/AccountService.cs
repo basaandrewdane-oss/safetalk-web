@@ -5,6 +5,7 @@ using SafeTalkApp.DTOs.Shared;
 using SafeTalkApp.Models;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Web;
@@ -34,12 +35,14 @@ namespace SafeTalkApp.Services
                     firstName = signUp.firstName,
                     middleName = signUp.middleName,
                     lastName = signUp.lastName,
-                    birthDate = signUp.birthDate,
+                    birthDate = DateTime.ParseExact(
+                        signUp.birthDate,
+                        "yyyy-MM-dd",
+                        CultureInfo.InvariantCulture),
                     genderID = signUp.genderID,
                     phoneNumber = signUp.phoneNumber,
                     licenseNumber = signUp.roleID == 2 ? signUp.licenseNumber : null,
                     specialization = signUp.roleID == 2 ? signUp.specialization : null,
-                    slotDuration = signUp.roleID == 2 ? signUp.slotDuration : null,
                     email = signUp.email,
                     password = BCrypt.Net.BCrypt.HashPassword(signUp.password),
                     isVerified = signUp.roleID == 2 ? false : true, // Doctors are not verified by default
@@ -73,6 +76,7 @@ namespace SafeTalkApp.Services
                             availabilityStart = TimeSpan.Parse(slot.availabilityStart),
                             availabilityEnd = TimeSpan.Parse(slot.availabilityEnd),
                             fee = slot.fee,
+                            slotDuration = slot.slotDuration,
                             dateCreated = DateTime.Now,
                             dateUpdated = DateTime.Now
                         };
@@ -83,8 +87,8 @@ namespace SafeTalkApp.Services
 
                 try
                 {
-                    //var verificationLink = $"https://localhost:44338/Account/VerifyEmail?token={HttpUtility.UrlEncode(token)}";
-                    //_emailService.SendVerificationEmail(signUp.email, verificationLink);
+                    var verificationLink = $"https://safe-talk.online/Account/VerifyEmail?token={HttpUtility.UrlEncode(token)}";
+                    _emailService.SendVerificationEmail(signUp.email, verificationLink);
                 }
                 catch (Exception emailEx)
                 {
@@ -109,7 +113,7 @@ namespace SafeTalkApp.Services
             catch (Exception ex)
             {
                 Console.WriteLine("EXCEPTION: " + ex.Message);
-                return ApiResponse<bool>.Fail("An unexpected error occurred. Please try again.");
+                return ApiResponse<bool>.Fail($"An unexpected error occurred. Please try again. Error: {ex.Message}");
             }
         }
 
@@ -126,7 +130,7 @@ namespace SafeTalkApp.Services
 
                 if (!user.isEmailVerified)
                 {
-                    return ApiResponse<UserDTO>.Fail("Please verify your email before logging in.");
+                    return ApiResponse<UserDTO>.Fail("Please verify your email before logging in. Check your email inbox or spam section.");
                 }
 
                 if (user.isVerified == false)
@@ -162,13 +166,15 @@ namespace SafeTalkApp.Services
             {
                 System.Diagnostics.Debug.WriteLine($"Login Error: {ex.Message}\n{ex.StackTrace}");
                 Console.WriteLine("EXCEPTION: " + ex.Message);
-                return ApiResponse<UserDTO>.Fail("An unexpected error occurred. Please try again.");
+                return ApiResponse<UserDTO>.Fail($"An unexpected error occurred. Please try again. {ex.Message}");
             }
         }
 
         public ClaimsIdentity GenerateUserIdentity(UserDTO user)
         {
-            var claims = new List<Claim>
+            try
+            {
+                var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.userID.ToString()),
                 new Claim(ClaimTypes.Name, user.email),
@@ -177,68 +183,88 @@ namespace SafeTalkApp.Services
                 new Claim("ProfilePictureUrl", user.profilePictureUrl ?? "/Uploads/ProfilePictures/default-avatar.png")
             };
 
-            return new ClaimsIdentity(claims, "ApplicationCookie");
+                return new ClaimsIdentity(claims, "ApplicationCookie");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("EXCEPTION: " + ex.Message);
+                return null;
+            }
         }
 
         public ApiResponse<VerifyEmailResultDTO> VerifyEmail(string token)
         {
-            Console.WriteLine("Incoming token: " + token);
-            var user = _db.user_tbl.FirstOrDefault(u => u.emailVerificationToken == token);
-
-            if (user == null)
+            try
             {
-                return ApiResponse<VerifyEmailResultDTO>.Fail("Invalid token.");
-            }
+                Console.WriteLine("Incoming token: " + token);
+                var user = _db.user_tbl.FirstOrDefault(u => u.emailVerificationToken == token);
 
-            if (user.emailVerificationExpiry < DateTime.Now)
-            {
-                return ApiResponse<VerifyEmailResultDTO>.Fail(
-                    "Token has expired. Please request a new verification email.",
-                    new VerifyEmailResultDTO { IsVerified = false, IsExpired = true, Email = user.email }
+                if (user == null)
+                {
+                    return ApiResponse<VerifyEmailResultDTO>.Fail("Invalid token.");
+                }
+
+                if (user.emailVerificationExpiry < DateTime.Now)
+                {
+                    return ApiResponse<VerifyEmailResultDTO>.Fail(
+                        "Token has expired. Please request a new verification email.",
+                        new VerifyEmailResultDTO { IsVerified = false, IsExpired = true, Email = user.email }
+                    );
+                }
+
+                user.isEmailVerified = true;
+                user.emailVerificationToken = null;
+                _db.SaveChanges();
+
+                return ApiResponse<VerifyEmailResultDTO>.Ok(
+                    new VerifyEmailResultDTO { IsVerified = true, IsExpired = false, Email = user.email },
+                    "Email verified successfully."
                 );
             }
-
-            user.isEmailVerified = true;
-            user.emailVerificationToken = null;
-            _db.SaveChanges();
-
-            return ApiResponse<VerifyEmailResultDTO>.Ok(
-                new VerifyEmailResultDTO { IsVerified = true, IsExpired = false, Email = user.email },
-                "Email verified successfully."
-            );
+            catch (Exception ex)
+            {
+                return ApiResponse<VerifyEmailResultDTO>.Fail($"An unexpected error occurred. Please try again. {ex.Message}");
+            }
         }
 
         public ApiResponse<ResendVerficationResultDTO> ResendVerificationEmail(string email)
         {
-            var user = _db.user_tbl.FirstOrDefault(u => u.email == email);
-
-            if (user == null)
+            try
             {
-                return ApiResponse<ResendVerficationResultDTO>.Fail("User not found.");
+                var user = _db.user_tbl.FirstOrDefault(u => u.email == email);
+
+                if (user == null)
+                {
+                    return ApiResponse<ResendVerficationResultDTO>.Fail("User not found.");
+                }
+
+                if (user.isEmailVerified)
+                {
+                    return ApiResponse<ResendVerficationResultDTO>.Fail("Email is already verified.");
+                }
+
+                // Generate a new token + expiry
+                var newToken = Guid.NewGuid().ToString();
+                user.emailVerificationToken = newToken;
+                user.emailVerificationExpiry = DateTime.Now.AddHours(24);
+                user.dateUpdated = DateTime.Now;
+
+                _db.SaveChanges();
+
+                var verificationLink = $"https://safe-talk.online/Account/VerifyEmail?token={newToken}";
+                _emailService.SendVerificationEmail(user.email, verificationLink);
+
+                return ApiResponse<ResendVerficationResultDTO>.Ok(new ResendVerficationResultDTO
+                {
+                    Email = user.email,
+                    Expiry = user.emailVerificationExpiry
+                },
+                "A new verification email has been sent. Please check your inbox.");
             }
-
-            if (user.isEmailVerified)
+            catch (Exception ex)
             {
-                return ApiResponse<ResendVerficationResultDTO>.Fail("Email is already verified.");
+                return ApiResponse<ResendVerficationResultDTO>.Fail($"Error resending verification email. Please try again later. {ex.Message}");
             }
-
-            // Generate a new token + expiry
-            var newToken = Guid.NewGuid().ToString();
-            user.emailVerificationToken = newToken;
-            user.emailVerificationExpiry = DateTime.Now.AddHours(24);
-            user.dateUpdated = DateTime.Now;
-
-            _db.SaveChanges();
-
-            var verificationLink = $"https://localhost/Account/VerifyEmail?token={newToken}";
-            _emailService.SendVerificationEmail(user.email, verificationLink);
-
-            return ApiResponse<ResendVerficationResultDTO>.Ok(new ResendVerficationResultDTO
-            {
-                Email = user.email,
-                Expiry = user.emailVerificationExpiry
-            },
-            "A new verification email has been sent. Please check your inbox.");
         }
 
         public ApiResponse<IEnumerable<object>> GetRoles()
@@ -251,9 +277,9 @@ namespace SafeTalkApp.Services
 
                 return ApiResponse<IEnumerable<object>>.Ok(roles);
             }
-            catch
+            catch (Exception ex)
             {
-                return ApiResponse<IEnumerable<object>>.Fail("Error retrieving roles");
+                return ApiResponse<IEnumerable<object>>.Fail("Error retrieving roles " + ex.Message);
             }
         }
 
@@ -267,9 +293,9 @@ namespace SafeTalkApp.Services
 
                 return ApiResponse<IEnumerable<object>>.Ok(genders);
             }
-            catch
+            catch (Exception ex)
             {
-                return ApiResponse<IEnumerable<object>>.Fail("Error retrieving genders");
+                return ApiResponse<IEnumerable<object>>.Fail($"Error retrieving genders: {ex.Message}");
             }
         }
 
@@ -283,9 +309,58 @@ namespace SafeTalkApp.Services
 
                 return ApiResponse<IEnumerable<object>>.Ok(days);
             }
-            catch
+            catch (Exception ex)
             {
-                return ApiResponse<IEnumerable<object>>.Fail("Error retrieving days of the week");
+                return ApiResponse<IEnumerable<object>>.Fail($"Error retrieving days of the week: {ex.Message}");
+            }
+        }
+
+        public ApiResponse<bool> ForgotPassword(string email)
+        {
+            var user = _db.user_tbl.FirstOrDefault(u => u.email == email);
+            if (user == null)
+            {
+                return ApiResponse<bool>.Fail("User not found.");
+            }
+
+            try
+            {
+                var resetToken = Guid.NewGuid().ToString();
+                user.emailVerificationToken = resetToken;
+                user.emailVerificationExpiry = DateTime.Now.AddHours(1);
+                _db.SaveChanges();
+                var resetLink = $"https://safe-talk.online/Account/ResetPassword?token={HttpUtility.UrlEncode(resetToken)}";
+                _emailService.SendPasswordResetEmail(user.email, resetLink);
+                return ApiResponse<bool>.Ok(true, "Password reset email sent. Please check your inbox.");
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<bool>.Fail($"Error sending password reset email: {ex.Message}");
+            }
+        }
+
+        public ApiResponse<bool> ResetPassword(ResetPasswordDTO resetData)
+        {
+            var user = _db.user_tbl.FirstOrDefault(u => u.emailVerificationToken == resetData.token);
+            if (user == null)
+            {
+                return ApiResponse<bool>.Fail("Invalid token.");
+            }
+            if (user.emailVerificationExpiry < DateTime.Now)
+            {
+                return ApiResponse<bool>.Fail("Token has expired. Please request a new password reset email.");
+            }
+            try
+            {
+                user.password = BCrypt.Net.BCrypt.HashPassword(resetData.newPassword);
+                user.emailVerificationToken = null;
+                user.emailVerificationExpiry = null;
+                _db.SaveChanges();
+                return ApiResponse<bool>.Ok(true, "Password has been reset successfully.");
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<bool>.Fail($"Error resetting password: {ex.Message}");
             }
         }
     }

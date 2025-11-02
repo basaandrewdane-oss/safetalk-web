@@ -1,31 +1,41 @@
-﻿app.controller("PaymentController", function ($scope, $timeout, $rootScope, PaymentService) {
+﻿app.controller("PaymentController", ["$scope", "$timeout", "$rootScope", "PaymentService", function ($scope, $timeout, $rootScope, PaymentService) {
     // ===== For user payment =====
 
     $rootScope.payWithPayPal = function (appointment) {
-        PaymentService.createPayPalOrder(appointment.appointmentID).then(function (result) {
-            if (result.success) {
-                // Show loading swal before redirect
-                Swal.fire({
-                    title: 'Redirecting to PayPal...',
-                    text: 'Please wait while we connect you to the payment gateway.',
-                    allowOutsideClick: false,
-                    allowEscapeKey: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-
-                // Redirect to PayPal
-                window.location.href = result.data;
-
-            } else {
-                Swal.fire("Error", result.message, "error");
+        // Show loading swal immediately
+        Swal.fire({
+            title: 'Preparing PayPal payment...',
+            text: 'Please wait while we create your order.',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: () => {
+                Swal.showLoading();
             }
-        }).catch(function (err) {
-            Swal.fire("Error", "Something went wrong while creating the PayPal order.", "error");
-            console.log(err);
         });
+
+        // Then create the order
+        PaymentService.createPayPalOrder(appointment.appointmentID)
+            .then(function (result) {
+                if (result.success) {
+                    // Update loading message before redirect
+                    Swal.update({
+                        title: 'Redirecting to PayPal...',
+                        text: 'Please wait while we connect you to the payment gateway.',
+                        showConfirmButton: false,
+                    });
+
+                    // Redirect to PayPal
+                    window.location.href = result.data;
+                } else {
+                    Swal.fire("Error", result.message, "error");
+                }
+            })
+            .catch(function (err) {
+                Swal.fire("Error", "Something went wrong while creating the PayPal order.", "error");
+                console.log(err);
+            });
     };
+
 
     $rootScope.openPaymentModal = function (appointment) {
         $scope.selectedAppointment = appointment;
@@ -131,4 +141,40 @@
         });
     }
 
-});
+    $scope.rejectPayment = function (appointmentID) {
+        Swal.fire({
+            title: "Reject Payment",
+            text: "Are you sure you want to reject this payment?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, reject",
+            cancelButtonText: "No, cancel"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                PaymentService.rejectPayment(appointmentID).then(function (result) {
+                    if (result.success) {
+                        Swal.fire("Success", "Payment rejected successfully.", "success");
+                        $timeout(function () {
+                            $scope.getPayments(); // Refresh the list
+                            const modalElem = document.getElementById('imageModal');
+
+                            if (!modalElem.classList.contains('modal-initialized')) {
+                                M.Modal.init(modalElem);
+                                modalElem.classList.add('modal-initialized');
+                            }
+
+                            const instance = M.Modal.getInstance(modalElem);
+                            instance.close(); // Close the image modal after verification
+                        });
+                    } else {
+                        Swal.fire("Error", result.message, "error");
+                    }
+                }, function (error) {
+                    console.error("Verification error", error);
+                    Swal.fire("Error", "Unable to verify payment. Please try again.", "error");
+                });
+            }
+        });
+    }
+
+}]);

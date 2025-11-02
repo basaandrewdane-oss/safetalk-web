@@ -1,4 +1,4 @@
-﻿app.controller("AdminController", function ($scope, $timeout, AdminService, $sce) {
+﻿app.controller("AdminController", ["$scope", "$timeout", "AdminService", "$sce", function ($scope, $timeout, AdminService, $sce) {
     $scope.pendingDoctors = [];
     $scope.faqs = [];
     $scope.newFaq = {};
@@ -320,4 +320,5 @@
             }
         });
     };
-});
+}
+]);

@@ -33,7 +33,7 @@ namespace SafeTalkApp.Services
                                           d.day,
                                           a.availabilityStart,
                                           a.availabilityEnd,
-                                          u.slotDuration,
+                                          a.slotDuration,
                                           a.fee
                                       })
                                       .ToList() // <-- materialize here
@@ -65,29 +65,10 @@ namespace SafeTalkApp.Services
             {
                 var now = DateTime.Now;
 
-                // Get user record (since slotDuration is stored in user_tbl)
-                var user = _db.user_tbl.FirstOrDefault(u => u.userID == userID);
-                if (user == null)
-                    return ApiResponse<bool>.Fail("User not found.");
-
                 // Get existing availability for this user
                 var existingList = _db.user_availability_tbl
                     .Where(a => a.userID == userID)
                     .ToList();
-
-                // --- Handle slot duration update ---
-                // (Take slotDuration from the first record if multiple provided)
-                if (availabilities != null && availabilities.Any())
-                {
-                    var newSlotDuration = availabilities.FirstOrDefault()?.slotDuration ?? user.slotDuration;
-
-                    // Only update if changed
-                    if (newSlotDuration > 0 && newSlotDuration != user.slotDuration)
-                    {
-                        user.slotDuration = newSlotDuration;
-                        user.dateUpdated = now;
-                    }
-                }
 
                 // --- Handle availabilities ---
                 foreach (var dto in availabilities)
@@ -100,6 +81,7 @@ namespace SafeTalkApp.Services
                         existing.availabilityStart = TimeSpan.Parse(dto.availabilityStart);
                         existing.availabilityEnd = TimeSpan.Parse(dto.availabilityEnd);
                         existing.fee = dto.fee > 0 ? dto.fee : existing.fee;
+                        existing.slotDuration = dto.slotDuration > 0 ? dto.slotDuration : existing.slotDuration;
                         existing.dateUpdated = now;
                     }
                     else

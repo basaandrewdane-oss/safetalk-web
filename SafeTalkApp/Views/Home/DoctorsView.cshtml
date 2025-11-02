@@ -12,7 +12,7 @@
     <div class="row">
         <div class="col s12">
             <!-- Neutral heading -->
-            <h4 class="grey-text text-darken-4 center">Health Professionals</h4>
+            <h4 class="pink-text text-lighten-2 center">Health Professionals</h4>
         </div>
     </div>
 
@@ -22,7 +22,7 @@
             <div class="card @*teal lighten-2 white-text*@ z-depth-2">
                 <div class="card-content">
                     <!-- Circular avatar -->
-                    <img src="{{d.profilePictureUrl}}" alt="Doctor 1"
+                    <img src="{{d.profilePictureUrl}}" alt="Doctor"
                          class="circle responsive-img"
                          style="width:100px; height:100px; object-fit:cover; margin-bottom:15px;">
                     <!-- Doctor Name -->
@@ -67,7 +67,7 @@
             </div>
         </div>
         <div class="center-align" ng-if="doctors.length === 0">
-            <h4 class="grey-text">No available doctors yet.</h4>
+            <p class="grey-text">No available doctors at this time.</p>
         </div>
     </div>
 </main>

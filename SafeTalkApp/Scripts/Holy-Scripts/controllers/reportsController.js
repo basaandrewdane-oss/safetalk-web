@@ -1,4 +1,4 @@
-﻿app.controller('ReportsController', function ($scope, $timeout, reportsService) {
+﻿app.controller('ReportsController', ["$scope", "$timeout", "reportsService", function ($scope, $timeout, reportsService) {
 
     $scope.getConsultationReport = function () {
         var getConsultationReport = reportsService.getConsultationReport();
@@ -171,4 +171,4 @@
         });
     }
 
-})
+}])

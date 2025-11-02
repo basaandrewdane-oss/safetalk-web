@@ -1,4 +1,4 @@
-﻿app.controller('AvailabilityController', function ($scope, AccountService, AvailabilityService) {
+﻿app.controller('AvailabilityController', ["$scope", "AccountService", "AvailabilityService", function ($scope, AccountService, AvailabilityService) {
     $scope.availabilities = [];
     $scope.daysOfWeek = [];
 
@@ -85,4 +85,5 @@
     // Initialize
     $scope.loadAvailability();
     $scope.getDaysOfWeek();
-});
+}
+]);

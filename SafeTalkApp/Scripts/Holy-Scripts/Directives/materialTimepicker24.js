@@ -1,4 +1,4 @@
-﻿app.directive('materialTimepicker24', function ($timeout) {
+﻿app.directive('materialTimepicker24', ['$timeout', function ($timeout) {
     return {
         restrict: 'A',
         require: 'ngModel',
@@ -60,4 +60,4 @@
             };
         }
     };
-});
+}]);

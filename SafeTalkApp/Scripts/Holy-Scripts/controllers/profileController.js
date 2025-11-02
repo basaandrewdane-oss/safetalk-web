@@ -1,4 +1,4 @@
-﻿app.controller('ProfileController', function ($scope, $timeout, ProfileService) {
+﻿app.controller('ProfileController', ["$scope", "$timeout", "ProfileService", function ($scope, $timeout, ProfileService) {
     $scope.user = {};
     $scope.selectedFile = null;
 
@@ -56,4 +56,4 @@
     });
 
     $scope.loadProfile();
-});
+}]);

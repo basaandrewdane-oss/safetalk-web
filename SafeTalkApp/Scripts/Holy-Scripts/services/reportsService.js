@@ -1,4 +1,4 @@
-﻿app.service('reportsService', function ($http, ApiHelper) {
+﻿app.service('reportsService', ['$http', 'ApiHelper', function ($http, ApiHelper) {
 
     this.getConsultationReport = function () {
         return ApiHelper.handleApiResponse(
@@ -31,4 +31,4 @@
             $http.get('/Reports/GetMissedAppointments')
         )
     }
-})
+}])

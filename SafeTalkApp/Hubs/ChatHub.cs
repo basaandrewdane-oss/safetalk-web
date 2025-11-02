@@ -78,6 +78,11 @@ namespace SafeTalkApp.Hubs
             Clients.Group($"appointment_{appointmentId}").broadcastMessage(senderName, message);
         }
 
+        public void BroadcastTranscript(int appointmentId, string transcript)
+        {
+            Clients.Group($"appointment_{appointmentId}").receiveTranscriptUpdate(transcript);
+        }
+
         // ----------------------
         // Group Joining
         // ----------------------
@@ -215,8 +220,8 @@ namespace SafeTalkApp.Hubs
 
             var appointment = db.appointments_tbl.FirstOrDefault(a => a.appointmentID.ToString() == appointmentId);
 
-            if (appointment.doctorID != userId)
-                throw new HubException("Only the doctor can end the appointment early");
+            if (appointment.doctorID != userId && appointment.patientID != userId)
+                throw new HubException("Only the doctor or user can end the appointment early");
 
             appointment.status = 6; // Completed
             appointment.dateUpdated = DateTime.Now;

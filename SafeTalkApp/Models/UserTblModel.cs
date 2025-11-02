@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
@@ -11,12 +12,12 @@ namespace SafeTalkApp.Models
         public string firstName { get; set; }
         public string middleName { get; set; }
         public string lastName { get; set; }
+        [Column(TypeName = "date")]
         public DateTime birthDate { get; set; }
         public int genderID { get; set; }
         public string phoneNumber { get; set; }
         public string licenseNumber { get; set; }
         public string specialization { get; set; }
-        public int? slotDuration { get; set; } // in minutes, nullable for non-doctors
         public string email { get; set; }
         public string password { get; set; }
         public string profilePictureUrl { get; set; }

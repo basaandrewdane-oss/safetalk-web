@@ -13,6 +13,7 @@ namespace SafeTalkApp.Models
         public TimeSpan availabilityStart { get; set; }
         public TimeSpan availabilityEnd { get; set; }
         public decimal fee { get; set; }
+        public int? slotDuration { get; set; }
         public DateTime dateCreated { get; set; }
         public DateTime dateUpdated { get; set; }
     }

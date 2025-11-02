@@ -1,5 +1,7 @@
+using Microsoft.Extensions.Logging;
 using SafeTalkApp.Models;
 using SafeTalkApp.Services;
+using Serilog;
 using System;
 using System.Configuration;
 using System.Net.Http;
@@ -53,7 +55,6 @@ namespace SafeTalkApp
             container.RegisterType<IHomeService, HomeService>();
             container.RegisterType<IAdminService, AdminService>();
             container.RegisterType<IAppointmentService, AppointmentService>();
-            container.RegisterType<IChatBotService, ChatBotService>();
             container.RegisterType<IConsultationService, ConsultationService>();
             container.RegisterType<IPaymentService, PaymentService>();
             container.RegisterType<IPayPalService, PayPalService>();
@@ -67,7 +68,22 @@ namespace SafeTalkApp
             var httpClient = new HttpClient();
             container.RegisterInstance<HttpClient>(httpClient);
 
-            
+            // In UnityConfig.RegisterTypes
+            var loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddSerilog(dispose: false); // don't dispose global Serilog
+            });
+
+            // Register ILogger<T> properly
+            container.RegisterFactory(typeof(ILogger<>), null, (c, type, name) =>
+            {
+                Type genericType = type; // 'type' is already ILogger<T>
+                var method = typeof(LoggerFactoryExtensions)
+                    .GetMethod(nameof(LoggerFactoryExtensions.CreateLogger), new Type[] { typeof(ILoggerFactory) })
+                    .MakeGenericMethod(genericType.GetGenericArguments()[0]);
+                return method.Invoke(null, new object[] { loggerFactory });
+            });
+
             string apiKey = ConfigurationManager.AppSettings["CohereApiKey"];
             container.RegisterInstance<string>("CohereApiKey", apiKey);
 

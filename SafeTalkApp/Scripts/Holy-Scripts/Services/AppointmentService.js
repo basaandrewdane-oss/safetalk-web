@@ -1,4 +1,4 @@
-﻿app.service("AppointmentService", function ($http, ApiHelper) {
+﻿app.service("AppointmentService", ['$http', 'ApiHelper', function ($http, ApiHelper) {
 
     this.getAppointmentStatus = function (appointmentID) {
         return ApiHelper.handleApiResponse(
@@ -61,4 +61,4 @@
             $http.post("/Appointment/RejectAppointment", data)
         )
     }
-});
+}]);

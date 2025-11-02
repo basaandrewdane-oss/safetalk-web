@@ -1,4 +1,5 @@
-﻿using SafeTalkApp.DTOs.Shared;
+﻿using MySql.Data.MySqlClient;
+using SafeTalkApp.DTOs.Shared;
 using SafeTalkApp.Services;
 using System;
 using System.Collections.Generic;

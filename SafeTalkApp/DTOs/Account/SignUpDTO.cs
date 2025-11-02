@@ -10,7 +10,7 @@ namespace SafeTalkApp.DTOs.Account
         public string firstName { get; set; }
         public string middleName { get; set; }
         public string lastName { get; set; }
-        public DateTime birthDate { get; set; }
+        public string birthDate { get; set; }
         public int genderID { get; set; }
         public string phoneNumber { get; set; }
         public string licenseNumber { get; set; }

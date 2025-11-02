@@ -14,5 +14,6 @@ namespace SafeTalkApp.Services
         ApiResponse<PaymentReviewDTO> ReviewPayPalOrder(string token, int appointmentID);
         ApiResponse<PaymentProcessingDTO> CapturePayPalOrder(string token, int appointmentID);
         ApiResponse<bool> VerifyPayment(int appointmentID);
+        ApiResponse<bool> RejectPayment(int appointmentID);
     }
 }

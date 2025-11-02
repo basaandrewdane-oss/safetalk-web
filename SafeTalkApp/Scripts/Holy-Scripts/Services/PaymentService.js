@@ -1,4 +1,4 @@
-﻿app.service("PaymentService", function ($http, ApiHelper) {
+﻿app.service("PaymentService", ['$http', 'ApiHelper', function ($http, ApiHelper) {
     // ===== User Payment =====
     this.submitPayment = function (formData) {
         return ApiHelper.handleApiResponse(
@@ -25,4 +25,10 @@
             $http.post("/Payment/VerifyPayment", { appointmentID: appointmentID })
         );
     }
-});
+
+    this.rejectPayment = function(appointmentID) {
+        return ApiHelper.handleApiResponse(
+            $http.post("/Payment/RejectPayment", { appointmentID: appointmentID })
+        );
+    }
+}]);

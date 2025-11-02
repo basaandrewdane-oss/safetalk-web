@@ -1,4 +1,4 @@
-﻿app.controller("DashboardController", function ($scope, DashboardService) {
+﻿app.controller("DashboardController", ["$scope", "DashboardService", function ($scope, DashboardService) {
 
     // For user and doctor
     $scope.stats = {
@@ -182,4 +182,4 @@
             options: { plugins: { legend: { position: "bottom" } } }
         });
     };
-})
+}])

@@ -71,7 +71,7 @@ namespace SafeTalkApp.Services
             try
             {
                 var user = _db.user_tbl.FirstOrDefault(u => u.userID == userID);
-                var slotDuration = user?.slotDuration ?? 30; // fallback to 30 mins
+                //var slotDuration = user?.slotDuration ?? 30; // fallback to 30 mins
 
                 var availability = (from a in _db.user_availability_tbl
                                     join d in _db.days_of_week_tbl on a.dayID equals d.dayID
@@ -84,7 +84,8 @@ namespace SafeTalkApp.Services
                                         d.day,
                                         a.availabilityStart,
                                         a.availabilityEnd,
-                                        a.fee
+                                        a.fee,
+                                        a.slotDuration
                                     }).ToList();
 
                 var result = availability.Select(a => new DoctorAvailabilityDTO
@@ -94,7 +95,7 @@ namespace SafeTalkApp.Services
                     dayID = a.dayID,
                     day = a.day,
                     fee = a.fee,
-                    slots = GenerateTimeSlots(a.availabilityStart, a.availabilityEnd, slotDuration)
+                    slots = GenerateTimeSlots(a.availabilityStart, a.availabilityEnd, (int)a.slotDuration)
                 }).ToList();
 
                 return ApiResponse<IEnumerable<DoctorAvailabilityDTO>>.Ok(result);
@@ -274,21 +275,20 @@ namespace SafeTalkApp.Services
                 appointment.dateUpdated = DateTime.Now;
                 _db.SaveChanges();
 
-
-                //try
-                //{
-                //    var doctor = _db.user_tbl.Find(appointment.doctorID);
-                //    var patient = _db.user_tbl.Find(appointment.patientID);
-                //    if (doctor != null && patient != null)
-                //    {
-                //        _emailService.SendDoctorAppointmentCancellation(doctor, patient, appointment);
-                //        _emailService.SendPatientAppointmentCancellation(patient, doctor, appointment);
-                //    }
-                //}
-                //catch (Exception emailEx)
-                //{
-                //    System.Diagnostics.Debug.WriteLine("Error sending cancellation emails: " + emailEx.Message);
-                //}
+                try
+                {
+                    var doctor = _db.user_tbl.Find(appointment.doctorID);
+                    var patient = _db.user_tbl.Find(appointment.patientID);
+                    if (doctor != null && patient != null)
+                    {
+                        _emailService.SendDoctorAppointmentCancellation(doctor, patient, appointment);
+                        _emailService.SendPatientAppointmentCancellation(patient, doctor, appointment);
+                    }
+                }
+                catch (Exception emailEx)
+                {
+                    System.Diagnostics.Debug.WriteLine("Error sending cancellation emails: " + emailEx.Message);
+                }
 
                 return ApiResponse<bool>.Ok(true, "Appointment cancelled successfully.");
             }
@@ -347,21 +347,21 @@ namespace SafeTalkApp.Services
                 _db.SaveChanges();
 
                 // Send confirmation email to patient
-                //try
-                //{
-                //    var patient = _db.user_tbl.Find(appointment.patientID);
-                //    var doctor = _db.user_tbl.Find(appointment.doctorID);
+                try
+                {
+                    var patient = _db.user_tbl.Find(appointment.patientID);
+                    var doctor = _db.user_tbl.Find(appointment.doctorID);
 
-                //    if (patient != null && doctor != null)
-                //    {
-                //        _emailService.SendPatientAppointmentApproved(patient, doctor, appointment);
-                //        _emailService.SendDoctorAppointmentApproved(doctor, patient, appointment);
-                //    }
-                //}
-                //catch (Exception emailEx)
-                //{
-                //    System.Diagnostics.Debug.WriteLine("Error sending approval emails: " + emailEx.Message);
-                //}
+                    if (patient != null && doctor != null)
+                    {
+                        _emailService.SendPatientAppointmentApproved(patient, doctor, appointment);
+                        _emailService.SendDoctorAppointmentApproved(doctor, patient, appointment);
+                    }
+                }
+                catch (Exception emailEx)
+                {
+                    System.Diagnostics.Debug.WriteLine("Error sending approval emails: " + emailEx.Message);
+                }
 
                 return ApiResponse<bool>.Ok(true, "Appointment approved and confirmation email sent.");
             }
@@ -385,20 +385,20 @@ namespace SafeTalkApp.Services
                 appointment.dateUpdated = DateTime.Now;
                 _db.SaveChanges();
                 // Send rejection email to patient and doctor
-                //try
-                //{
-                //    var patient = _db.user_tbl.Find(appointment.patientID);
-                //    var doctor = _db.user_tbl.Find(appointment.doctorID);
-                //    if (patient != null && doctor != null)
-                //    {
-                //        _emailService.SendPatientAppointmentRejected(patient, doctor, appointment);
-                //        _emailService.SendDoctorAppointmentRejected(doctor, patient, appointment);
-                //    }
-                //}
-                //catch (Exception emailEx)
-                //{
-                //    System.Diagnostics.Debug.WriteLine("Error sending rejection emails: " + emailEx.Message);
-                //}
+                try
+                {
+                    var patient = _db.user_tbl.Find(appointment.patientID);
+                    var doctor = _db.user_tbl.Find(appointment.doctorID);
+                    if (patient != null && doctor != null)
+                    {
+                        _emailService.SendPatientAppointmentRejected(patient, doctor, appointment);
+                        _emailService.SendDoctorAppointmentRejected(doctor, patient, appointment);
+                    }
+                }
+                catch (Exception emailEx)
+                {
+                    System.Diagnostics.Debug.WriteLine("Error sending rejection emails: " + emailEx.Message);
+                }
                 return ApiResponse<bool>.Ok(true, "Appointment rejected and notification email sent.");
             }
             catch (Exception ex)

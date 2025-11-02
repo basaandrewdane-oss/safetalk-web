@@ -1,4 +1,4 @@
-﻿app.service("ResourceService", function ($http, ApiHelper) {
+﻿app.service("ResourceService", ['$http', 'ApiHelper', function ($http, ApiHelper) {
 
     this.loadResources = function () {
         return ApiHelper.handleApiResponse(
@@ -26,4 +26,4 @@
         );
     }
 
-});
+}]);

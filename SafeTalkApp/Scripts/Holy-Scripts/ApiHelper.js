@@ -1,4 +1,4 @@
-﻿app.factory("ApiHelper", function ($q) {
+﻿app.factory("ApiHelper", ['$q', function ($q) {
     function handleApiResponse(promise) {
         return promise.then(function (response) {
             var res = response.data;
@@ -15,4 +15,4 @@
     return {
         handleApiResponse: handleApiResponse
     };
-});
+}]);

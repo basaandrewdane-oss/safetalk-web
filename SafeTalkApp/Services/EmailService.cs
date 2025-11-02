@@ -77,6 +77,17 @@ namespace SafeTalkApp.Services
                 IsBodyHtml = true
             });
         }
+        public void SendPasswordResetEmail(string toEmail, string resetLink)
+        {
+            SendEmail(new EmailMessageDTO
+            {
+                To = toEmail,
+                Subject = "Password Reset Request",
+                Body = $"You can reset your password by clicking the following link: <a href='{resetLink}'>Reset Password</a>" +
+                $"<p>This link will expire in 1 hour.</p>",
+                IsBodyHtml = true
+            });
+        }
 
 
         // Appointment Emails
@@ -233,7 +244,7 @@ namespace SafeTalkApp.Services
                     <strong>Doctor:</strong> Dr. {doctor?.firstName} {doctor?.lastName}<br/>
                     <strong>Amount:</strong> ₱{payment.amount:N2}<br/>
                     <strong>Date Submitted:</strong> {payment.paymentDate:MMMM dd, yyyy hh:mm tt}<br/>
-                    <strong>Status:</strong> {payment.status}
+                    <strong>Status:</strong> {(payment.status == PaymentStatus.Pending ? "Pending" : "Completed")}
                 </p>
                 <p>
                     You can log in to the admin dashboard to review and verify this payment.<br/>
@@ -252,6 +263,8 @@ namespace SafeTalkApp.Services
         public void SendPaymentVerifiedEmailToPatient(UserTblModel patient, UserTblModel doctor, AppointmentsTblModel appointment, PaymentTblModel payment)
         {
             var subject = "Your Payment Has Been Verified";
+            var startDateTime = DateTime.Today.Add(appointment.startTime);
+            var endDateTime = DateTime.Today.Add(appointment.endTime);
             var body = $@"
             <p>Dear {patient.firstName},</p>
             <p>
@@ -260,7 +273,7 @@ namespace SafeTalkApp.Services
             </p>
             <p>
                 <strong>Appointment Date:</strong> {appointment.date:MMMM dd, yyyy}<br/>
-                <strong>Time:</strong> {appointment.startTime:hh\\:mm tt} – {appointment.endTime:hh\\:mm tt}<br/>
+                <strong>Time:</strong> {startDateTime:hh:mm tt} – {endDateTime:hh:mm tt}<br/>
                 <strong>Amount Paid:</strong> ₱{payment.amount:N2}<br/>
                 <strong>Status:</strong> Verified
             </p>
@@ -280,6 +293,8 @@ namespace SafeTalkApp.Services
         public void SendPaymentVerifiedEmailToDoctor(UserTblModel doctor, UserTblModel patient, AppointmentsTblModel appointment, PaymentTblModel payment)
         {
             var subject = "A Patient’s Payment Has Been Verified";
+            var startDateTime = DateTime.Today.Add(appointment.startTime);
+            var endDateTime = DateTime.Today.Add(appointment.endTime);
             var body = $@"
             <p>Dear Dr. {doctor.firstName},</p>
             <p>
@@ -288,12 +303,72 @@ namespace SafeTalkApp.Services
             </p>
             <p>
                 <strong>Appointment Date:</strong> {appointment.date:MMMM dd, yyyy}<br/>
-                <strong>Time:</strong> {appointment.startTime:hh\\:mm tt} – {appointment.endTime:hh\\:mm tt}<br/>
+                <strong>Time:</strong> {startDateTime:hh:mm tt} – {endDateTime:hh:mm tt}<br/>
                 <strong>Amount:</strong> ₱{payment.amount:N2}<br/>
                 <strong>Status:</strong> Paid and Confirmed
             </p>
             <p>
                 You may now prepare for the consultation.
+            </p>
+            <p>– SafeTalk Team</p>";
+
+            SendEmail(new EmailMessageDTO
+            {
+                To = doctor.email,
+                Subject = subject,
+                Body = body,
+                IsBodyHtml = true
+            });
+        }
+        public void SendPaymentRejectedEmailToPatient(UserTblModel patient, UserTblModel doctor, AppointmentsTblModel appointment, PaymentTblModel payment)
+        {
+            var subject = "Your Payment Has Been Rejected";
+            var startDateTime = DateTime.Today.Add(appointment.startTime);
+            var endDateTime = DateTime.Today.Add(appointment.endTime);
+            var body = $@"
+            <p>Dear {patient.firstName},</p>
+            <p>
+                Your payment for your consultation with Dr. {doctor.firstName} {doctor.lastName}
+                has been rejected.
+            </p>
+            <p>
+                <strong>Appointment Date:</strong> {appointment.date:MMMM dd, yyyy}<br/>
+                <strong>Time:</strong> {startDateTime:hh:mm tt} – {endDateTime:hh:mm tt}<br/>
+                <strong>Amount Paid:</strong> ₱{payment.amount:N2}<br/>
+                <strong>Status:</strong> Rejected
+            </p>
+            <p>
+                You can book another appointment.
+            </p>
+            <p>– SafeTalk Team</p>";
+
+            SendEmail(new EmailMessageDTO
+            {
+                To = patient.email,
+                Subject = subject,
+                Body = body,
+                IsBodyHtml = true
+            });
+        }
+        public void SendPaymentRejectedEmailToDoctor(UserTblModel doctor, UserTblModel patient, AppointmentsTblModel appointment, PaymentTblModel payment)
+        {
+            var subject = "A Patient’s Payment Has Been Rejected";
+            var startDateTime = DateTime.Today.Add(appointment.startTime);
+            var endDateTime = DateTime.Today.Add(appointment.endTime);
+            var body = $@"
+            <p>Dear Dr. {doctor.firstName},</p>
+            <p>
+                The payment for your upcoming appointment with
+                {patient.firstName} {patient.lastName} has been rejected.
+            </p>
+            <p>
+                <strong>Appointment Date:</strong> {appointment.date:MMMM dd, yyyy}<br/>
+                <strong>Time:</strong> {startDateTime:hh:mm tt} – {endDateTime:hh:mm tt}<br/>
+                <strong>Amount:</strong> ₱{payment.amount:N2}<br/>
+                <strong>Status:</strong> Rejected
+            </p>
+            <p>
+                You may wait for another appointment.
             </p>
             <p>– SafeTalk Team</p>";
 

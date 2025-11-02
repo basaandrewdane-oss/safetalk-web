@@ -18,5 +18,7 @@ namespace SafeTalkApp.Services
         ApiResponse<IEnumerable<object>> GetRoles();
         ApiResponse<IEnumerable<object>> GetGenders();
         ApiResponse<IEnumerable<object>> GetDaysOfWeek();
+        ApiResponse<bool> ForgotPassword(string email);
+        ApiResponse<bool> ResetPassword(ResetPasswordDTO resetData);
     }
 }

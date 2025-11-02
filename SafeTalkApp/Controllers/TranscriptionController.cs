@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNet.SignalR;
+using SafeTalkApp.DTOs.Shared;
 using SafeTalkApp.Hubs;
 using SafeTalkApp.Models;
 using SafeTalkApp.Services;
@@ -28,11 +29,11 @@ namespace SafeTalkApp.Controllers
             return View();
         }
 
-        public async Task<ActionResult> UploadAudio(HttpPostedFileBase file, int appointmentId)
-        {
-            var response = await _transcriptionService.ProcessAndSaveTranscription(file, appointmentId);
-            return Json(response);
-        }
+        //public async Task<ActionResult> UploadAudio(HttpPostedFileBase file, int appointmentId)
+        //{
+        //    var response = await _transcriptionService.ProcessAndSaveTranscription(file, appointmentId);
+        //    return Json(response);
+        //}
 
         public async Task<ActionResult> DownloadTranscript(int appointmentID)
         {
@@ -45,6 +46,11 @@ namespace SafeTalkApp.Controllers
 
             string fileName = $"appointment_{appointmentID}_transcript.txt";
             return File(result.data, "text/plain", fileName);
+        }
+
+        public ActionResult SaveTextTranscript(TextTranscriptDTO model)
+        {
+            return Json(_transcriptionService.SaveTextTranscript(model));
         }
     }
 }

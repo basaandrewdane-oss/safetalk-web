@@ -1,4 +1,4 @@
-﻿app.service("AvailabilityService", function ($http, ApiHelper) {
+﻿app.service("AvailabilityService", ['$http', 'ApiHelper', function ($http, ApiHelper) {
     this.getAvailability = function () {
         return ApiHelper.handleApiResponse(
             $http.get('/Availability/GetAvailability')
@@ -10,4 +10,4 @@
             $http.post('/Availability/SaveAvailability', availabilities)
         );
     };
-});
+}]);

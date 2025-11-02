@@ -1,4 +1,4 @@
-﻿app.service("ConsultationService", function ($http, ApiHelper) {
+﻿app.service("ConsultationService", ['$http', 'ApiHelper', function ($http, ApiHelper) {
 
     this.getChatMessages = function (appointmentID) {
         return ApiHelper.handleApiResponse(
@@ -38,4 +38,4 @@
             $http.post("/Consultation/CreateReferral", referralData)
         );
     }
-});
+}]);

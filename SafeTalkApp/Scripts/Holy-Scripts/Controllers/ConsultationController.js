@@ -1,4 +1,4 @@
-﻿app.controller("ConsultationController", function ($scope, $timeout, ConsultationService) {
+﻿app.controller("ConsultationController", ["$scope", "$timeout", "ConsultationService", function ($scope, $timeout, ConsultationService) {
 
     $scope.goToConsultation = function (appointmentID) {
         window.location.href = '/Consultation/ChatRoom?appointmentID=' + appointmentID;
@@ -136,4 +136,4 @@
                 M.toast({ html: 'Failed to submit referral', classes: 'red lighten-2' });
             });
     };
-});
+}]);

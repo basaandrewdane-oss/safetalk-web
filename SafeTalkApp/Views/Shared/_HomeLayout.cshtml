@@ -3,10 +3,9 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>@ViewBag.Title</title>
+    <title>@ViewBag.Title - SafeTalk</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         main {
@@ -289,48 +288,6 @@
                 </div>
             </div>
         </div>
-        <div ng-controller="ChatBotController">
-            <!-- Floating Chat Button -->
-            <div class="fixed-action-btn">
-                <a class="btn-floating btn-large purple" ng-click="toggleChat()">
-                    <i class="material-icons">chat</i>
-                </a>
-            </div>
-
-            <!-- Chat Window -->
-            <div id="chatbot-window" class="card chatbot-window" ng-show="chatOpen" ng-cloak>
-                <div class="card-content messages-container">
-                    <span class="card-title">AI Chatbot</span>
-
-                    <!-- Messages -->
-                    <div ng-repeat="m in messages"
-                         class="chat-message"
-                         ng-class="{'user-msg': m.from=='user', 'bot-msg': m.from=='bot'}">{{m.text}}</div>
-
-                    <!-- ✅ Suggested prompts -->
-                    <div class="suggested-prompts" ng-if="promptsVisible">
-                        <button ng-repeat="prompt in prompts"
-                                ng-click="usePrompt(prompt, $event)">
-                            {{prompt.text}}
-                        </button>
-                    </div>
-
-                    <!-- Typing indicator -->
-                    <div class="chat-message bot-msg typing-indicator" ng-if="typing">
-                        <span></span><span></span><span></span>
-                    </div>
-                </div>
-
-                <!-- Input always visible -->
-                <div class="card-action chat-input">
-                    <form ng-submit="sendMessage()">
-                        <div class="input-field">
-                            <input type="text" ng-model="message" placeholder="Type a message..." />
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
 
         <div class="footer-copyright deep-purple lighten-3">
             <div class="container white-text">
@@ -354,5 +311,30 @@
             $('input#input_text, textarea#textarea1').characterCounter();
         });
     </script>
+    <!--Start of Tawk.to Script-->
+    <script type="text/javascript">
+        var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+        (function () {
+            var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+            s1.async = true;
+            s1.src = 'https://embed.tawk.to/687f159426d3e2191999b399/1j0o6oj3e';
+            s1.charset = 'UTF-8';
+            s1.setAttribute('crossorigin', '*');
+            s0.parentNode.insertBefore(s1, s0);
+        })();
+    </script>
+    <!--End of Tawk.to Script--><!--Start of Tawk.to Script-->
+    <script type="text/javascript">
+        var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+        (function () {
+            var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+            s1.async = true;
+            s1.src = 'https://embed.tawk.to/687f159426d3e2191999b399/1j0o6oj3e';
+            s1.charset = 'UTF-8';
+            s1.setAttribute('crossorigin', '*');
+            s0.parentNode.insertBefore(s1, s0);
+        })();
+    </script>
+    <!--End of Tawk.to Script-->
 </body>
 </html>

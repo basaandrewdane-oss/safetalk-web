@@ -9,7 +9,6 @@ using System.Web.Mvc;
 
 namespace SafeTalkApp.Controllers
 {
-    [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
         private readonly IAdminService _adminService;
@@ -30,19 +29,19 @@ namespace SafeTalkApp.Controllers
             var response = _adminService.GetFaqs();
             return Json(response, JsonRequestBehavior.AllowGet);
         }
-
+        [Authorize(Roles = "Admin")]
         public JsonResult AddFaq(FAQsDTO faq)
         {
             var response = _adminService.AddFaq(faq);
             return Json(response);
         }
-
+        [Authorize(Roles = "Admin")]
         public JsonResult UpdateFaq(FAQsDTO faq)
         {
             var response = _adminService.UpdateFaq(faq);
             return Json(response);
         }
-
+        [Authorize(Roles = "Admin")]
         public JsonResult DeleteFaq(int faqID)
         {
             var response = _adminService.DeleteFaq(faqID);
@@ -60,19 +59,19 @@ namespace SafeTalkApp.Controllers
             var response = _adminService.GetPrompts();
             return Json(response, JsonRequestBehavior.AllowGet);
         }
-
+        [Authorize(Roles = "Admin")]
         public ActionResult PendingDoctors()
         {
             ViewBag.Title = "Pending Doctor Verifications";
             return View();
         }
-
+        [Authorize(Roles = "Admin")]
         public JsonResult GetPendingDoctors()
         {
             var response = _adminService.GetPendingDoctors();
             return Json(response, JsonRequestBehavior.AllowGet);
         }
-
+        [Authorize(Roles = "Admin")]
         public JsonResult VerifyDoctor(int userID)
         {
             var result = _adminService.VerifyDoctor(userID);
@@ -96,7 +95,7 @@ namespace SafeTalkApp.Controllers
             var response = _adminService.GetTerms();
             return Json(response, JsonRequestBehavior.AllowGet);
         }
-
+        [Authorize(Roles = "Admin")]
         public JsonResult UpdateTerms(TermsUpdateDTO dto)
         {
             var response = _adminService.UpdateTerms(dto.content);
@@ -120,13 +119,13 @@ namespace SafeTalkApp.Controllers
             var response = _adminService.GetUsers();
             return Json(response, JsonRequestBehavior.AllowGet);
         }
-
+        [Authorize(Roles = "Admin")]
         public JsonResult VerifyUser(int userID)
         {
             var response = _adminService.VerifyUser(userID);
             return Json(response);
         }
-
+        [Authorize(Roles = "Admin")]
         public JsonResult DeleteUser(int userID)
         {
             var response = _adminService.DeleteUser(userID);

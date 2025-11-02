@@ -1,5 +1,8 @@
-﻿app.controller("AccountController", function ($scope, AccountService, AdminService) {
+﻿app.controller("AccountController", ["$scope", "AccountService", "AdminService", function ($scope, AccountService, AdminService) {
     $scope.emailExists = false;
+    $scope.forgot = {};
+    $scope.token = "";
+    let forgotModal;
 
     window.addEventListener('pageshow', function (event) {
         if (event.persisted) {
@@ -151,31 +154,36 @@
                 .map(day => {
                     const startDate = new Date($scope.availabilityTimes[day].start);
                     const endDate = new Date($scope.availabilityTimes[day].end);
-
                     const pad = n => n.toString().padStart(2, '0');
 
                     return {
                         dayID: day,
                         availabilityStart: `${pad(startDate.getHours())}:${pad(startDate.getMinutes())}`,
                         availabilityEnd: `${pad(endDate.getHours())}:${pad(endDate.getMinutes())}`,
-                        fee: $scope.availabilityTimes[day].fee
+                        fee: $scope.availabilityTimes[day].fee,
+                        slotDuration: $scope.availabilityTimes[day].slotDuration
                     };
                 })
                 .filter(a => a.availabilityStart && a.availabilityEnd);
         }
+
+        var formatDate = date => {
+            const d = new Date(date);
+            const pad = n => n.toString().padStart(2, '0');
+            return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+        };
 
         var userData = {
             roleID: $scope.selectedRole,
             firstName: $scope.firstName,
             middleName: $scope.middleName,
             lastName: $scope.lastName,
-            birthDate: $scope.birthDate,
+            birthDate: formatDate($scope.birthDate),
             genderID: $scope.selectedGender,
             phoneNumber: $scope.phoneNumber,
             licenseNumber: $scope.licenseNumber,
             specialization: $scope.specialization,
             availability: availability,
-            slotDuration: $scope.slotDuration,
             email: $scope.email,
             password: $scope.password
         }
@@ -366,4 +374,66 @@
             Swal.fire("Error", "Something went wrong while verifying.", "error");
         });
     };
-});
+
+    $scope.openForgotPassword = function () {
+        forgotModal.open()
+    };
+
+    $scope.submitForgotPassword = function () {
+        if (!$scope.forgot.email) {
+            Swal.fire("Warning", "Please enter your email address.", "warning");
+            return;
+        }
+
+        AccountService.forgotPassword($scope.forgot.email).then(function (result) {
+            if (result.success) {
+                Swal.fire("Success", result.message, "success");
+                forgotModal.close()
+            } else {
+                Swal.fire("Error", result.message, "error");
+            }
+        });
+    };
+
+    $scope.init = function () {
+        // Extract token from query string
+        const params = new URLSearchParams(window.location.search);
+        $scope.token = params.get("token");
+    };
+
+    $scope.resetPassword = function () {
+        if (!$scope.password.newPassword || !$scope.password.confirmPassword) {
+            Swal.fire("Warning", "Please fill in both password fields.", "warning");
+            return;
+        }
+        if ($scope.password.newPassword !== $scope.password.confirmPassword) {
+            Swal.fire("Error", "Passwords do not match.", "error");
+            return;
+        }
+
+        resetData = {
+            token: $scope.token,
+            newPassword: $scope.password.newPassword
+        }
+
+        AccountService.resetPassword(resetData).then(function (response) {
+            if (response.success) {
+                Swal.fire("Success", response.message, "success").then(() => {
+                    window.location.href = "/Account/Login";
+                });
+            } else {
+                Swal.fire("Error", response.message, "error");
+            }
+        });
+    };
+
+    angular.element(document).ready(function () {
+        var elem = document.getElementById('forgotPasswordModal');
+        forgotModal = M.Modal.init(elem, {
+            dismissible: false,
+            onOpenEnd: function () {
+            }
+        });
+    });
+}
+]);

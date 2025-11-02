@@ -1,4 +1,4 @@
-﻿app.controller("AppointmentsController", function ($scope, $timeout, AppointmentService) {
+﻿app.controller("AppointmentsController", ["$scope", "$timeout", "AppointmentService", function ($scope, $timeout, AppointmentService) {
     $scope.appointmentFilter = "active";
     var instance;
     // ===== User Appointments =====
@@ -347,4 +347,5 @@
         var modal = document.getElementById('rejectModal');
         instance = M.Modal.init(modal);
     });
-});
+}
+]);

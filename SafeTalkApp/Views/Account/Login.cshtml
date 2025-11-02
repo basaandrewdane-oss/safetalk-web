@@ -62,9 +62,24 @@
                                     <a href="#" class="deep-purple-text text-lighten-2" ng-click="getRoles()">Sign Up</a> <!-- ✅ Accent -->
                                 </p>
                             </div>
+                            <div class="row center-align">
+                                <p><a href="" ng-click="openForgotPassword()">Forgot Password?</a></p>
+                            </div>
                         </form>
                     </div>
                 </div>
+            </div>
+        </div>
+        <!-- Forgot Password Modal -->
+        <div id="forgotPasswordModal" class="modal">
+            <div class="modal-content">
+                <h5>Reset Password</h5>
+                <p>Enter your email and we’ll send you a password reset link.</p>
+                <input type="email" ng-model="forgot.email" placeholder="Enter your email" required />
+
+                <button class="btn deep-purple lighten-2" ng-click="submitForgotPassword()">
+                    Send Reset Link
+                </button>
             </div>
         </div>
     </div>

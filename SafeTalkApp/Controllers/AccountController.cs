@@ -186,5 +186,23 @@ namespace SafeTalkApp.Controllers
                 return Content("Admin account created.");
             }
         }
+
+        public JsonResult ForgotPassword(string email)
+        {
+            var result = _accountService.ForgotPassword(email);
+            return Json(result);
+        }
+
+        public ActionResult ResetPassword()
+        {
+            ViewBag.Title = "Reset Password";
+            return View();
+        }
+
+        public JsonResult ResetUserPassword(ResetPasswordDTO resetData)
+        {
+            var result = _accountService.ResetPassword(resetData);
+            return Json(result);
+        }
     }
 }

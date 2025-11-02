@@ -10,6 +10,7 @@ namespace SafeTalkApp.Services
         // Account Emails
         void SendVerificationEmail(string toEmail, string verificationLink);
         void SendDoctorVerifiedAccount(UserTblModel doctor);
+        void SendPasswordResetEmail(string toEmail, string resetLink);
 
         // Appointment Emails
         void SendDoctorAppointmentNotification(UserTblModel doctor, UserTblModel patient, AppointmentsTblModel appointment);
@@ -28,6 +29,8 @@ namespace SafeTalkApp.Services
         void SendPaymentSubmittedEmail(UserTblModel admin, AppointmentsTblModel appointment, PaymentTblModel payment, UserTblModel patient, UserTblModel doctor);
         void SendPaymentVerifiedEmailToPatient(UserTblModel patient, UserTblModel doctor, AppointmentsTblModel appointment, PaymentTblModel payment);
         void SendPaymentVerifiedEmailToDoctor(UserTblModel doctor, UserTblModel patient, AppointmentsTblModel appointment, PaymentTblModel payment);
+        void SendPaymentRejectedEmailToPatient(UserTblModel patient, UserTblModel doctor, AppointmentsTblModel appointment, PaymentTblModel payment);
+        void SendPaymentRejectedEmailToDoctor(UserTblModel doctor, UserTblModel patient, AppointmentsTblModel appointment, PaymentTblModel payment);
         void SendPayPalPaymentConfirmationToPatient(UserTblModel patient, UserTblModel doctor, AppointmentsTblModel appointment, PaymentTblModel payment);
         void SendPayPalPaymentNotificationToDoctor(UserTblModel doctor, UserTblModel patient, AppointmentsTblModel appointment, PaymentTblModel payment);
 

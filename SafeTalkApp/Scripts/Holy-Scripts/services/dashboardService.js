@@ -1,4 +1,4 @@
-﻿app.service("DashboardService", function ($http, ApiHelper) {
+﻿app.service("DashboardService", ['$http', 'ApiHelper', function ($http, ApiHelper) {
 
     this.getDashboardStats = function () {
         return ApiHelper.handleApiResponse(
@@ -11,4 +11,4 @@
             $http.get("/Dashboard/GetAdminReports")
         );
     };
-})
+}])

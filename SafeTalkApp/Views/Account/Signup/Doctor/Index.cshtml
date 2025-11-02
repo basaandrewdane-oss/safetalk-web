@@ -113,6 +113,7 @@
                                                name="email"
                                                type="email"
                                                ng-model="email"
+                                               ng-blur="checkEmailExists(email)"
                                                required>
                                         <label for="email">Email</label>
                                         <span class="helper-text left-align red-text text-lighten-2"
@@ -122,6 +123,11 @@
                                         <span class="helper-text left-align red-text text-lighten-2"
                                               ng-show="doctorForm.email.$dirty && doctorForm.email.$invalid">
                                             Invalid email format
+                                        </span>
+                                        <!-- Duplicate email -->
+                                        <span class="helper-text left-align red-text text-lighten-2"
+                                              ng-show="emailExists">
+                                            Email is already registered
                                         </span>
                                     </div>
                                     <div class="input-field col s12 m6 l6">
@@ -223,7 +229,7 @@
                                 <div class="row">
                                     <div ng-repeat="day in selectedDays">
                                         <!-- Start Time -->
-                                        <div class="input-field col s12 m6 l3">
+                                        <div class="input-field col s12 m6 l6">
                                             <input id="timeStart{{day}}"
                                                    name="timeStart{{day}}"
                                                    type="time"
@@ -255,7 +261,7 @@
                                             </span>
                                         </div>
                                         <!-- End Time -->
-                                        <div class="input-field col s12 m6 l3">
+                                        <div class="input-field col s12 m6 l6">
                                             <input id="timeEnd{{day}}"
                                                    name="timeEnd{{day}}"
                                                    end-after-start="availabilityTimes[day].start"
@@ -289,27 +295,27 @@
                                                 End time must be later than start time
                                             </span>
                                         </div>
-                                        <div class="input-field col s12 m6 l3">
+                                        <div class="input-field col s12 m6 l6">
                                             <select id="slotDuration"
-                                                    ng-model="slotDuration"
+                                                    ng-model="availabilityTimes[day].slotDuration"
                                                     material-select
                                                     required>
                                                 <option value="" disabled selected>Slot Duration</option>
-                                                <option value="15">15 minutes</option>
-                                                <option value="30">30 minutes</option>
-                                                <option value="45">45 minutes</option>
-                                                <option value="60">1 hour</option>
-                                                <option value="90">1 hour and 30 minutes</option>
-                                                <option value="120">2 hour</option>
+                                                <option ng-value="15">15 minutes</option>
+                                                <option ng-value="30">30 minutes</option>
+                                                <option ng-value="45">45 minutes</option>
+                                                <option ng-value="60">1 hour</option>
+                                                <option ng-value="90">1 hour and 30 minutes</option>
+                                                <option ng-value="120">2 hour</option>
                                             </select>
                                             <label>Consultation Slot Duration</label>
                                             <span class="helper-text left-align red-text text-lighten-2"
-                                                  ng-show="(doctorForm.slotDuration.$touched || doctorForm.$submitted) && !slotDuration">
+                                                  ng-show="(doctorForm.slotDuration.$touched || doctorForm.$submitted) && doctorForm.slotDuration.$error.required">
                                                 Slot duration is required
                                             </span>
                                         </div>
 
-                                        <div class="input-field col s12 m6 l3">
+                                        <div class="input-field col s12 m6 l6">
                                             <input id="fee{{day}}"
                                                    name="fee{{day}}"
                                                    type="number"

@@ -152,20 +152,20 @@ namespace SafeTalkApp.Services
                 _db.SaveChanges();
 
                 // Send email to patient
-                //try
-                //{
-                //    var doctor = _db.user_tbl.Find(model.doctorID);
-                //    var patient = _db.user_tbl.Find(model.patientID);
+                try
+                {
+                    var doctor = _db.user_tbl.Find(model.doctorID);
+                    var patient = _db.user_tbl.Find(model.patientID);
 
-                //    if (doctor != null && patient != null)
-                //    {
-                //        _emailService.SendReferralCreatedEmail(patient, doctor, referral);
-                //    }
-                //}
-                //catch (Exception emailEx)
-                //{
-                //    System.Diagnostics.Debug.WriteLine("Error sending referral email: " + emailEx.Message);
-                //}
+                    if (doctor != null && patient != null)
+                    {
+                        _emailService.SendReferralCreatedEmail(patient, doctor, referral);
+                    }
+                }
+                catch (Exception emailEx)
+                {
+                    System.Diagnostics.Debug.WriteLine("Error sending referral email: " + emailEx.Message);
+                }
 
                 return ApiResponse<bool>.Ok(true);
             }

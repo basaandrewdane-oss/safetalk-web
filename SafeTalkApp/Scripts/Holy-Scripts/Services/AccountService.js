@@ -1,4 +1,4 @@
-﻿app.service("AccountService", function ($http, ApiHelper) {
+﻿app.service("AccountService", ['$http', 'ApiHelper', function ($http, ApiHelper) {
     // ===== Account Management =====
     this.getRoles = function () {
         return ApiHelper.handleApiResponse($http.get("/Account/GetRoles"));
@@ -35,4 +35,16 @@
             $http.post("/Account/ResendVerificationEmail", { email: email })
         );
     };
-});
+
+    this.forgotPassword = function (email) {
+        return ApiHelper.handleApiResponse(
+            $http.post("/Account/ForgotPassword", { email: email })
+        )
+    }
+
+    this.resetPassword = function (resetData) {
+        return ApiHelper.handleApiResponse(
+            $http.post("/Account/ResetUserPassword", resetData)
+        )
+    }
+}]);

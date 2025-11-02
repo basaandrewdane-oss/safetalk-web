@@ -1,4 +1,4 @@
-﻿app.service('ProfileService', function ($http) {
+﻿app.service('ProfileService', ['$http', function ($http) {
     this.getProfile = function () {
         return $http.get('/Profile/GetProfile');
     };
@@ -9,4 +9,4 @@
             headers: { 'Content-Type': undefined }
         });
     };
-});
+}]);

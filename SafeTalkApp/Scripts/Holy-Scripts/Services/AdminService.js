@@ -1,4 +1,4 @@
-﻿app.service("AdminService", function ($http, ApiHelper) {
+﻿app.service("AdminService", ['$http', 'ApiHelper', function ($http, ApiHelper) {
 
     this.getFaqs = function () {
         return ApiHelper.handleApiResponse(
@@ -71,4 +71,4 @@
             $http.post("/Admin/DeleteUser", { userID: userID })
         );
     };
-});
+}]);
