@@ -5,6 +5,7 @@ using SafeTalkApp.DTOs.Shared;
 using SafeTalkApp.Services;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -54,6 +55,22 @@ namespace SafeTalkApp.Controllers
             var userId = User.Identity.GetUserId();
             var result = _profileService.GetProfile(userId);
             return Json(result, JsonRequestBehavior.AllowGet);
+        }
+        [AllowAnonymous]
+        public ActionResult GetProfilePicture(string fileName)
+        {
+            string folderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "Uploads", "ProfilePictures");
+            string fullPath = Path.Combine(folderPath, fileName ?? "");
+            System.Diagnostics.Debug.WriteLine($"Looking for: {fullPath}");
+
+            if (!System.IO.File.Exists(fullPath))
+            {
+                string defaultAvatarPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Uploads", "ProfilePictures", "default-avatar.png");
+                return new FilePathResult(defaultAvatarPath, "image/png");
+            }
+
+            string mimeType = MimeMapping.GetMimeMapping(fullPath);
+            return new FilePathResult(fullPath, mimeType);
         }
 
         public JsonResult UpdateProfile(ProfileUpdateDTO dto)

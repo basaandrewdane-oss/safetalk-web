@@ -2,6 +2,7 @@
 using Org.BouncyCastle.Asn1.Ocsp;
 using SafeTalkApp.DTOs.Payment;
 using SafeTalkApp.DTOs.Shared;
+using SafeTalkApp.Interfaces;
 using SafeTalkApp.Models;
 using System;
 using System.Collections.Generic;
@@ -19,13 +20,18 @@ namespace SafeTalkApp.Services
         private readonly ISafeTalkAppContext _db;
         private readonly IPayPalService _payPalService;
         private readonly IEmailService _emailService;
+        private readonly IFileStorageService _fileStorage;
+        private readonly IDateTimeProvider _time;
         private readonly ILogger<PaymentService> _logger;
 
-        public PaymentService(ISafeTalkAppContext db, IPayPalService payPalService, IEmailService emailService, ILogger<PaymentService> logger)
+        public PaymentService(ISafeTalkAppContext db, IPayPalService payPalService, IEmailService emailService, IFileStorageService fileStorage,
+        IDateTimeProvider time, ILogger<PaymentService> logger)
         {
             _db = db;
             _payPalService = payPalService;
             _emailService = emailService;
+            _fileStorage = fileStorage;
+            _time = time;
             _logger = logger;
         }
 
@@ -35,75 +41,71 @@ namespace SafeTalkApp.Services
             {
                 var appointment = _db.appointments_tbl.Find(appointmentID);
                 if (appointment == null)
-                {
                     return ApiResponse<bool>.Fail("Appointment not found.");
-                }
 
-                // Validate file
                 if (paymentProof == null || paymentProof.ContentLength == 0)
-                {
                     return ApiResponse<bool>.Fail("No payment proof uploaded.");
-                }
 
-                // Validate file type (optional but recommended)
-                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".pdf" };
-                var fileExtension = Path.GetExtension(paymentProof.FileName).ToLower();
-                if (!allowedExtensions.Contains(fileExtension))
-                {
-                    return ApiResponse<bool>.Fail("Invalid file type. Only JPG, PNG, or PDF allowed.");
-                }
-                // Save payment image
-                var fileName = $"{Guid.NewGuid()}{fileExtension}";
-                var uploadPath = HttpContext.Current.Server.MapPath("~/Uploads/Payments/");
-                if (!Directory.Exists(uploadPath))
-                {
-                    Directory.CreateDirectory(uploadPath);
-                }
+                // File validation
+                var allowed = new[] { ".jpg", ".jpeg", ".png", ".pdf" };
+                var ext = Path.GetExtension(paymentProof.FileName).ToLower();
+                if (!allowed.Contains(ext))
+                    return ApiResponse<bool>.Fail("Invalid file type.");
 
-                var fullPath = Path.Combine(uploadPath, fileName);
-                paymentProof.SaveAs(fullPath);
-                // Create payment record
+                // Save file through abstraction
+                var imagePath = _fileStorage.SavePaymentProof(paymentProof);
+
+                var now = _time.Now;
+
                 var payment = new PaymentTblModel
                 {
                     appointmentID = appointmentID,
-                    imagePath = "/Uploads/Payments/" + fileName, // For easier access on frontend
+                    imagePath = imagePath,
                     status = PaymentStatus.Pending,
-                    transactionId = Guid.NewGuid().ToString(), // Temporary transaction ID
+                    transactionId = Guid.NewGuid().ToString(),
                     amount = appointment.fee,
-                    paymentDate = DateTime.Now,
-                    dateCreated = DateTime.Now,
-                    dateUpdated = DateTime.Now
+                    paymentDate = now,
+                    dateCreated = now,
+                    dateUpdated = now
                 };
+
                 _db.payment_tbl.Add(payment);
 
-                appointment.status = AppointmentStatus.PaymentSubmitted; // Update appointment status
-                appointment.dateUpdated = DateTime.Now;
+                appointment.status = AppointmentStatus.PaymentSubmitted;
+                appointment.dateUpdated = now;
+
                 _db.SaveChanges();
 
-                try
-                {
-                    var admin = (from u in _db.user_tbl
-                                 join r in _db.user_role_tbl on u.userID equals r.userID
-                                 where r.roleID == 3
-                                 select u).FirstOrDefault();
-                    var patient = _db.user_tbl.FirstOrDefault(u => u.userID == appointment.patientID);
-                    var doctor = _db.user_tbl.FirstOrDefault(u => u.userID == appointment.doctorID);
-
-                    if (admin != null)
-                    {
-                        _emailService.SendPaymentSubmittedEmail(admin, appointment, payment, patient, doctor);
-                    }
-                }
-                catch (Exception emailEx)
-                {
-                    System.Diagnostics.Debug.WriteLine("Error sending payment submitted email: " + emailEx.Message);
-                }
+                TrySendEmail(appointment, payment);
 
                 return ApiResponse<bool>.Ok(true, "Payment Submitted");
             }
             catch (Exception ex)
             {
-                return ApiResponse<bool>.Fail("There was a problem in submitting payment please try again later " + ex.Message);
+                _logger.LogError(ex, "Error submitting payment");
+                return ApiResponse<bool>.Fail("Problem submitting payment: " + ex.Message);
+            }
+        }
+
+        private void TrySendEmail(AppointmentsTblModel appointment, PaymentTblModel payment)
+        {
+            try
+            {
+                var admin = _db.user_tbl
+                    .Join(_db.user_role_tbl, u => u.userID, r => r.userID, (u, r) => new { u, r })
+                    .Where(x => x.r.roleID == 3)
+                    .Select(x => x.u)
+                    .FirstOrDefault();
+
+                var patient = _db.user_tbl.Find(appointment.patientID);
+                var doctor = _db.user_tbl.Find(appointment.doctorID);
+
+                if (admin != null)
+                    _emailService.SendPaymentSubmittedEmail(admin, appointment, payment, patient, doctor);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Email sending failed");
             }
         }
 
@@ -143,7 +145,7 @@ namespace SafeTalkApp.Services
 
                 if (appointment == null)
                 {
-                    ApiResponse<PaymentReviewDTO>.Fail("Appointment not found.");
+                    return ApiResponse<PaymentReviewDTO>.Fail("Appointment not found.");
                 }
 
                 var dto = new PaymentReviewDTO

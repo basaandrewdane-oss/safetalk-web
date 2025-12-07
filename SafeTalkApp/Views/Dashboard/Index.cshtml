@@ -134,266 +134,279 @@
             }
 
             <!-- Dashboard Tools -->
-            <div class="row">
+        <div class="row">
 
-                <!-- User Tools -->
-                @if (User.IsInRole("User"))
-                {
-                    <h6 class="grey-text text-darken-2">User Tools</h6>
+            <!-- User Tools -->
+            @if (User.IsInRole("User"))
+            {
+                <h6 class="grey-text text-darken-2">User Tools</h6>
 
-                    <div class="col s12 m6 l6">
-                        <div class="card hoverable">
-                            <div class="card-content center">
-                                <i class="material-icons medium teal-text text-lighten-2">event_available</i>
-                                <h6 class="grey-text text-darken-4">Book Consultation</h6>
-                                <p class="grey-text text-darken-2">Schedule a consultation with a doctor.</p>
-                            </div>
-                            <div class="card-action center deep-purple lighten-5">
-                                <a href="@Url.Action("Book", "Appointment")" class="btn-small deep-purple lighten-3">View</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col s12 m6 l6">
-                        <div class="card hoverable">
-                            <div class="card-content center">
-                                <i class="material-icons medium teal-text text-lighten-2">groups</i>
-                                <h6 class="grey-text text-darken-4">Doctors</h6>
-                                <p class="grey-text text-darken-2">View available professionals.</p>
-                            </div>
-                            <div class="card-action center deep-purple lighten-5">
-                                <a href="@Url.Action("DoctorsView", "Home")" class="btn-small deep-purple lighten-3">View</a>
-                            </div>
-                        </div>
-                    </div>
-                }
-
-                <!-- User & Doctor Tools -->
-                @if (User.IsInRole("User") || User.IsInRole("Doctor"))
-                {
-                    <h6 class="grey-text text-darken-2">Appointments & Consultations</h6>
-
-                    <div class="col s12 m6 l6">
-                        <div class="card hoverable">
-                            <div class="card-content center">
-                                <i class="material-icons medium teal-text text-lighten-2">event</i>
-                                <h6 class="grey-text text-darken-4">Appointments</h6>
-                                <p class="grey-text text-darken-2">Manage and view your upcoming appointments.</p>
-                            </div>
-                            <div class="card-action center deep-purple lighten-5">
-                                <a href="@Url.Action("Appointments", "Appointment")" class="btn-small deep-purple lighten-3">View</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col s12 m6 l6">
-                        <div class="card hoverable">
-                            <div class="card-content center">
-                                <i class="material-icons medium teal-text text-lighten-2">chat</i>
-                                <h6 class="grey-text text-darken-4">Consultations</h6>
-                                <p class="grey-text text-darken-2">Read and send messages securely.</p>
-                            </div>
-                            <div class="card-action center deep-purple lighten-5">
-                                <a href="@Url.Action("Consultations", "Consultation")" class="btn-small deep-purple lighten-3">View</a>
-                            </div>
-                        </div>
-                    </div>
-                }
-
-                <!-- Doctor Tools -->
-                @if (User.IsInRole("Doctor"))
-                {
-                    <div class="col s12 m6 l6">
-                        <h6 class="grey-text text-darken-2">Doctor Tools</h6>
-                        <div class="card hoverable">
-                            <div class="card-content center">
-                                <i class="material-icons medium teal-text text-lighten-2">access_time</i>
-                                <h6 class="grey-text text-darken-4">Availability</h6>
-                                <p class="grey-text text-darken-2">Set your consultation schedule.</p>
-                            </div>
-                            <div class="card-action center deep-purple lighten-5">
-                                <a href="@Url.Action("Index", "Availability")" class="btn-small deep-purple lighten-3">View</a>
-                            </div>
-                        </div>
-                    </div>
-                }
-
-                <!-- Admin Tools -->
-                @if (User.IsInRole("Admin"))
-                {
-                    <h6 class="grey-text text-darken-2">Admin Tools</h6>
-
-                    <div class="col s12 m6 l6">
-                        <div class="card hoverable">
-                            <div class="card-content center">
-                                <i class="material-icons medium teal-text text-lighten-2">manage_accounts</i>
-                                <h6 class="grey-text text-darken-4">Manage Users</h6>
-                                <p class="grey-text text-darken-2">View and manage all platform users.</p>
-                            </div>
-                            <div class="card-action center deep-purple lighten-5">
-                                <a href="@Url.Action("ManageUsers", "Admin")" class="btn-small deep-purple lighten-3">View</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col s12 m6 l6">
-                        <div class="card hoverable">
-                            <div class="card-content center">
-                                <i class="material-icons medium teal-text text-lighten-2">view_list</i>
-                                <h6 class="grey-text text-darken-4">Pending Doctors</h6>
-                                <p class="grey-text text-darken-2">Review and approve pending doctor accounts.</p>
-                            </div>
-                            <div class="card-action center deep-purple lighten-5">
-                                <a href="@Url.Action("PendingDoctors", "Admin")" class="btn-small deep-purple lighten-3">View</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col s12 m6 l6">
-                        <div class="card hoverable">
-                            <div class="card-content center">
-                                <i class="material-icons medium teal-text text-lighten-2">question_mark</i>
-                                <h6 class="grey-text text-darken-4">Manage FAQs</h6>
-                                <p class="grey-text text-darken-2">Review and update FAQs</p>
-                            </div>
-                            <div class="card-action center deep-purple lighten-5">
-                                <a href="@Url.Action("FAQs", "Admin")" class="btn-small deep-purple lighten-3">View</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col s12 m6 l6">
-                        <div class="card hoverable">
-                            <div class="card-content center">
-                                <i class="material-icons medium teal-text text-lighten-2">payments</i>
-                                <h6 class="grey-text text-darken-4">Manage Payments</h6>
-                                <p class="grey-text text-darken-2">Review and update payments</p>
-                            </div>
-                            <div class="card-action center deep-purple lighten-5">
-                                <a href="@Url.Action("Payments", "Admin")" class="btn-small deep-purple lighten-3">View</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col s12 m6 l6">
-                        <div class="card hoverable">
-                            <div class="card-content center">
-                                <i class="material-icons medium teal-text text-lighten-2">description</i>
-                                <h6 class="grey-text text-darken-4">Manage Terms</h6>
-                                <p class="grey-text text-darken-2">Review and update terms</p>
-                            </div>
-                            <div class="card-action center deep-purple lighten-5">
-                                <a href="@Url.Action("ManageTerms", "Admin")" class="btn-small deep-purple lighten-3">View</a>
-                            </div>
-                        </div>
-                    </div>
-                }
-
-                <!-- Common Tools -->
                 <div class="col s12 m6 l6">
-                    <h6 class="grey-text text-darken-2">General Tools</h6>
                     <div class="card hoverable">
                         <div class="card-content center">
-                            <i class="material-icons medium teal-text text-lighten-2">library_books</i>
-                            <h6 class="grey-text text-darken-4">Resources</h6>
-                            <p class="grey-text text-darken-2">Access mental health and wellness resources.</p>
+                            <i class="material-icons medium teal-text text-lighten-2">event_available</i>
+                            <h6 class="grey-text text-darken-4">Book Consultation</h6>
+                            <p class="grey-text text-darken-2">Schedule a consultation with a doctor.</p>
                         </div>
                         <div class="card-action center deep-purple lighten-5">
-                            <a href="@Url.Action("Index", "Resources")" class="btn-small deep-purple lighten-3">View</a>
+                            <a href="@Url.Action("Book", "Appointment")" class="btn-small deep-purple lighten-3">View</a>
                         </div>
                     </div>
                 </div>
 
-                <!-- Reports -->
-                @if (User.IsInRole("Doctor"))
-                {
-                    <div class="col s12 m12 l12">
-                        <h6 class="grey-text text-darken-2">Reports</h6>
-                        <div class="row">
-                            <div class="col s12 m6 l4">
-                                <div class="card hoverable">
-                                    <div class="card-content center">
-                                        <i class="material-icons medium teal-text text-lighten-2">trending_up</i>
-                                        <h6 class="grey-text text-darken-4">Consultation Trends</h6>
-                                        <p class="grey-text text-darken-2">View number of consultations over time.</p>
-                                    </div>
-                                    <div class="card-action center deep-purple lighten-5">
-                                        <a href="@Url.Action("ConsultationReport", "Reports")" class="btn-small deep-purple lighten-3">View</a>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col s12 m6 l4">
-                                <div class="card hoverable">
-                                    <div class="card-content center">
-                                        <i class="material-icons medium teal-text text-lighten-2">history</i>
-                                        <h6 class="grey-text text-darken-4">Patient History</h6>
-                                        <p class="grey-text text-darken-2">View a complete history of each patient you’ve seen.</p>
-                                    </div>
-                                    <div class="card-action center deep-purple lighten-5">
-                                        <a href="@Url.Action("PatientHistory", "Reports")" class="btn-small deep-purple lighten-3">View</a>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col s12 m6 l4">
-                                <div class="card hoverable">
-                                    <div class="card-content center">
-                                        <i class="material-icons medium teal-text text-lighten-2">assignment</i>
-                                        <h6 class="grey-text text-darken-4">Follow-ups & Missed</h6>
-                                        <p class="grey-text text-darken-2">Track missed appointments and follow-ups.</p>
-                                    </div>
-                                    <div class="card-action center deep-purple lighten-5">
-                                        <a href="@Url.Action("FollowUpReport", "Reports")" class="btn-small deep-purple lighten-3">View</a>
-                                    </div>
-                                </div>
-                            </div>
+                <div class="col s12 m6 l6">
+                    <div class="card hoverable">
+                        <div class="card-content center">
+                            <i class="material-icons medium teal-text text-lighten-2">groups</i>
+                            <h6 class="grey-text text-darken-4">Doctors</h6>
+                            <p class="grey-text text-darken-2">View available professionals.</p>
+                        </div>
+                        <div class="card-action center deep-purple lighten-5">
+                            <a href="@Url.Action("DoctorsView", "Home")" class="btn-small deep-purple lighten-3">View</a>
                         </div>
                     </div>
-                }
+                </div>
+            }
 
-                @if (User.IsInRole("User"))
-                {
-                    <div class="col s12 m6 l6">
-                        <h6 class="grey-text text-darken-2">Reports</h6>
-                        @*<div class="col s12 m6 l4">
-                        <div class="card hoverable">
-                            <div class="card-content center">
-                                <i class="material-icons medium teal-text text-lighten-2">trending_up</i>
-                                <h6 class="grey-text text-darken-4">Consultation Trends</h6>
-                                <p class="grey-text text-darken-2">View number of consultations over time.</p>
-                            </div>
-                            <div class="card-action center deep-purple lighten-5">
-                                <a href="@Url.Action("ConsultationReport", "Reports")" class="btn-small deep-purple lighten-3">View</a>
-                            </div>
+            <!-- User & Doctor Tools -->
+            @if (User.IsInRole("User") || User.IsInRole("Doctor"))
+            {
+                <h6 class="grey-text text-darken-2">Appointments & Consultations</h6>
+
+                <div class="col s12 m6 l6">
+                    <div class="card hoverable">
+                        <div class="card-content center">
+                            <i class="material-icons medium teal-text text-lighten-2">event</i>
+                            <h6 class="grey-text text-darken-4">Appointments</h6>
+                            <p class="grey-text text-darken-2">Manage and view your upcoming appointments.</p>
                         </div>
-                    </div>*@
-
-
-                        <div class="card hoverable">
-                            <div class="card-content center">
-                                <i class="material-icons medium teal-text text-lighten-2">history</i>
-                                <h6 class="grey-text text-darken-4">Doctor History</h6>
-                                <p class="grey-text text-darken-2">View a complete history of each doctor you’ve seen.</p>
-                            </div>
-                            <div class="card-action center deep-purple lighten-5">
-                                <a href="@Url.Action("DoctorHistory", "Reports")" class="btn-small deep-purple lighten-3">View</a>
-                            </div>
-                        </div>
-
-                        <div class="card hoverable">
-                            <div class="card-content center">
-                                <i class="material-icons medium teal-text text-lighten-2">assignment</i>
-                                <h6 class="grey-text text-darken-4">Follow-ups & Missed</h6>
-                                <p class="grey-text text-darken-2">Track missed appointments and follow-ups.</p>
-                            </div>
-                            <div class="card-action center deep-purple lighten-5">
-                                <a href="@Url.Action("FollowUpReport", "Reports")" class="btn-small deep-purple lighten-3">View</a>
-                            </div>
+                        <div class="card-action center deep-purple lighten-5">
+                            <a href="@Url.Action("Appointments", "Appointment")" class="btn-small deep-purple lighten-3">View</a>
                         </div>
                     </div>
-                }
+                </div>
+
+                <div class="col s12 m6 l6">
+                    <div class="card hoverable">
+                        <div class="card-content center">
+                            <i class="material-icons medium teal-text text-lighten-2">chat</i>
+                            <h6 class="grey-text text-darken-4">Consultations</h6>
+                            <p class="grey-text text-darken-2">Read and send messages securely.</p>
+                        </div>
+                        <div class="card-action center deep-purple lighten-5">
+                            <a href="@Url.Action("Consultations", "Consultation")" class="btn-small deep-purple lighten-3">View</a>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Doctor Tools -->
+            @if (User.IsInRole("Doctor"))
+            {
+                <div class="col s12 m6 l6">
+                    <h6 class="grey-text text-darken-2">Doctor Tools</h6>
+                    <div class="card hoverable">
+                        <div class="card-content center">
+                            <i class="material-icons medium teal-text text-lighten-2">access_time</i>
+                            <h6 class="grey-text text-darken-4">Availability</h6>
+                            <p class="grey-text text-darken-2">Set your consultation schedule.</p>
+                        </div>
+                        <div class="card-action center deep-purple lighten-5">
+                            <a href="@Url.Action("Index", "Availability")" class="btn-small deep-purple lighten-3">View</a>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Admin Tools -->
+            @if (User.IsInRole("Admin"))
+            {
+                <h6 class="grey-text text-darken-2">Admin Tools</h6>
+
+                <div class="col s12 m6 l6">
+                    <div class="card hoverable">
+                        <div class="card-content center">
+                            <i class="material-icons medium teal-text text-lighten-2">manage_accounts</i>
+                            <h6 class="grey-text text-darken-4">Manage Users</h6>
+                            <p class="grey-text text-darken-2">View and manage all platform users.</p>
+                        </div>
+                        <div class="card-action center deep-purple lighten-5">
+                            <a href="@Url.Action("ManageUsers", "Admin")" class="btn-small deep-purple lighten-3">View</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col s12 m6 l6">
+                    <div class="card hoverable">
+                        <div class="card-content center">
+                            <i class="material-icons medium teal-text text-lighten-2">view_list</i>
+                            <h6 class="grey-text text-darken-4">Pending Doctors</h6>
+                            <p class="grey-text text-darken-2">Review and approve pending doctor accounts.</p>
+                        </div>
+                        <div class="card-action center deep-purple lighten-5">
+                            <a href="@Url.Action("PendingDoctors", "Admin")" class="btn-small deep-purple lighten-3">View</a>
+                        </div>
+                    </div>
+                </div>
+
+                @*<div class="col s12 m6 l6">
+                    <div class="card hoverable">
+                        <div class="card-content center">
+                            <i class="material-icons medium teal-text text-lighten-2">question_mark</i>
+                            <h6 class="grey-text text-darken-4">Manage FAQs</h6>
+                            <p class="grey-text text-darken-2">Review and update FAQs</p>
+                        </div>
+                        <div class="card-action center deep-purple lighten-5">
+                            <a href="@Url.Action("FAQs", "Admin")" class="btn-small deep-purple lighten-3">View</a>
+                        </div>
+                    </div>
+                </div>*@
+
+                <div class="col s12 m6 l6">
+                    <div class="card hoverable">
+                        <div class="card-content center">
+                            <i class="material-icons medium teal-text text-lighten-2">perm_contact_calendar</i>
+                            <h6 class="grey-text text-darken-4">Manage Appointments</h6>
+                            <p class="grey-text text-darken-2">Review appointments on the platform</p>
+                        </div>
+                        <div class="card-action center deep-purple lighten-5">
+                            <a href="@Url.Action("Appointments", "Admin")" class="btn-small deep-purple lighten-3">View</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col s12 m6 l6">
+                    <div class="card hoverable">
+                        <div class="card-content center">
+                            <i class="material-icons medium teal-text text-lighten-2">payments</i>
+                            <h6 class="grey-text text-darken-4">Manage Payments</h6>
+                            <p class="grey-text text-darken-2">Review and update payments</p>
+                        </div>
+                        <div class="card-action center deep-purple lighten-5">
+                            <a href="@Url.Action("Payments", "Admin")" class="btn-small deep-purple lighten-3">View</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col s12 m6 l6">
+                    <div class="card hoverable">
+                        <div class="card-content center">
+                            <i class="material-icons medium teal-text text-lighten-2">description</i>
+                            <h6 class="grey-text text-darken-4">Manage Terms</h6>
+                            <p class="grey-text text-darken-2">Review and update terms</p>
+                        </div>
+                        <div class="card-action center deep-purple lighten-5">
+                            <a href="@Url.Action("ManageTerms", "Admin")" class="btn-small deep-purple lighten-3">View</a>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Common Tools -->
+            <div class="col s12 m6 l6">
+                <h6 class="grey-text text-darken-2">General Tools</h6>
+                <div class="card hoverable">
+                    <div class="card-content center">
+                        <i class="material-icons medium teal-text text-lighten-2">library_books</i>
+                        <h6 class="grey-text text-darken-4">Resources</h6>
+                        <p class="grey-text text-darken-2">Access mental health and wellness resources.</p>
+                    </div>
+                    <div class="card-action center deep-purple lighten-5">
+                        <a href="@Url.Action("Index", "Resources")" class="btn-small deep-purple lighten-3">View</a>
+                    </div>
+                </div>
             </div>
+
+            <!-- Reports -->
+            @if (User.IsInRole("Doctor"))
+            {
+                <div class="col s12 m12 l12">
+                    <h6 class="grey-text text-darken-2">Reports</h6>
+                    <div class="row">
+                        <div class="col s12 m6 l4">
+                            <div class="card hoverable">
+                                <div class="card-content center">
+                                    <i class="material-icons medium teal-text text-lighten-2">trending_up</i>
+                                    <h6 class="grey-text text-darken-4">Consultation Trends</h6>
+                                    <p class="grey-text text-darken-2">View number of consultations over time.</p>
+                                </div>
+                                <div class="card-action center deep-purple lighten-5">
+                                    <a href="@Url.Action("ConsultationReport", "Reports")" class="btn-small deep-purple lighten-3">View</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col s12 m6 l4">
+                            <div class="card hoverable">
+                                <div class="card-content center">
+                                    <i class="material-icons medium teal-text text-lighten-2">history</i>
+                                    <h6 class="grey-text text-darken-4">Patient History</h6>
+                                    <p class="grey-text text-darken-2">View a complete history of each patient you’ve seen.</p>
+                                </div>
+                                <div class="card-action center deep-purple lighten-5">
+                                    <a href="@Url.Action("PatientHistory", "Reports")" class="btn-small deep-purple lighten-3">View</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col s12 m6 l4">
+                            <div class="card hoverable">
+                                <div class="card-content center">
+                                    <i class="material-icons medium teal-text text-lighten-2">assignment</i>
+                                    <h6 class="grey-text text-darken-4">Follow-ups & Missed</h6>
+                                    <p class="grey-text text-darken-2">Track missed appointments and follow-ups.</p>
+                                </div>
+                                <div class="card-action center deep-purple lighten-5">
+                                    <a href="@Url.Action("FollowUpReport", "Reports")" class="btn-small deep-purple lighten-3">View</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @if (User.IsInRole("User"))
+            {
+                <div class="col s12 m6 l6">
+                    <h6 class="grey-text text-darken-2">Reports</h6>
+                    @*<div class="col s12 m6 l4">
+                    <div class="card hoverable">
+                        <div class="card-content center">
+                            <i class="material-icons medium teal-text text-lighten-2">trending_up</i>
+                            <h6 class="grey-text text-darken-4">Consultation Trends</h6>
+                            <p class="grey-text text-darken-2">View number of consultations over time.</p>
+                        </div>
+                        <div class="card-action center deep-purple lighten-5">
+                            <a href="@Url.Action("ConsultationReport", "Reports")" class="btn-small deep-purple lighten-3">View</a>
+                        </div>
+                    </div>
+                </div>*@
+
+
+                    <div class="card hoverable">
+                        <div class="card-content center">
+                            <i class="material-icons medium teal-text text-lighten-2">history</i>
+                            <h6 class="grey-text text-darken-4">Doctor History</h6>
+                            <p class="grey-text text-darken-2">View a complete history of each doctor you’ve seen.</p>
+                        </div>
+                        <div class="card-action center deep-purple lighten-5">
+                            <a href="@Url.Action("DoctorHistory", "Reports")" class="btn-small deep-purple lighten-3">View</a>
+                        </div>
+                    </div>
+
+                    <div class="card hoverable">
+                        <div class="card-content center">
+                            <i class="material-icons medium teal-text text-lighten-2">assignment</i>
+                            <h6 class="grey-text text-darken-4">Follow-ups & Missed</h6>
+                            <p class="grey-text text-darken-2">Track missed appointments and follow-ups.</p>
+                        </div>
+                        <div class="card-action center deep-purple lighten-5">
+                            <a href="@Url.Action("FollowUpReport", "Reports")" class="btn-small deep-purple lighten-3">View</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
         </div>
     </div>
 </main>

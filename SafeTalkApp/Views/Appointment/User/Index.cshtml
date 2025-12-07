@@ -69,7 +69,11 @@
                             <span ng-switch-when="1" class="blue-text">Approved - Awaiting Payment</span>
                             <span ng-switch-when="2" class="orange-text">Payment Submitted</span>
                             <span ng-switch-when="3" class="green-text">Paid</span>
-                            <span ng-switch-when="4" class="red-text">Rejected</span>
+                            <span ng-switch-when="4" class="red-text">
+                                Rejected
+                                <br />
+                                <small><i>{{appt.rejectReason}}</i></small>
+                            </span>
                             <span ng-switch-when="5" class="grey-text">Canceled</span>
                             <span ng-switch-when="7" class="deep-orange-text">Missed</span>
                             <span ng-switch-default class="grey-text">Unknown</span>

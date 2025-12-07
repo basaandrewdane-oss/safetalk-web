@@ -321,6 +321,7 @@
     <Compile Include="DTOs\Account\ResetPasswordDTO.cs" />
     <Compile Include="DTOs\Account\SignUpDTO.cs" />
     <Compile Include="DTOs\Account\VerifyEmailResultDTO.cs" />
+    <Compile Include="DTOs\Admin\AppointmentsDTO.cs" />
     <Compile Include="DTOs\Admin\PaymentDTO.cs" />
     <Compile Include="DTOs\Admin\TermsUpdateDTO.cs" />
     <Compile Include="DTOs\Admin\UsersDTO.cs" />
@@ -359,6 +360,8 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Hubs\ChatHub.cs" />
+    <Compile Include="Interfaces\IDateTimeProvider.cs" />
+    <Compile Include="Interfaces\IFileStorageService.cs" />
     <Compile Include="Models\AppointmentStatus.cs" />
     <Compile Include="Models\AppointmentsTblMap.cs" />
     <Compile Include="Models\AppointmentsTblModel.cs" />
@@ -382,16 +385,16 @@
     <Compile Include="Services\AvailabilityService.cs" />
     <Compile Include="Services\ConsultationService.cs" />
     <Compile Include="Services\DashboardService.cs" />
-    <Compile Include="Services\IAppointmentService.cs" />
-    <Compile Include="Services\IAvailabilityService.cs" />
-    <Compile Include="Services\IConsultationService.cs" />
-    <Compile Include="Services\IDashboardService.cs" />
-    <Compile Include="Services\IPaymentService.cs" />
-    <Compile Include="Services\IPayPalService.cs" />
-    <Compile Include="Services\IProfileService.cs" />
-    <Compile Include="Services\IReportsService.cs" />
-    <Compile Include="Services\IResourceService.cs" />
-    <Compile Include="Services\ISafeTalkAppContext.cs" />
+    <Compile Include="Interfaces\IAppointmentService.cs" />
+    <Compile Include="Interfaces\IAvailabilityService.cs" />
+    <Compile Include="Interfaces\IConsultationService.cs" />
+    <Compile Include="Interfaces\IDashboardService.cs" />
+    <Compile Include="Interfaces\IPaymentService.cs" />
+    <Compile Include="Interfaces\IPayPalService.cs" />
+    <Compile Include="Interfaces\IProfileService.cs" />
+    <Compile Include="Interfaces\IReportsService.cs" />
+    <Compile Include="Interfaces\IResourceService.cs" />
+    <Compile Include="Interfaces\ISafeTalkAppContext.cs" />
     <Compile Include="Models\LogInViewModel.cs" />
     <Compile Include="Models\PaymentStatus.cs" />
     <Compile Include="Models\PaymentTblMap.cs" />
@@ -414,13 +417,15 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\AccountService.cs" />
     <Compile Include="Services\AdminService.cs" />
+    <Compile Include="Services\DateTimeProviderService.cs" />
     <Compile Include="Services\EmailService.cs" />
-    <Compile Include="Services\IAccountService.cs" />
-    <Compile Include="Services\IAdminService.cs" />
-    <Compile Include="Services\IEmailService.cs" />
-    <Compile Include="Services\IHomeService.cs" />
+    <Compile Include="Interfaces\IAccountService.cs" />
+    <Compile Include="Interfaces\IAdminService.cs" />
+    <Compile Include="Interfaces\IEmailService.cs" />
+    <Compile Include="Interfaces\IHomeService.cs" />
+    <Compile Include="Services\FileStorageService.cs" />
     <Compile Include="Services\HomeService.cs" />
-    <Compile Include="Services\ITranscriptionService.cs" />
+    <Compile Include="Interfaces\ITranscriptionService.cs" />
     <Compile Include="Services\PaymentService.cs" />
     <Compile Include="Services\PayPalService.cs" />
     <Compile Include="Services\ProfileService.cs" />
@@ -1297,21 +1302,7 @@
     <Content Include="Scripts\test-bundles\angular-sanitize.js" />
     <Content Include="Scripts\test-bundles\angular-touch.js" />
     <Content Include="Content\Sounds\ringtone.mp3" />
-    <Content Include="Uploads\Payments\40f5b57f-7110-43f5-aabd-83be01485e4b.png" />
-    <Content Include="Uploads\Payments\53d275e3-de4b-4e4d-b312-e62756c1bc80.png" />
     <Content Include="Uploads\ProfilePictures\default-avatar.png" />
-    <Content Include="Uploads\Transcripts\appointment_1_20251003115451.txt" />
-    <Content Include="Uploads\Transcripts\appointment_1_20251003115453.txt" />
-    <Content Include="Uploads\Transcripts\appointment_1_20251006073930.txt" />
-    <Content Include="Uploads\Transcripts\appointment_1_20251018202552.txt" />
-    <Content Include="Uploads\Transcripts\appointment_1_20251018213104.txt" />
-    <Content Include="Uploads\Transcripts\appointment_2_20250928230510.txt" />
-    <Content Include="Uploads\Transcripts\appointment_2_20250928230542.txt" />
-    <Content Include="Uploads\Transcripts\appointment_4_20250930134330.txt" />
-    <Content Include="Uploads\Transcripts\appointment_4_20250930134334.txt" />
-    <Content Include="Uploads\Transcripts\appointment_4_20251019123551.txt" />
-    <Content Include="Uploads\Transcripts\appointment_5_20251006101829.txt" />
-    <Content Include="Uploads\Transcripts\appointment_5_20251006101905.txt" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -1321,8 +1312,6 @@
     </Content>
     <Content Include="Scripts\version.json" />
     <Content Include="Views\Account\Login.cshtml" />
-    <Content Include="Views\Account\Signup\Doctor\Index.cshtml" />
-    <Content Include="Views\Account\Signup\User\Index.cshtml" />
     <Content Include="Views\Account\VerifyEmail.cshtml" />
     <Content Include="Views\Admin\FAQs.cshtml" />
     <Content Include="Views\Admin\Payments.cshtml" />
@@ -1343,9 +1332,6 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Payment\PaymentProcessing.cshtml" />
     <Content Include="Views\Payment\PaymentReview.cshtml" />
-    <Content Include="Views\Profile\Admin\Index.cshtml" />
-    <Content Include="Views\Profile\Doctor\Index.cshtml" />
-    <Content Include="Views\Profile\User\Index.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_AccountLayout.cshtml" />
     <Content Include="Views\Shared\_DashboardLayout.cshtml" />
@@ -1367,10 +1353,14 @@
     <Content Include="Views\Reports\FollowUpReport.cshtml" />
     <Content Include="Views\Admin\ManageUsers.cshtml" />
     <Content Include="Views\Account\ResetPassword.cshtml" />
+    <Content Include="Views\Account\Signup\Index.cshtml" />
+    <Content Include="Views\Admin\Appointments.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Uploads\Payments\" />
     <Folder Include="Uploads\Recordings\" />
+    <Folder Include="Uploads\Transcripts\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />

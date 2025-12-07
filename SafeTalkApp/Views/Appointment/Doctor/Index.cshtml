@@ -27,6 +27,7 @@
                     <tr>
                         <th>Action</th>
                         <th>Patient</th>
+                        <th>Chief Complaint</th>
                         <th>Date</th>
                         <th>Start</th>
                         <th>End</th>
@@ -48,6 +49,7 @@
                             </div>
                         </td>
                         <td>{{appt.patientName}}</td>
+                        <td>{{appt.chiefComplaint}}</td>
                         <td>{{appt.date | dotNetDate | date: 'yyyy-MM-dd'}}</td>
                         <td>{{appt.startTime | timespanToTime}}</td>
                         <td>{{appt.endTime | timespanToTime}}</td>

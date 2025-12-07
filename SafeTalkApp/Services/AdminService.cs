@@ -309,5 +309,33 @@ namespace SafeTalkApp.Services
                 return ApiResponse<bool>.Fail("Error deleting user: " + ex.Message);
             }
         }
+
+        public ApiResponse<IEnumerable<AppointmentsDTO>> GetAppointmentsForAdmin()
+        {
+            try
+            {
+                var appointments = (from a in _db.appointments_tbl
+                                    join p in _db.user_tbl on a.patientID equals p.userID
+                                    join d in _db.user_tbl on a.doctorID equals d.userID
+                                    orderby a.date descending, a.startTime descending
+                                    select new AppointmentsDTO
+                                    {
+                                        appointmentID = a.appointmentID,
+                                        date = a.date,
+                                        startTime = a.startTime,
+                                        endTime = a.endTime,
+                                        status = a.status,
+                                        patientName = p.firstName + " " + p.lastName,
+                                        doctorName = d.firstName + " " + d.lastName,
+                                        chiefComplaint = a.chiefComplaint,
+                                        rejectReason = a.rejectReason
+                                    }).ToList();
+                return ApiResponse<IEnumerable<AppointmentsDTO>>.Ok(appointments);
+            }
+            catch (Exception ex)
+            {
+                return ApiResponse<IEnumerable<AppointmentsDTO>>.Fail("Error retrieving appointments: " + ex.Message);
+            }
+        }
     }
 }

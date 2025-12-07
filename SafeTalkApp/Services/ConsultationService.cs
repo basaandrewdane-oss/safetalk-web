@@ -47,21 +47,24 @@ namespace SafeTalkApp.Services
             }
         }
 
-        public ApiResponse<IEnumerable<ChatMessageDTO>> GetChatMessages(int appointmentID)
+        public ApiResponse<IEnumerable<ChatMessageDTO>> GetChatMessages(int appointmentID, int currentUserId)
         {
             try
             {
-                var messages = _db.chat_message_tbl
-                        .Where(m => m.appointmentID == appointmentID)
-                        .OrderBy(m => m.sentAt)
-                        .Select(m => new ChatMessageDTO
-                        {
-                            messageID = m.messageID,
-                            appointmentID = m.appointmentID,
-                            senderID = m.senderID,
-                            message = m.message,
-                            sentAt = m.sentAt
-                        }).ToList();
+                var messages = (from m in _db.chat_message_tbl
+                                join u in _db.user_tbl on m.senderID equals u.userID
+                                where m.appointmentID == appointmentID
+                                orderby m.sentAt
+                                select new ChatMessageDTO
+                                {
+                                    messageID = m.messageID,
+                                    appointmentID = m.appointmentID,
+                                    senderID = m.senderID,
+                                    message = m.message,
+                                    sentAt = m.sentAt,
+                                    senderName = u.firstName + " " + u.lastName,
+                                    currentUserId = currentUserId
+                                }).ToList();
 
                 return ApiResponse<IEnumerable<ChatMessageDTO>>.Ok(messages);
             }

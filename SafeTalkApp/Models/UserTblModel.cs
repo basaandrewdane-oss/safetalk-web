@@ -25,6 +25,10 @@ namespace SafeTalkApp.Models
         public string emailVerificationToken { get; set; }
         public DateTime? emailVerificationExpiry { get; set; }
         public bool isEmailVerified { get; set; }
+        public int failedLoginAttempts { get; set; }
+        public DateTime? lastFailedLoginAttempt { get; set; }
+        public bool isLocked { get; set; }
+        public DateTime? lockoutEnd { get; set; }
         public DateTime dateCreated { get; set; }
         public DateTime dateUpdated { get; set; }
     }

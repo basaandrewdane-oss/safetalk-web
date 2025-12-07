@@ -233,7 +233,7 @@
                     <li><a href="@Url.Action("Contact", "Home")" class="">Contact</a></li>
                     <li><a href="@Url.Action("About", "Home")" class="">About Us</a></li>
                     <li><a href="@Url.Action("Login", "Account")" class="waves-effect waves-light btn teal lighten-2" style="margin: 5px;">Log In</a></li>
-                    <li><a href="#" class="waves-effect waves-light btn deep-purple lighten-2" ng-click="getRoles()" style="margin: 5px;">Sign Up</a></li>
+                    <li><a href="@Url.Action("Signup", "Account")" class="waves-effect waves-light btn deep-purple lighten-2" style="margin: 5px;">Sign Up</a></li>
                 </ul>
             </div>
         </nav>
@@ -245,7 +245,7 @@
         <li><a href="@Url.Action("Contact", "Home")" class="">Contact</a></li>
         <li><a href="@Url.Action("About", "Home")" class="">About Us</a></li>
         <li><a href="@Url.Action("Login", "Account")">Log In</a></li>
-        <li><a href="#" ng-click="getRoles()">Sign Up</a></li>
+        <li><a href="@Url.Action("Signup", "Account")">Sign Up</a></li>
     </ul>
     <div>
         @RenderBody()

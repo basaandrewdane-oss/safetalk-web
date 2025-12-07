@@ -71,4 +71,10 @@
             $http.post("/Admin/DeleteUser", { userID: userID })
         );
     };
+
+    this.getAppointments = function () {
+        return ApiHelper.handleApiResponse(
+            $http.get('/Admin/GetAppointmentsForAdmin')
+        )
+    }
 }]);

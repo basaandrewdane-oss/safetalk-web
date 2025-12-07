@@ -9,7 +9,7 @@ namespace SafeTalkApp.Services
 {
     public class EmailService : IEmailService
     {
-        public void SendEmail(EmailMessageDTO message)
+        public virtual void SendEmail(EmailMessageDTO message)
         {
             string smtpHost = ConfigurationManager.AppSettings["SmtpHost"];
             int smtpPort = int.Parse(ConfigurationManager.AppSettings["SmtpPort"]);
@@ -44,6 +44,7 @@ namespace SafeTalkApp.Services
         // Account Emails
         public void SendVerificationEmail(string toEmail, string verificationLink)
         {
+            if(toEmail == null) throw new ArgumentNullException(nameof(toEmail));
             SendEmail(new EmailMessageDTO
             {
                 To = toEmail,
@@ -54,6 +55,12 @@ namespace SafeTalkApp.Services
         }
         public void SendDoctorVerifiedAccount(UserTblModel doctor)
         {
+            if (doctor == null)
+                throw new ArgumentNullException(nameof(doctor));
+
+            if (string.IsNullOrWhiteSpace(doctor.email))
+                throw new ArgumentException("Doctor email cannot be null or empty.", nameof(doctor));
+
             var subject = "Your Doctor Account Has Been Verified";
             var body = $@"
             <p>Dear Dr. {doctor.firstName} {doctor.lastName},</p>
@@ -79,6 +86,12 @@ namespace SafeTalkApp.Services
         }
         public void SendPasswordResetEmail(string toEmail, string resetLink)
         {
+            if (string.IsNullOrWhiteSpace(toEmail))
+                throw new ArgumentNullException(nameof(toEmail));
+
+            if (string.IsNullOrWhiteSpace(resetLink))
+                throw new ArgumentNullException(nameof(resetLink));
+
             SendEmail(new EmailMessageDTO
             {
                 To = toEmail,
@@ -94,6 +107,9 @@ namespace SafeTalkApp.Services
         // New Appointment Notification Email (to Doctor)
         public void SendDoctorAppointmentNotification(UserTblModel doctor, UserTblModel patient, AppointmentsTblModel appointment)
         {
+            if (doctor == null) throw new ArgumentNullException(nameof(doctor));
+            if (patient == null) throw new ArgumentNullException(nameof(patient));
+            if (appointment == null) throw new ArgumentNullException(nameof(appointment));
             SendEmail(new EmailMessageDTO
             {
                 To = doctor.email,
@@ -108,6 +124,9 @@ namespace SafeTalkApp.Services
         // Appointment Confirmation Email (to Patient)
         public void SendPatientAppointmentConfirmation(UserTblModel patient, UserTblModel doctor, AppointmentsTblModel appointment)
         {
+            if (patient == null) throw new ArgumentNullException(nameof(patient));
+            if (doctor == null) throw new ArgumentNullException(nameof(doctor));
+            if (appointment == null) throw new ArgumentNullException(nameof(appointment));
             SendEmail(new EmailMessageDTO
             {
                 To = patient.email,
@@ -122,6 +141,9 @@ namespace SafeTalkApp.Services
         // Appointment Approved Email (to Patient)
         public void SendPatientAppointmentApproved(UserTblModel patient, UserTblModel doctor, AppointmentsTblModel appointment)
         {
+            if (patient == null) throw new ArgumentNullException(nameof(patient));
+            if (doctor == null) throw new ArgumentNullException(nameof(doctor));
+            if (appointment == null) throw new ArgumentNullException(nameof(appointment));
             SendEmail(new EmailMessageDTO
             {
                 To = patient.email,
@@ -135,6 +157,9 @@ namespace SafeTalkApp.Services
         // Appointment Approved Email (to Doctor)
         public void SendDoctorAppointmentApproved(UserTblModel doctor, UserTblModel patient, AppointmentsTblModel appointment)
         {
+            if (doctor == null) throw new ArgumentNullException(nameof(doctor));
+            if (patient == null) throw new ArgumentNullException(nameof(patient));
+            if (appointment == null) throw new ArgumentNullException(nameof(appointment));
             SendEmail(new EmailMessageDTO
             {
                 To = doctor.email,
@@ -148,6 +173,9 @@ namespace SafeTalkApp.Services
         // Appointment Cancelled Email (to Doctor)
         public void SendDoctorAppointmentCancellation(UserTblModel doctor, UserTblModel patient, AppointmentsTblModel appointment)
         {
+            if (doctor == null) throw new ArgumentNullException(nameof(doctor));
+            if (patient == null) throw new ArgumentNullException(nameof(patient));
+            if (appointment == null) throw new ArgumentNullException(nameof(appointment));
             SendEmail(new EmailMessageDTO
             {
                 To = doctor.email,
@@ -161,6 +189,9 @@ namespace SafeTalkApp.Services
         // Appointment Cancelled Email (to Patient)
         public void SendPatientAppointmentCancellation(UserTblModel patient, UserTblModel doctor, AppointmentsTblModel appointment)
         {
+            if (patient == null) throw new ArgumentNullException(nameof(patient));
+            if (doctor == null) throw new ArgumentNullException(nameof(doctor));
+            if (appointment == null) throw new ArgumentNullException(nameof(appointment));
             SendEmail(new EmailMessageDTO
             {
                 To = patient.email,
@@ -174,6 +205,9 @@ namespace SafeTalkApp.Services
         // Appointment Rejected Email (to Patient)
         public void SendPatientAppointmentRejected(UserTblModel patient, UserTblModel doctor, AppointmentsTblModel appointment)
         {
+            if (patient == null) throw new ArgumentNullException(nameof(patient));
+            if (doctor == null) throw new ArgumentNullException(nameof(doctor));
+            if (appointment == null) throw new ArgumentNullException(nameof(appointment));
             SendEmail(new EmailMessageDTO
             {
                 To = patient.email,
@@ -188,6 +222,9 @@ namespace SafeTalkApp.Services
         // Appointment Rejected Email (to Doctor)
         public void SendDoctorAppointmentRejected(UserTblModel doctor, UserTblModel patient, AppointmentsTblModel appointment)
         {
+            if (doctor == null) throw new ArgumentNullException(nameof(doctor));
+            if (patient == null) throw new ArgumentNullException(nameof(patient));
+            if (appointment == null) throw new ArgumentNullException(nameof(appointment));
             SendEmail(new EmailMessageDTO
             {
                 To = doctor.email,
@@ -202,6 +239,9 @@ namespace SafeTalkApp.Services
         // Referrals
         public void SendReferralCreatedEmail(UserTblModel patient, UserTblModel doctor, ReferralTblModel referral)
         {
+            if (patient == null) throw new ArgumentNullException(nameof(patient));
+            if (doctor == null) throw new ArgumentNullException(nameof(doctor));
+            if (referral == null) throw new ArgumentNullException(nameof(referral));
             var subject = "New Referral Created for You";
             var body = $@"
             <p>Dear {patient.firstName},</p>
@@ -232,6 +272,11 @@ namespace SafeTalkApp.Services
 
         public void SendPaymentSubmittedEmail(UserTblModel admin, AppointmentsTblModel appointment, PaymentTblModel payment, UserTblModel patient, UserTblModel doctor)
         {
+            if (admin == null) throw new ArgumentNullException(nameof(admin));
+            if (appointment == null) throw new ArgumentNullException(nameof(appointment));
+            if (payment == null) throw new ArgumentNullException(nameof(payment));
+            if (patient == null) throw new ArgumentNullException(nameof(patient));
+            if (doctor == null) throw new ArgumentNullException(nameof(doctor));
             var subject = $"New Payment Submitted – Appointment #{appointment.appointmentID}";
             var body = $@"
                 <p>Dear Admin,</p>
@@ -262,6 +307,10 @@ namespace SafeTalkApp.Services
         }
         public void SendPaymentVerifiedEmailToPatient(UserTblModel patient, UserTblModel doctor, AppointmentsTblModel appointment, PaymentTblModel payment)
         {
+            if (patient == null) throw new ArgumentNullException(nameof(patient));
+            if (doctor == null) throw new ArgumentNullException(nameof(doctor));
+            if (appointment == null) throw new ArgumentNullException(nameof(appointment));
+            if (payment == null) throw new ArgumentNullException(nameof(payment));
             var subject = "Your Payment Has Been Verified";
             var startDateTime = DateTime.Today.Add(appointment.startTime);
             var endDateTime = DateTime.Today.Add(appointment.endTime);
@@ -292,6 +341,10 @@ namespace SafeTalkApp.Services
         }
         public void SendPaymentVerifiedEmailToDoctor(UserTblModel doctor, UserTblModel patient, AppointmentsTblModel appointment, PaymentTblModel payment)
         {
+            if (patient == null) throw new ArgumentNullException(nameof(patient));
+            if (doctor == null) throw new ArgumentNullException(nameof(doctor));
+            if (appointment == null) throw new ArgumentNullException(nameof(appointment));
+            if (payment == null) throw new ArgumentNullException(nameof(payment));
             var subject = "A Patient’s Payment Has Been Verified";
             var startDateTime = DateTime.Today.Add(appointment.startTime);
             var endDateTime = DateTime.Today.Add(appointment.endTime);
@@ -322,6 +375,10 @@ namespace SafeTalkApp.Services
         }
         public void SendPaymentRejectedEmailToPatient(UserTblModel patient, UserTblModel doctor, AppointmentsTblModel appointment, PaymentTblModel payment)
         {
+            if (patient == null) throw new ArgumentNullException(nameof(patient));
+            if (doctor == null) throw new ArgumentNullException(nameof(doctor));
+            if (appointment == null) throw new ArgumentNullException(nameof(appointment));
+            if (payment == null) throw new ArgumentNullException(nameof(payment));
             var subject = "Your Payment Has Been Rejected";
             var startDateTime = DateTime.Today.Add(appointment.startTime);
             var endDateTime = DateTime.Today.Add(appointment.endTime);
@@ -352,6 +409,10 @@ namespace SafeTalkApp.Services
         }
         public void SendPaymentRejectedEmailToDoctor(UserTblModel doctor, UserTblModel patient, AppointmentsTblModel appointment, PaymentTblModel payment)
         {
+            if (patient == null) throw new ArgumentNullException(nameof(patient));
+            if (doctor == null) throw new ArgumentNullException(nameof(doctor));
+            if (appointment == null) throw new ArgumentNullException(nameof(appointment));
+            if (payment == null) throw new ArgumentNullException(nameof(payment));
             var subject = "A Patient’s Payment Has Been Rejected";
             var startDateTime = DateTime.Today.Add(appointment.startTime);
             var endDateTime = DateTime.Today.Add(appointment.endTime);
@@ -441,6 +502,10 @@ namespace SafeTalkApp.Services
         // Transcription
         public void SendTranscriptionReadyToPatient(UserTblModel patient, UserTblModel doctor, AppointmentsTblModel appointment, string transcriptFileName)
         {
+            if (patient == null) throw new ArgumentNullException(nameof(patient));
+            if (doctor == null) throw new ArgumentNullException(nameof(doctor));
+            if (appointment == null) throw new ArgumentNullException(nameof(appointment));
+            if (transcriptFileName == null) throw new ArgumentNullException(nameof(transcriptFileName));
             var subject = "Your Consultation Transcript is Ready!";
             var body = $@"
             <p>Dear {patient.firstName},</p>
@@ -470,6 +535,10 @@ namespace SafeTalkApp.Services
         }
         public void SendTranscriptionReadyToDoctor(UserTblModel doctor, UserTblModel patient, AppointmentsTblModel appointment, string transcriptFileName)
         {
+            if (patient == null) throw new ArgumentNullException(nameof(patient));
+            if (doctor == null) throw new ArgumentNullException(nameof(doctor));
+            if (appointment == null) throw new ArgumentNullException(nameof(appointment));
+            if (transcriptFileName == null) throw new ArgumentNullException(nameof(transcriptFileName));
             var subject = "Consultation Transcript Generated";
             var body = $@"
             <p>Dear Dr. {doctor.firstName} {doctor.lastName},</p>
@@ -497,6 +566,5 @@ namespace SafeTalkApp.Services
                 IsBodyHtml = true
             });
         }
-
     }
 }

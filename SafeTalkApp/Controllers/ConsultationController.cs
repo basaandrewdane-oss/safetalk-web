@@ -96,12 +96,15 @@ namespace SafeTalkApp.Controllers
             try
             {
                 var currentUserId = User.Identity.GetUserId<int>();
-                var messages = _consultationService.GetChatMessages(appointmentID);
+                var messages = _consultationService.GetChatMessages(appointmentID, currentUserId);
                 return Json(new
                 {
                     success = true,
-                    currentUserId,
-                    messages
+                    data = new
+                    {
+                        currentUserId = currentUserId,
+                        messages = messages.data // assuming ApiResponse has a Data property
+                    }
                 }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)

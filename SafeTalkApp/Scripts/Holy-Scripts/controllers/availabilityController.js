@@ -17,6 +17,14 @@
                             const [h, m] = a.availabilityEnd.split(':');
                             a.availabilityEnd = new Date(1970, 0, 1, h, m);
                         }
+                        // 🕒 Auto-fill hours and minutes based on slotDuration (in minutes)
+                        if (a.slotDuration) {
+                            a.slotHours = Math.floor(a.slotDuration / 60);
+                            a.slotMinutes = a.slotDuration % 60;
+                        } else {
+                            a.slotHours = 0;
+                            a.slotMinutes = 0;
+                        }
                         return a;
                     });
                 } else {
@@ -61,6 +69,11 @@
             if (a.availabilityEnd instanceof Date) {
                 a.availabilityEnd = a.availabilityEnd.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
             }
+
+            // Convert hours & minutes into total slot duration (in minutes)
+            const hours = parseInt(a.slotHours || 0);
+            const minutes = parseInt(a.slotMinutes || 0);
+            a.slotDuration = (hours * 60) + minutes;
         });
         Swal.fire({
             title: 'Confirm Save',

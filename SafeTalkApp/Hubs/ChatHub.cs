@@ -4,6 +4,7 @@ using SafeTalkApp.Models;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -111,14 +112,14 @@ namespace SafeTalkApp.Hubs
             if (nowPh < appointmentStart)
             {
                 // ❌ Too early
-                Clients.Caller.notifyJoinBlocked("early", appointmentStart.ToString("f"));
+                Clients.Caller.notifyJoinBlocked("early", appointmentStart.ToString("f", CultureInfo.GetCultureInfo("en-US")));
                 return;
             }
 
             if (nowPh > appointmentEnd || appointment.status == 6)
             {
                 // ❌ Already ended
-                Clients.Caller.notifyJoinBlocked("ended", appointmentEnd.ToString("f"));
+                Clients.Caller.notifyJoinBlocked("ended", appointmentEnd.ToString("f", CultureInfo.GetCultureInfo("en-US")));
                 return;
             }
             // Track connection + username

@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using SafeTalkApp.Interfaces;
 using SafeTalkApp.Models;
 using SafeTalkApp.Services;
 using Serilog;
@@ -64,6 +65,8 @@ namespace SafeTalkApp
             container.RegisterType<IResourceService, ResourceService>();
             container.RegisterType<IProfileService, ProfileService>();
             container.RegisterType<IAvailabilityService, AvailabilityService>();
+            container.RegisterType<IFileStorageService, FileStorageService>();
+            container.RegisterType<IDateTimeProvider, DateTimeProviderService>();
 
             var httpClient = new HttpClient();
             container.RegisterInstance<HttpClient>(httpClient);

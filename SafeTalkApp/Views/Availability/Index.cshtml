@@ -31,15 +31,28 @@
                     <td><input type="time" ng-model="a.availabilityStart" /></td>
                     <td><input type="time" ng-model="a.availabilityEnd" /></td>
                     <td>
-                        <select ng-model="a.slotDuration" class="browser-default">
-                            <option value="">Slot Duration</option>
-                            <option ng-value="15">15 minutes</option>
-                            <option ng-value="30">30 minutes</option>
-                            <option ng-value="45">45 minutes</option>
-                            <option ng-value="60">1 hour</option>
-                            <option ng-value="90">1 hour and 30 minutes</option>
-                            <option ng-value="120">2 hours</option>
-                        </select>
+                        <div class="row" style="margin-bottom: 0;">
+                            <div class="input-field col s6" style="padding: 0 5px;">
+                                <input type="number"
+                                       min="0"
+                                       max="8"
+                                       ng-model="a.slotHours"
+                                       placeholder="0">
+                                <label style="font-size: 0.8rem;">Hr</label>
+                            </div>
+                            <div class="input-field col s6" style="padding: 0 5px;">
+                                <input type="number"
+                                       min="0"
+                                       max="59"
+                                       ng-model="a.slotMinutes"
+                                       placeholder="0">
+                                <label style="font-size: 0.8rem;">Min</label>
+                            </div>
+                        </div>
+
+                        <p class="grey-text" style="margin: 0;">
+                            Total: {{ (a.slotHours || 0) * 60 + (a.slotMinutes || 0) }} mins
+                        </p>
                     </td>
                     <td><input type="number" ng-model="a.fee" /></td>
                     <td><button class="btn-flat red-text" ng-click="removeAvailability($index)">✖</button></td>

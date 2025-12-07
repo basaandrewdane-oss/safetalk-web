@@ -1,0 +1,382 @@
+﻿@{
+    Layout = "~/Views/Shared/_AccountLayout.cshtml";
+}
+<!-- User Signup Form-->
+<style>
+    b:hover {
+        color: #9575cd;
+    }
+</style>
+<main class="grey lighten-5">
+    <a href="@Url.Action("Index", "Home")" class="btn-floating btn-large pink lighten-2" style="position: fixed; top: 20px; left: 20px;">
+        <i class="material-icons">arrow_back</i>
+    </a>
+    <!-- Background Light -->
+    <div class="container" ng-controller="AccountController">
+        <div class="row">
+            <div class="col s12 m10 offset-m1 l8 offset-l2">
+                <div class="card z-depth-3">
+                    <div class="card-content">
+                        <h3 class="deep-purple-text text-lighten-3 center">Sign Up</h3>
+                        <div class="input-field col s12 m12 l12" ng-init="getRoles()">
+                            <select id="roleSelect"
+                                    name="roleSelect"
+                                    ng-model="selectedRoleId"
+                                    ng-options="r.roleID as r.roleName for r in roles"
+                                    ng-change="onRoleChange()"
+                                    watch-collection="roles"
+                                    material-select
+                                    required>
+                                <option value="" disabled selected>Choose a role</option>
+                            </select>
+                            <label>Register as</label>
+                            <span class="helper-text red-text text-lighten-2"
+                                  ng-show="!selectedRoleId && (signupForm.$submitted || signupForm.$submitted)">
+                                Please select a role.
+                            </span>
+                        </div>
+
+
+                        <form name="signupForm" ng-submit="signUp()" novalidate>
+                            <!--Log in cred-->
+                            <div class="">
+                                <h4 class="deep-purple-text text-lighten-3" style="margin-left: 10px;">
+                                    Log-in Credentials
+                                </h4>
+                                <div class="input-field col s12 m6 l6">
+                                    <input id="email" name="email" type="email" ng-model="email" ng-blur="checkEmailExists(email)" required>
+                                    <label for="email">Email</label>
+                                    <span class="helper-text red-text text-lighten-2"
+                                          ng-show="(signupForm.email.$touched || signupForm.$submitted) && signupForm.email.$error.required">
+                                        Email is required
+                                    </span>
+                                    <span class="helper-text red-text text-lighten-2"
+                                          ng-show="signupForm.email.$dirty && signupForm.email.$error.email">
+                                        Invalid email format
+                                    </span>
+                                    <span class="helper-text left-align red-text text-lighten-2"
+                                          ng-show="signupForm.email.$error.emailExists">
+                                        Email is already registered
+                                    </span>
+                                </div>
+                                <div class="input-field col s12 m6 l6">
+                                    <input id="password" name="password" type="password" ng-model="password"
+                                           ng-minlength="8" password-validator required>
+                                    <label for="password">Password</label>
+                                    <span class="helper-text red-text text-lighten-2"
+                                          ng-show="(signupForm.password.$touched || signupForm.$submitted) && signupForm.password.$error.required">
+                                        Password is required
+                                    </span>
+                                    <span class="helper-text amber-text text-lighten-2"
+                                          ng-show="(signupForm.password.$dirty || signupForm.$submitted) && signupForm.password.$error.minlength">
+                                        Password must be at least 8 characters.
+                                    </span>
+                                    <span class="helper-text amber-text text-lighten-2"
+                                          ng-show="signupForm.password.$dirty && signupForm.password.$error.pattern">
+                                        Must include uppercase, number, and special character
+                                    </span>
+                                </div>
+                                <div class="input-field col s12 m12 l12">
+                                    <input id="confirmPassword" name="confirmPassword" type="password"
+                                           ng-model="confirmPassword" required>
+                                    <label for="confirmPassword">Confirm Password</label>
+                                    <span class="helper-text red-text text-lighten-2"
+                                          ng-show="(signupForm.confirmPassword.$touched || signupForm.$submitted) && signupForm.confirmPassword.$error.required">
+                                        Confirm Password is required
+                                    </span>
+                                    <span class="helper-text red-text text-lighten-2"
+                                          ng-show="(signupForm.confirmPassword.$dirty || signupForm.$submitted) && confirmPassword !== password">
+                                        Passwords do not match.
+                                    </span>
+                                </div>
+                            </div>
+                            <!--User profile-->
+                            <div class="">
+                                <h4 class="deep-purple-text text-lighten-3" style="margin-left: 10px;">
+                                    User Profile
+                                </h4>
+                                <div class="input-field col s12 m6 l6">
+                                    <input id="first_name" name="firstName" type="text" ng-model="firstName" required>
+                                    <label for="first_name">First Name</label>
+                                    <span class="helper-text red-text text-lighten-2"
+                                          ng-show="(signupForm.firstName.$touched || signupForm.$submitted) && signupForm.firstName.$error.required">
+                                        First Name is required
+                                    </span>
+                                </div>
+                                <div class="input-field col s12 m6 l6">
+                                    <input id="middle_name" name="middleName" type="text" ng-model="middleName">
+                                    <label for="middle_name">Middle Name (Optional)</label>
+                                </div>
+                                <div class="input-field col s12 m6 l6">
+                                    <input id="last_name" name="lastName" type="text" ng-model="lastName" required>
+                                    <label for="last_name">Last Name</label>
+                                    <span class="helper-text red-text text-lighten-2"
+                                          ng-show="(signupForm.lastName.$touched || signupForm.$submitted) && signupForm.lastName.$error.required">
+                                        Last Name is required
+                                    </span>
+                                </div>
+
+                                <!-- Birthdate / Gender / Phone -->
+                                <div class="input-field col s12 m6 l6">
+                                    <input id="birth_date" name="birthDate" type="date"
+                                           ng-model="birthDate" validate-age required>
+                                    <label for="birth_date">Birth Date</label>
+                                    <span class="helper-text red-text text-lighten-2"
+                                          ng-show="(signupForm.birthDate.$touched || signupForm.$submitted) && signupForm.birthDate.$error.required">
+                                        Birth Date is required
+                                    </span>
+                                    <span class="helper-text amber-text text-lighten-2"
+                                          ng-show="signupForm.birthDate.$dirty && signupForm.birthDate.$error.age">
+                                        You must be at least 18 years old
+                                    </span>
+                                </div>
+                                <div class="input-field col s12 m6 l6" ng-init="getGenders()">
+                                    <select id="gender" name="gender" ng-model="selectedGender"
+                                            ng-options="g.genderID as g.gender for g in genders"
+                                            material-select watch-collection="genders" required>
+                                        <option value="" disabled selected>Choose your option</option>
+                                    </select>
+                                    <label>Gender</label>
+                                    <span class="helper-text red-text text-lighten-2"
+                                          ng-show="(signupForm.gender.$touched || signupForm.$submitted) && signupForm.gender.$error.required">
+                                        Gender is required
+                                    </span>
+                                </div>
+                                <div class="input-field col s12 m6 l6">
+                                    <input id="phone_number" name="phoneNumber" type="text"
+                                           ng-model="phoneNumber" required ng-pattern="/^(09|\+639)\d{9}$/">
+                                    <label for="phone_number">Mobile Number</label>
+                                    <span class="helper-text red-text text-lighten-2"
+                                          ng-show="(signupForm.phoneNumber.$touched || signupForm.$submitted) && signupForm.phoneNumber.$error.required">
+                                        Phone Number is required
+                                    </span>
+                                    <span class="helper-text amber-text text-lighten-2"
+                                          ng-show="(signupForm.phoneNumber.$touched || signupForm.$submitted) && signupForm.phoneNumber.$error.pattern">
+                                        Enter a valid Philippine mobile number (e.g. 09171234567 or +639171234567)
+                                    </span>
+                                </div>
+                            </div>
+                            <!--doctor cred-->
+                            <div ng-show="roleName === 'Doctor'">
+                                <div class="">
+                                    <h4 class="deep-purple-text text-lighten-3" style="margin-left: 10px;">
+                                        Credentials and Availability
+                                    </h4>
+                                </div>
+                                <div class="">
+                                    <div class="input-field col s12 m6 l6">
+                                        <input id="license_number"
+                                               name="licenseNumber"
+                                               type="text"
+                                               ng-model="licenseNumber"
+                                               ng-minlength="7"
+                                               ng-pattern="/^[0-9]*$/"
+                                               ng-required="roleName === 'Doctor'"
+                                               required>
+                                        <label for="license_number">License Number</label>
+
+                                        <span class="helper-text left-align red-text text-lighten-2"
+                                              ng-show="(signupForm.licenseNumber.$touched || signupForm.$submitted) && signupForm.licenseNumber.$error.required">
+                                            License number is required
+                                        </span>
+
+                                        <span class="helper-text left-align amber-text text-lighten-2"
+                                              ng-show="signupForm.licenseNumber.$dirty && signupForm.licenseNumber.$error.minlength">
+                                            License number must be at least 7 digits
+                                        </span>
+
+                                        <span class="helper-text left-align red-text text-lighten-2"
+                                              ng-show="signupForm.licenseNumber.$error.pattern">
+                                            Only numbers are allowed
+                                        </span>
+                                    </div>
+                                    <div class="input-field col s12 m6 l6">
+                                        <input id="specialization"
+                                               name="specialization"
+                                               type="text"
+                                               ng-model="specialization"
+                                               ng-required="roleName === 'Doctor'"
+                                               required>
+                                        <label for="specialization">Specialization</label>
+                                        <span class="helper-text left-align red-text text-lighten-2"
+                                              ng-show="(signupForm.specialization.$touched || signupForm.$submitted) && signupForm.specialization.$error.required">
+                                            Specialization is required
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="">
+                                    <div class="input-field col s12 m12 l12" ng-init="getDaysOfWeek()">
+                                        <select multiple
+                                                id="days"
+                                                name="days"
+                                                ng-model="selectedDays"
+                                                material-select
+                                                watch-collection="daysOfWeek"
+                                                form-name="signupForm"
+                                                ng-options="d.dayID as d.day for d in daysOfWeek"
+                                                ng-required="roleName === 'Doctor'"
+                                                required>
+                                            <option value="" disabled>Select Available Days</option>
+                                        </select>
+                                        <label for="days">Available Days</label>
+                                        <span class="helper-text left-align red-text text-lighten-2"
+                                              ng-show="(signupForm.days.$touched || signupForm.$submitted) && signupForm.days.$error.required">
+                                            Select at least one day.
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="" ng-repeat="day in selectedDays">
+                                    <!-- Start Time -->
+                                    <div class="input-field col s12 m6 l6">
+                                        <input id="timeStart{{day}}"
+                                               name="timeStart{{day}}"
+                                               type="time"
+                                               ng-model="availabilityTimes[day].start"
+                                               placeholder="Start Time"
+                                               min="08:00" max="20:00"
+                                               ng-required="roleName === 'Doctor'"
+                                               required>
+                                        <label for="timeStart{{day}}" class="active">
+                                            <b class="teal-text text-lighten-2">Start Time</b> for
+                                            <b class="deep-purple-text text-lighten-3">{{getDayName(day)}}</b>
+                                        </label>
+
+                                        <!-- Required validation -->
+                                        <span class="helper-text left-align red-text text-lighten-2"
+                                              ng-show="(signupForm['timeStart' + day].$touched || signupForm.$submitted) && signupForm['timeStart' + day].$error.required">
+                                            This field is required
+                                        </span>
+
+                                        <!-- Min validation -->
+                                        <span class="helper-text left-align red-text text-lighten-2"
+                                              ng-show="(signupForm['timeStart' + day].$touched || signupForm.$submitted) && signupForm['timeStart' + day].$error.min">
+                                            Start time cannot be earlier than 08:00 AM
+                                        </span>
+
+                                        <!-- Max validation -->
+                                        <span class="helper-text left-align red-text text-lighten-2"
+                                              ng-show="(signupForm['timeStart' + day].$touched || signupForm.$submitted) && signupForm['timeStart' + day].$error.max">
+                                            Start time cannot be later than 08:00 PM
+                                        </span>
+                                    </div>
+                                    <!-- End Time -->
+                                    <div class="input-field col s12 m6 l6">
+                                        <input id="timeEnd{{day}}"
+                                               name="timeEnd{{day}}"
+                                               end-after-start="availabilityTimes[day].start"
+                                               type="time"
+                                               ng-model="availabilityTimes[day].end"
+                                               placeholder="End Time"
+                                               min="08:00" max="20:00"
+                                               ng-required="roleName === 'Doctor'"
+                                               required>
+                                        <label for="timeEnd{{day}}">
+                                            <b class="pink-text text-lighten-2">End Time</b> for
+                                            <b class="deep-purple-text text-lighten-3">{{getDayName(day)}}</b>
+                                        </label>
+
+                                        <!-- Required validation -->
+                                        <span class="helper-text left-align red-text text-lighten-2"
+                                              ng-show="(signupForm['timeEnd' + day].$touched || signupForm.$submitted) && signupForm['timeEnd' + day].$error.required">
+                                            This field is required
+                                        </span>
+                                        <!-- Min validation -->
+                                        <span class="helper-text left-align red-text text-lighten-2"
+                                              ng-show="(signupForm['timeEnd' + day].$touched || signupForm.$submitted) && signupForm['timeEnd' + day].$error.min">
+                                            End time cannot be earlier than 08:00 AM
+                                        </span>
+
+                                        <!-- Max validation -->
+                                        <span class="helper-text left-align red-text text-lighten-2"
+                                              ng-show="(signupForm['timeEnd' + day].$touched || signupForm.$submitted) && signupForm['timeEnd' + day].$error.max">
+                                            End time cannot be later than 08:00 PM
+                                        </span>
+
+                                        <!-- Custom directive validation (End > Start) -->
+                                        <span ng-show="signupForm['timeEnd' + day].$error.endAfterStart"
+                                              class="helper-text left-align red-text text-lighten-2">
+                                            End time must be later than start time
+                                        </span>
+                                    </div>
+                                </div>
+                                <div ng-show="selectedDays && selectedDays.length > 0">
+                                    <div class="input-field col s12 m12 l12">
+                                        <input id="fee"
+                                               name="fee"
+                                               type="number"
+                                               min="0"
+                                               step="0.01"
+                                               ng-model="fee"
+                                               placeholder="Fee"
+                                               ng-required="roleName === 'Doctor'"
+                                               required>
+                                        <label for="fee{{day}}"><b class="teal-text text-lighten-2">Fee</b></label>
+
+                                        <span class="helper-text left-align red-text text-lighten-2"
+                                              ng-show="(signupForm.fee.$touched || signupForm.$submitted) && signupForm.fee.$error.required">
+                                            Fee is required.
+                                        </span>
+                                        <span class="helper-text left-align red-text text-lighten-2"
+                                              ng-show="signupForm.fee.$error.min">
+                                            Fee must be at least ₱0.
+                                        </span>
+                                        <span class="helper-text left-align red-text text-lighten-2"
+                                              ng-show="signupForm.fee.$error.max">
+                                            Fee must not exceed ₱10,000.
+                                        </span>
+                                    </div>
+                                    <div class="input-field col s12 m12 l12" style="margin-top: 0px;">
+                                        <div class="row">
+                                            <div class="input-field col s12 m6 l6">
+                                                <input id="slotHours"
+                                                       type="number"
+                                                       min="0"
+                                                       max="8"
+                                                       ng-model="slotHours"
+                                                       ng-required="roleName === 'Doctor'"
+                                                       placeholder="Hours">
+                                                <label for="slotHours"><b class="teal-text text-lighten-2">Slot Duration</b> per Appointment</label>
+                                            </div>
+                                            <div class="input-field col s12 m6 l6">
+                                                <input id="slotMinutes"
+                                                       type="number"
+                                                       min="0"
+                                                       max="59"
+                                                       ng-model="slotMinutes"
+                                                       ng-required="roleName === 'Doctor'"
+                                                       placeholder="Minutes">
+                                            </div>
+                                        </div>
+                                        <span class="helper-text grey-text">
+                                            Total duration: {{ ((slotHours || 0) * 60 + (slotMinutes || 0)) }} minutes per appointment
+                                        </span>
+
+                                        <span class="helper-text left-align red-text text-lighten-2"
+                                              ng-show="(signupForm.slotDuration.$touched || signupForm.$submitted) && (!slotHours && !slotMinutes)">
+                                            Slot duration is required
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Buttons -->
+                            <div class="center-align" style="margin-top: 20px;">
+                                <!-- Primary Action -->
+                                <button class="waves-effect waves-light btn-large pink lighten-2 white-text" type="submit">
+                                    Sign Up
+                                </button>
+                                <!-- Secondary Action -->
+                                <a class="waves-effect waves-light btn-large teal lighten-2 white-text" style="margin-top: 5px;"
+                                   ng-click="cancelSignUp()">
+                                    Cancel
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="center-align deep-purple-text text-lighten-3">
+                        Already have an account? <a href="/Account/Login" class="pink-text text-lighten-3"><b>Log in</b></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

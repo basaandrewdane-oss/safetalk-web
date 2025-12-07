@@ -30,12 +30,12 @@ namespace SafeTalkApp.Tests.Services
             {
                 firstName = "John",
                 lastName = "Doe",
-                birthDate = new DateTime(1990, 1, 1),
+                birthDate = "1990-01-01",
                 genderID = 1,
                 phoneNumber = "09123456789",
                 email = "john@test.com",
                 password = "Password123!",
-                
+
                 roleID = 1
             };
 
@@ -54,7 +54,7 @@ namespace SafeTalkApp.Tests.Services
 
             // Assert
             Assert.IsTrue(result.success);
-            mockUserDbSet.Verify(db => db.Add(It.Is<UserTblModel>(u => u.email == dto.email)    ), Times.Once);
+            mockUserDbSet.Verify(db => db.Add(It.Is<UserTblModel>(u => u.email == dto.email)), Times.Once);
             mockUserRoleDbSet.Verify(db => db.Add(It.Is<UserRoleTblModel>(ur => ur.roleID == dto.roleID)), Times.Once);
             _mockContext.Verify(c => c.SaveChanges(), Times.AtLeast(2));
         }
@@ -67,7 +67,7 @@ namespace SafeTalkApp.Tests.Services
             {
                 firstName = "Alice",
                 lastName = "Smith",
-                birthDate = new DateTime(1985, 5, 5),
+                birthDate = "1985-05-05",
                 genderID = 2,
                 phoneNumber = "09998887777",
                 email = "alice@doc.com",
@@ -108,7 +108,7 @@ namespace SafeTalkApp.Tests.Services
             {
                 firstName = "Bob",
                 lastName = "Fail",
-                birthDate = DateTime.Now,
+                birthDate = "1990-01-01",
                 genderID = 1,
                 phoneNumber = "09001112222",
                 email = "fail@test.com",
@@ -144,7 +144,7 @@ namespace SafeTalkApp.Tests.Services
 
             // Assert
             Assert.IsFalse(result.success);
-            Assert.AreEqual("Invalid email.", result.message);
+            Assert.AreEqual("Invalid email or password.", result.message);
         }
 
         [TestMethod]
@@ -176,7 +176,7 @@ namespace SafeTalkApp.Tests.Services
 
             // Assert
             Assert.IsFalse(result.success);
-            Assert.AreEqual("Please verify your email before logging in.", result.message);
+            Assert.AreEqual("Please verify your email before logging in. Check your email inbox or spam section.", result.message);
         }
 
         [TestMethod]
@@ -224,7 +224,5 @@ namespace SafeTalkApp.Tests.Services
             // doctor flagged as not verified
             Assert.AreEqual("Your account is pending verification. Please wait for an administrator to verify your account.", result.message);
         }
-
-        
     }
 }

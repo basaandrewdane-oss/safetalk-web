@@ -3,6 +3,7 @@ using SafeTalkApp.DTOs.Shared;
 using SafeTalkApp.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using static SafeTalkApp.DTOs.Appointment.DoctorAvailabilityDTO;
@@ -28,10 +29,17 @@ namespace SafeTalkApp.Services
                 if (appointment == null)
                     return ApiResponse<AppointmentStatusDTO>.Fail("Appointment not found.");
 
+                var phTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Singapore Standard Time");
+
+                var endTimeLocal = appointment.date.Add(appointment.endTime);
+
+                // convert PH time → UTC before serializing
+                var endTimeUtc = TimeZoneInfo.ConvertTimeToUtc(endTimeLocal, phTimeZone);
+
                 var dto = new AppointmentStatusDTO
                 {
                     status = appointment.status,
-                    endTime = appointment.date.Add(appointment.endTime) // if endTime is a TimeSpan
+                    endTime = endTimeUtc
                 };
 
                 return ApiResponse<AppointmentStatusDTO>.Ok(dto);
@@ -321,7 +329,8 @@ namespace SafeTalkApp.Services
                                         patientName = d.firstName + " " + d.lastName,
                                         patientEmail = d.email,
                                         paymentImage = p.imagePath,
-                                        transcriptPath = a.transcriptFilePath
+                                        transcriptPath = a.transcriptFilePath,
+                                        chiefComplaint = a.chiefComplaint
                                     }).ToList();
 
                 return ApiResponse<IEnumerable<DoctorAppointmentDTO>>.Ok(appointments);
@@ -411,24 +420,35 @@ namespace SafeTalkApp.Services
         {
             try
             {
-                var today = DateTime.Now.Date;
+                // Convert server time → Philippine time
+                var phTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Singapore Standard Time");
+                var now = TimeZoneInfo.ConvertTime(DateTime.UtcNow, phTimeZone);
 
-                // Get appointments before today that are still unpaid or pending
-                // Join appointments with payments
-                var pastAppointments = (from a in _db.appointments_tbl
-                                        join p in _db.payment_tbl
-                                            on a.appointmentID equals p.appointmentID into ap
-                                        from payment in ap.DefaultIfEmpty() // left join
-                                        where a.date < today &&
-                                              (a.status == AppointmentStatus.Pending ||
-                                               a.status == AppointmentStatus.Approved) &&
-                                              (
-                                                  payment == null /*|| */// no payment
-                                              /*payment.status == PaymentStatus.Rejected*/ // explicitly rejected
-                                              )
-                                        select a).ToList();
+                // Step 1: Fetch candidate appointments WITHOUT time comparison
+                var candidates = (from a in _db.appointments_tbl
+                                  join p in _db.payment_tbl
+                                    on a.appointmentID equals p.appointmentID into ap
+                                  from payment in ap.DefaultIfEmpty()
+                                  where a.status == AppointmentStatus.Pending ||
+                                        a.status == AppointmentStatus.Approved
+                                  select new { Appt = a, Payment = payment })
+                                  .ToList(); // <-- Forces LINQ-to-Objects (safe zone)
 
-                // Mark them as missed
+                var pastAppointments = new List<AppointmentsTblModel>();
+
+                // Step 2: Compute endDateTime in memory (LINQ-to-Objects)
+                foreach (var item in candidates)
+                {
+                    if (item.Payment != null)
+                        continue;
+
+                    var endDateTime = item.Appt.date.Date + item.Appt.endTime;
+
+                    if (endDateTime < now)
+                        pastAppointments.Add(item.Appt);
+                }
+
+                // Step 3: Update missed appointments
                 foreach (var appt in pastAppointments)
                 {
                     appt.status = AppointmentStatus.Missed;
@@ -439,7 +459,11 @@ namespace SafeTalkApp.Services
             }
             catch (Exception ex)
             {
-                return ApiResponse<bool>.Fail($"Error updating missed appointments: {ex.Message}");
+                var error = ex.Message;
+                if (ex.InnerException != null)
+                    error += " | Inner: " + ex.InnerException.Message;
+
+                return ApiResponse<bool>.Fail($"Error updating missed appointments: {error}");
             }
         }
     }

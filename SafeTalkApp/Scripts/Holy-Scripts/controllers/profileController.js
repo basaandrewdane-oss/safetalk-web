@@ -43,6 +43,8 @@
         updateProfile(formData).then(function (response) {
             if (response.data.success) {
                 Swal.fire("Success", "Profile updated successfully", "success");
+            } else {
+                Swal.fire("Error", response.data.message, "error");
             }
         }, function (error) {
             Swal.fire("Error", "Failed to update profile", "error");

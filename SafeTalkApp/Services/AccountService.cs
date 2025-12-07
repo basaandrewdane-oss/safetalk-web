@@ -125,8 +125,51 @@ namespace SafeTalkApp.Services
 
                 if (user == null)
                 {
-                    return ApiResponse<UserDTO>.Fail("Invalid email.");
+                    return ApiResponse<UserDTO>.Fail("Invalid email or password.");
                 }
+
+                // Check if user is locked
+                if (user.isLocked)
+                {
+                    if (user.lockoutEnd != null && user.lockoutEnd > DateTime.Now)
+                    {
+                        var minutesLeft = user.lockoutEnd.HasValue ? (user.lockoutEnd.Value - DateTime.Now).Minutes : 0;
+                        return ApiResponse<UserDTO>.Fail($"Your account is locked. Try again in {minutesLeft} minute(s).");
+                    }
+                    else
+                    {
+                        // Unlock after cooldown
+                        user.isLocked = false;
+                        user.failedLoginAttempts = 0;
+                        user.lockoutEnd = null;
+                        _db.SaveChanges();
+                    }
+                }
+
+                // Check password
+                if (!BCrypt.Net.BCrypt.Verify(login.password, user.password))
+                {
+                    user.failedLoginAttempts += 1;
+                    user.lastFailedLoginAttempt = DateTime.Now;
+
+                    // Lock user after 5 failed attempts
+                    if (user.failedLoginAttempts >= 5)
+                    {
+                        user.isLocked = true;
+                        user.lockoutEnd = DateTime.Now.AddMinutes(15);
+                        _db.SaveChanges();
+                        return ApiResponse<UserDTO>.Fail("Too many failed attempts. Your account is locked for 15 minutes.");
+                    }
+
+                    _db.SaveChanges();
+                    return ApiResponse<UserDTO>.Fail($"Invalid email or password. Attempts left: {5 - user.failedLoginAttempts}");
+                }
+
+                // ✅ Successful login
+                user.failedLoginAttempts = 0;
+                user.isLocked = false;
+                user.lockoutEnd = null;
+                _db.SaveChanges();
 
                 if (!user.isEmailVerified)
                 {
@@ -136,11 +179,6 @@ namespace SafeTalkApp.Services
                 if (user.isVerified == false)
                 {
                     return ApiResponse<UserDTO>.Fail("Your account is pending verification. Please wait for an administrator to verify your account.");
-                }
-
-                if (!BCrypt.Net.BCrypt.Verify(login.password, user.password))
-                {
-                    return ApiResponse<UserDTO>.Fail("Wrong password.");
                 }
 
                 // Get role name

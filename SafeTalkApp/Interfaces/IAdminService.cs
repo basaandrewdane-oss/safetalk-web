@@ -22,5 +22,7 @@ namespace SafeTalkApp.Services
         ApiResponse<IEnumerable<UsersDTO>> GetUsers();
         ApiResponse<bool> VerifyUser(int userID);
         ApiResponse<bool> DeleteUser(int userID);
+
+        ApiResponse<IEnumerable<AppointmentsDTO>> GetAppointmentsForAdmin();
     }
 }

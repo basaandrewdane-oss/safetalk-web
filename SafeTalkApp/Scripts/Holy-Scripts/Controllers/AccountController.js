@@ -2,6 +2,9 @@
     $scope.emailExists = false;
     $scope.forgot = {};
     $scope.token = "";
+    $scope.roles = [];
+    $scope.roleName = null; // used in ng-show
+    $scope.selectedRoleId = null;
     let forgotModal;
 
     window.addEventListener('pageshow', function (event) {
@@ -11,65 +14,20 @@
     });
 
     $scope.getRoles = function () {
-        var getRoles = AccountService.getRoles();
-        getRoles.then(function (result) {
-            const filteredRoles = result.data.filter(r => r.roleName === "User" || r.roleName === "Doctor");
-            var inputOptions = {};
-            filteredRoles.forEach(r => {
-                inputOptions[r.roleID] = r.roleName;
-            });
-            Swal.fire({
-                title: "Choose Role",
-                input: "select",
-                inputOptions: inputOptions,
-                inputPlaceholder: "Select a role",
-                showCancelButton: true,
-                inputValidator: (value) => {
-                    return new Promise((resolve) => {
-                        if (value) {
-                            resolve(); // valid selection
-                        } else {
-                            resolve("Please select a role.");
-                        }
-                    });
-                }
-            }).then(result => {
-                if (result.isConfirmed) {
-                    var chosenRoleId = result.value;
-                    var chosenRole = inputOptions[result.value];
-                    Swal.fire({
-                        title: `You selected: ${chosenRole}`,
-                        text: "You will be redirected to the signup page.",
-                        icon: "info",
-                        showCancelButton: true,
-                        confirmButtonText: "Proceed",
-                        cancelButtonText: "Cancel"
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            sessionStorage.setItem("selectedRole", chosenRoleId);
-
-                            // ✅ SweetAlert2 loading modal
-                            Swal.fire({
-                                title: "Redirecting...",
-                                allowOutsideClick: false,
-                                didOpen: () => {
-                                    Swal.showLoading();
-                                }
-                            });
-                            setTimeout(() => {
-                                if (chosenRole === "User" || chosenRole === "Doctor") {
-                                    window.location.href = "/Account/Signup/" + chosenRole.toLowerCase();
-                                }
-                            }, 200); // Redirect after 2 seconds
-                        }
-                    })
-                }
-            });
+        AccountService.getRoles().then(function (result) {
+            $scope.roles = result.data.filter(r => r.roleName === "User" || r.roleName === "Doctor");
         }).catch(function (error) {
             console.error("Could not load roles", error.message);
             Swal.fire("Error", error.message || "Unable to load role list.", "error");
         });
-    }
+    };
+
+    $scope.onRoleChange = function () {
+        const selectedRole = $scope.roles.find(r => r.roleID === $scope.selectedRoleId);
+        if (selectedRole) {
+            $scope.roleName = selectedRole.roleName; // triggers ng-show form
+        }
+    };
 
     $scope.getGenders = function () {
         var getGenders = AccountService.getGenders();
@@ -96,8 +54,7 @@
     };
 
     $scope.signUp = function () {
-        if (($scope.userForm && $scope.userForm.$invalid) ||
-            ($scope.doctorForm && $scope.doctorForm.$invalid)) {
+        if ($scope.signupForm && $scope.signupForm.$invalid) {
             Swal.fire("Error", "Please check required fields", "error");
             return;
         }
@@ -147,24 +104,27 @@
                 Swal.showLoading();
             }
         });
-        $scope.selectedRole = parseInt(sessionStorage.getItem("selectedRole"));
+        const selectedRole = $scope.selectedRoleId
 
-        if ($scope.selectedRole == 2) {
+        if (selectedRole == 2) {
             var availability = $scope.selectedDays
                 .map(day => {
                     const startDate = new Date($scope.availabilityTimes[day].start);
                     const endDate = new Date($scope.availabilityTimes[day].end);
                     const pad = n => n.toString().padStart(2, '0');
+                    const hours = parseInt($scope.slotHours || 0);
+                    const minutes = parseInt($scope.slotMinutes || 0);
+                    const totalMinutes = (hours * 60) + minutes;
 
                     return {
                         dayID: day,
                         availabilityStart: `${pad(startDate.getHours())}:${pad(startDate.getMinutes())}`,
                         availabilityEnd: `${pad(endDate.getHours())}:${pad(endDate.getMinutes())}`,
-                        fee: $scope.availabilityTimes[day].fee,
-                        slotDuration: $scope.availabilityTimes[day].slotDuration
+                        fee: $scope.fee,
+                        slotDuration: totalMinutes
                     };
                 })
-                .filter(a => a.availabilityStart && a.availabilityEnd);
+                .filter(a => a.availabilityStart && a.availabilityEnd && a.slotDuration > 0);
         }
 
         var formatDate = date => {
@@ -174,7 +134,7 @@
         };
 
         var userData = {
-            roleID: $scope.selectedRole,
+            roleID: selectedRole,
             firstName: $scope.firstName,
             middleName: $scope.middleName,
             lastName: $scope.lastName,
@@ -219,19 +179,10 @@
         checkEmail.then(function (result) {
             if (result.success) {
                 $scope.emailExists = result.data;
+                $scope.signupForm.email.$setValidity('emailExists', !$scope.emailExists);
             }
         });
     }
-
-    $scope.currentStep = 1;
-
-    $scope.nextStep = function () {
-        if ($scope.currentStep < 3) $scope.currentStep++;
-    };
-
-    $scope.prevStep = function () {
-        if ($scope.currentStep > 1) $scope.currentStep--;
-    };
 
     $scope.login = function () {
         if ($scope.loginForm.$invalid) {
@@ -243,6 +194,16 @@
             email: $scope.email,
             password: $scope.password
         };
+
+        // 👉 Show loading immediately
+        Swal.fire({
+            title: "Logging in...",
+            text: "Please wait while we verify your credentials.",
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
 
         var login = AccountService.login(loginData);
         login.then(function (result) {
@@ -318,8 +279,7 @@
             cancelButtonText: "No, keep going.",
         }).then((result) => {
             if (result.isConfirmed) {
-                sessionStorage.removeItem("selectedRole");
-                window.location.href = "/Account/Login";
+                $scope.resetForm();
             }
         })
     }
@@ -427,10 +387,36 @@
         });
     };
 
+    $scope.resetForm = function () {
+        if ($scope.signupForm) {
+            $scope.signupForm.$setPristine();
+            $scope.signupForm.$setUntouched();
+            $scope.firstName = '';
+            $scope.middleName = '';
+            $scope.lastName = '';
+            $scope.birthDate = '';
+            $scope.selectedGender = '';
+            $scope.phoneNumber = '';
+            $scope.email = '';
+            $scope.password = '';
+            $scope.confirmPassword = '';
+
+            // Clear doctor-only fields
+            $scope.licenseNumber = '';
+            $scope.specialization = '';
+            $scope.selectedDays = [];
+            $scope.availabilityTimes = {};
+            $scope.$apply();
+        }
+        setTimeout(function () {
+            M.updateTextFields(); // refresh label positions
+        }, 100);
+    }
+
     angular.element(document).ready(function () {
         var elem = document.getElementById('forgotPasswordModal');
         forgotModal = M.Modal.init(elem, {
-            dismissible: false,
+            dismissible: true,
             onOpenEnd: function () {
             }
         });

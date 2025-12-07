@@ -277,7 +277,6 @@
         });
     }
 
-    // Verify user
     $scope.verifyUser = function (user) {
         Swal.fire({
             title: "Verify user?",
@@ -299,7 +298,6 @@
         });
     };
 
-    // Delete user
     $scope.deleteUser = function (user) {
         Swal.fire({
             title: "Delete user?",
@@ -320,5 +318,34 @@
             }
         });
     };
+
+    $scope.getAppointmentsForAdmin = function () {
+        if ($.fn.DataTable.isDataTable('#appointmentsTable')) {
+            $('#appointmentsTable').DataTable().destroy();
+        }
+        var getAppointments = AdminService.getAppointments()
+        getAppointments.then(function (result) {
+            if (result.success) {
+                $scope.appointments = result.data
+                $timeout(function () {
+                    $('#appointmentsTable').DataTable({
+                        responsive: true,
+                        language: {
+                            paginate: {
+                                next: 'Next ',
+                                previous: 'Previous'
+                            }
+                        },
+                        drawCallback: function () {
+                            $('#appointmentsTable_length select').formSelect();
+                        }
+                    });
+                })
+            }
+        }).catch(function (error) {
+            console.error("Error loading appointments", error);
+            Swal.fire("Error", "Unable to load appointments.", "error");
+        });
+    }
 }
 ]);

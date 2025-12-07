@@ -118,7 +118,5 @@ namespace SafeTalkApp.Services
                 return ApiResponse<bool>.Fail("Error saving availability: " + ex.Message);
             }
         }
-
-
     }
 }

@@ -11,7 +11,7 @@ namespace SafeTalkApp.Services
     public interface IConsultationService
     {
         ApiResponse<AppointmentResultDTO> GetAppointment(int appointmentID);
-        ApiResponse<IEnumerable<ChatMessageDTO>> GetChatMessages(int appointmentID);
+        ApiResponse<IEnumerable<ChatMessageDTO>> GetChatMessages(int appointmentID, int currentUserId);
         ApiResponse<IEnumerable<AppointmentResultDTO>> GetPatientConsultations(int userID);
         ApiResponse<IEnumerable<AppointmentResultDTO>> GetDoctorConsultations(int userID);
         ApiResponse<bool> CreateReferral(ReferralDTO model);

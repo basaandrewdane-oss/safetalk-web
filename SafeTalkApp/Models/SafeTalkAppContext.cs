@@ -15,7 +15,7 @@ namespace SafeTalkApp.Models
             Database.SetInitializer<SafeTalkAppContext>(null);
         }
 
-        public SafeTalkAppContext() : base("name=dbs14917142") { }
+        public SafeTalkAppContext() : base("name=safetalkappdb") { }
 
         public virtual DbSet<AppointmentsTblModel> appointments_tbl { get; set; }
         public virtual DbSet<ChatMessageTblModel> chat_message_tbl { get; set; }

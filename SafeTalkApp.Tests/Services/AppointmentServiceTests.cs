@@ -3,12 +3,7 @@ using SafeTalkApp.DTOs.Appointment;
 using SafeTalkApp.Models;
 using SafeTalkApp.Services;
 using SafeTalkApp.Tests.Helpers;
-using System;
-using System.Collections.Generic;
 using System.Data.Entity;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static SafeTalkApp.DTOs.Appointment.DoctorAvailabilityDTO;
 
 namespace SafeTalkApp.Tests.Services
@@ -47,6 +42,8 @@ namespace SafeTalkApp.Tests.Services
             var mockAppointmentsDbSet = MockDbSetHelper.BuildMockDbSet(appointments);
             _mockContext.Setup(c => c.appointments_tbl).Returns(mockAppointmentsDbSet.Object);
 
+            var expectedUtcEndTime = new DateTime(2025, 10, 3, 7, 30, 0, DateTimeKind.Utc);
+
             // Act
             var result = _service.GetAppointmentStatus(1);
 
@@ -54,7 +51,7 @@ namespace SafeTalkApp.Tests.Services
             Assert.IsTrue(result.success);
             Assert.IsNotNull(result.data);
             Assert.AreEqual(3, result.data.status);
-            Assert.AreEqual(date.Add(new TimeSpan(1, 30, 0)), result.data.endTime);
+            Assert.AreEqual(expectedUtcEndTime, result.data.endTime);
         }
 
         [TestMethod]
@@ -183,7 +180,8 @@ namespace SafeTalkApp.Tests.Services
                     dayID = 1,
                     availabilityStart = new TimeSpan(9, 0, 0),
                     availabilityEnd = new TimeSpan(12, 0, 0),
-                    fee = 500
+                    fee = 500,
+                    slotDuration = 30,
                 }
             }.AsQueryable();
 
@@ -194,7 +192,7 @@ namespace SafeTalkApp.Tests.Services
 
             var users = new List<UserTblModel>
             {
-                new UserTblModel { userID = 10, slotDuration = 30 }
+                new UserTblModel { userID = 10 }
             }.AsQueryable();
 
             _mockContext.Setup(c => c.user_tbl).Returns(MockDbSetHelper.BuildMockDbSet(users).Object);
@@ -227,7 +225,7 @@ namespace SafeTalkApp.Tests.Services
 
             var users = new List<UserTblModel>
             {
-                new UserTblModel { userID = 99, slotDuration = 30 }
+                new UserTblModel { userID = 99 }
             }.AsQueryable();
 
             _mockContext.Setup(c => c.user_tbl).Returns(MockDbSetHelper.BuildMockDbSet(users).Object);
@@ -727,8 +725,14 @@ namespace SafeTalkApp.Tests.Services
 
             _mockContext.Setup(c => c.appointments_tbl).Returns(mockAppointments.Object);
 
+            var dto = new AppointmentResultDTO
+            {
+                appointmentID = 1,
+                rejectReason = "Patient cancelled"
+            };
+
             // Act
-            var result = _service.RejectAppointment(1);
+            var result = _service.RejectAppointment(dto);
 
             // Assert
             Assert.IsTrue(result.success);
@@ -749,8 +753,14 @@ namespace SafeTalkApp.Tests.Services
 
             _mockContext.Setup(c => c.appointments_tbl).Returns(mockAppointments.Object);
 
+            var dto = new AppointmentResultDTO
+            {
+                appointmentID = 999,
+                rejectReason = "Not found test"
+            };
+
             // Act
-            var result = _service.RejectAppointment(999);
+            var result = _service.RejectAppointment(dto);
 
             // Assert
             Assert.IsFalse(result.success);
@@ -765,8 +775,14 @@ namespace SafeTalkApp.Tests.Services
             _mockContext.Setup(c => c.appointments_tbl.Find(It.IsAny<int>()))
                         .Throws(new Exception("DB error"));
 
+            var dto = new AppointmentResultDTO
+            {
+                appointmentID = 1,
+                rejectReason = "Trigger exception"
+            };
+
             // Act
-            var result = _service.RejectAppointment(1);
+            var result = _service.RejectAppointment(dto);
 
             // Assert
             Assert.IsFalse(result.success);

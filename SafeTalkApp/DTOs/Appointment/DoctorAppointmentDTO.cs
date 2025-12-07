@@ -17,5 +17,6 @@ namespace SafeTalkApp.DTOs.Appointment
         public string patientEmail { get; set; }
         public string paymentImage { get; set; }
         public string transcriptPath { get; set; }
+        public string chiefComplaint { get; set; }
     }
 }

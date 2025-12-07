@@ -1,12 +1,8 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
+﻿using Moq;
 using SafeTalkApp.DTOs.Admin;
 using SafeTalkApp.Models;
 using SafeTalkApp.Services;
 using SafeTalkApp.Tests.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace SafeTalkApp.Tests.Services
 {

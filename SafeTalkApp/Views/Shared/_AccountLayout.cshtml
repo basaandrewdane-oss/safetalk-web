@@ -73,10 +73,15 @@
             border-bottom: 1px solid #9575CD !important;
             box-shadow: 0 1px 0 0 #9575CD !important;
         }
+
+        [ng-cloak], [data-ng-cloak], [x-ng-cloak],
+        .ng-cloak, .x-ng-cloak {
+            display: none !important;
+        }
     </style>
 </head>
 
-<body ng-app="SafeTalkApp">
+<body ng-app="SafeTalkApp" ng-cloak>
     <div>
         @RenderBody()
     </div>

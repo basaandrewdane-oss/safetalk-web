@@ -34,6 +34,28 @@ namespace SafeTalkApp.Tests.Helpers
             {
                 mockSet.Setup(m => m.Find(It.IsAny<object[]>())).Returns(find);
             }
+            else
+            {
+                // Auto-detect a primary key property (NameID or ID)
+                var type = typeof(T);
+
+                var keyProp =
+                    type.GetProperties().FirstOrDefault(p =>
+                        p.Name.Equals($"{type.Name}ID", StringComparison.OrdinalIgnoreCase) ||
+                        p.Name.Equals("ID", StringComparison.OrdinalIgnoreCase) ||
+                        p.Name.EndsWith("ID", StringComparison.OrdinalIgnoreCase)
+                    );
+
+                if (keyProp != null)
+                {
+                    mockSet.Setup(m => m.Find(It.IsAny<object[]>())).Returns((object[] keys) =>
+                    {
+                        var id = keys.First();
+                        return dataList.FirstOrDefault(x =>
+                            keyProp.GetValue(x)?.Equals(id) == true);
+                    });
+                }
+            }
             return mockSet;
         }
     }

@@ -50,26 +50,10 @@ namespace SafeTalkApp.Controllers
             return View();
         }
 
-        public ActionResult Signup(string role)
+        public ActionResult Signup()
         {
-            if (string.IsNullOrWhiteSpace(role))
-            {
-                return RedirectToAction("SelectRole"); // optional fallback
-            }
-
-            role = role.Trim().ToLower();
-
-            switch (role)
-            {
-                case "user":
-                    ViewBag.Title = "User Signup";
-                    return View("~/Views/Account/Signup/User/index.cshtml");
-                case "doctor":
-                    ViewBag.Title = "Doctor Signup";
-                    return View("~/Views/Account/Signup/Doctor/index.cshtml");
-                default:
-                    return View("Error"); // Or return a not found message
-            }
+            ViewBag.Title = "Sign Up";
+            return View("~/Views/Account/Signup/Index.cshtml");
         }
 
         public JsonResult RegisterUser(SignUpDTO signUp)
@@ -146,45 +130,6 @@ namespace SafeTalkApp.Controllers
         {
             var result = _accountService.GetDaysOfWeek();
             return Json(result, JsonRequestBehavior.AllowGet);
-        }
-
-        public ActionResult CreateAdmin()
-        {
-            using (var db = new SafeTalkAppContext())
-            {
-                var email = "admin@safetalk.com";
-
-                if (db.user_tbl.Any(u => u.email == email))
-                    return Content("Admin already exists.");
-
-                var adminUser = new UserTblModel
-                {
-                    firstName = "System",
-                    lastName = "Admin",
-                    birthDate = new DateTime(1990, 1, 1),
-                    genderID = 1, // or any valid gender ID
-                    phoneNumber = "09940063174",
-                    email = email,
-                    password = BCrypt.Net.BCrypt.HashPassword("tfsqxoe2B!"),
-                    dateCreated = DateTime.Now,
-                    dateUpdated = DateTime.Now,
-                    isVerified = true
-                };
-                db.user_tbl.Add(adminUser);
-                db.SaveChanges();
-
-                var adminRole = new UserRoleTblModel
-                {
-                    userID = adminUser.userID,
-                    roleID = 3, // Admin role ID
-                    dateCreated = DateTime.Now,
-                    dateUpdated = DateTime.Now
-                };
-                db.user_role_tbl.Add(adminRole);
-                db.SaveChanges();
-
-                return Content("Admin account created.");
-            }
         }
 
         public JsonResult ForgotPassword(string email)

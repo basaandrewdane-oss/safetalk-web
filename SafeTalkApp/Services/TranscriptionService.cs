@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNet.SignalR;
 using SafeTalkApp.DTOs.Shared;
 using SafeTalkApp.Hubs;
+using SafeTalkApp.Interfaces;
 using SafeTalkApp.Models;
 using System;
 using System.Collections.Generic;
@@ -19,15 +20,13 @@ namespace SafeTalkApp.Services
     {
         private readonly ISafeTalkAppContext _db;
         private readonly IEmailService _emailService;
-        private readonly HttpClient _httpClient;
-        private readonly string _apiKey;
+        private readonly IFileStorageService _fileStorage;
 
-        public TranscriptionService(ISafeTalkAppContext db, HttpClient httpClient, [Dependency("AssemblyAIKey")] string apiKey, IEmailService emailService)
+        public TranscriptionService(ISafeTalkAppContext db, IEmailService emailService, IFileStorageService fileStorage)
         {
             _db = db;
-            _httpClient = httpClient;
-            _apiKey = apiKey;
             _emailService = emailService;
+            _fileStorage = fileStorage;
         }
 
         //private async Task<ApiResponse<string>> TranscribeWithAssemblyAI(string filePath)
@@ -197,69 +196,72 @@ namespace SafeTalkApp.Services
             try
             {
                 var appointment = _db.appointments_tbl.FirstOrDefault(a => a.appointmentID == appointmentID);
-
                 if (appointment == null || string.IsNullOrEmpty(appointment.transcriptFilePath))
-                {
                     return ApiResponse<byte[]>.Fail("Transcript not found.");
-                }
 
-                var fullPath = HttpContext.Current.Server.MapPath(appointment.transcriptFilePath);
-                if (!File.Exists(fullPath))
-                {
+                var fullPath = _fileStorage.MapPath(appointment.transcriptFilePath);
+                if (!_fileStorage.FileExists(fullPath))
                     return ApiResponse<byte[]>.Fail("Transcript file missing on server.");
-                }
 
-                // 🔑 Verify integrity
-                var transcriptContent = File.ReadAllText(fullPath);
-                var recomputedHash = ComputeStringHash(transcriptContent);
+                var content = _fileStorage.ReadAllText(fullPath);
+                var recomputedHash = ComputeStringHash(content);
 
                 if (!string.Equals(recomputedHash, appointment.transcriptHash, StringComparison.OrdinalIgnoreCase))
-                {
                     return ApiResponse<byte[]>.Fail("Transcript integrity check failed.");
-                }
 
-                // ✅ Return file as byte[]
-                var fileBytes = await Task.Run(() => File.ReadAllBytes(fullPath));
+                var fileBytes = await _fileStorage.ReadAllBytesAsync(fullPath);
                 return ApiResponse<byte[]>.Ok(fileBytes, "Transcript download ready.");
             }
             catch (Exception ex)
             {
-                return ApiResponse<byte[]>.Fail("Error during transcript download" + ex.Message);
+                return ApiResponse<byte[]>.Fail("Error during transcript download: " + ex.Message);
             }
         }
 
         public ApiResponse<string> SaveTextTranscript(TextTranscriptDTO model)
         {
+            if (model == null || string.IsNullOrWhiteSpace(model.transcript))
+                return ApiResponse<string>.Fail("Transcript is empty.");
+
             try
             {
-                if (string.IsNullOrWhiteSpace(model.transcript))
-                    return ApiResponse<string>.Fail("Transcript is empty.");
+                // Define transcript folder path
+                var transcriptRootPath = _fileStorage.MapPath("~/Uploads/Transcripts");
 
-                var transcriptDir = HttpContext.Current.Server.MapPath("~/Uploads/Transcripts");
-                Directory.CreateDirectory(transcriptDir);
+                // Ensure folder exists
+                _fileStorage.CreateDirectory(transcriptRootPath);
 
+                // Build file name and full path
                 var transcriptFileName = $"appointment_{model.appointmentId}_{DateTime.Now:yyyyMMddHHmmss}.txt";
-                var transcriptFilePath = Path.Combine(transcriptDir, transcriptFileName);
+                var transcriptFilePath = _fileStorage.CombinePath(transcriptRootPath, transcriptFileName);
 
-                File.WriteAllText(transcriptFilePath, model.transcript);
+                // Write transcript to file
+                _fileStorage.WriteAllText(transcriptFilePath, model.transcript);
 
-                // ✅ Compute hash for verification
+                // Compute hash for verification
                 var transcriptHash = ComputeStringHash(model.transcript);
 
+                // Update appointment record
                 var appointment = _db.appointments_tbl.FirstOrDefault(a => a.appointmentID == model.appointmentId);
                 if (appointment != null)
                 {
                     appointment.transcriptFilePath = "/Uploads/Transcripts/" + transcriptFileName;
                     appointment.transcriptHash = transcriptHash;
                     appointment.dateUpdated = DateTime.Now;
+
+                    _db.SaveChanges();
+                }
+                else
+                {
+                    return ApiResponse<string>.Fail("Appointment not found.");
                 }
 
-                _db.SaveChanges();
-
+                // Send emails (fail silently for unit test safety)
                 try
                 {
                     var patient = _db.user_tbl.FirstOrDefault(u => u.userID == appointment.patientID);
                     var doctor = _db.user_tbl.FirstOrDefault(u => u.userID == appointment.doctorID);
+
                     if (patient != null && doctor != null)
                     {
                         _emailService.SendTranscriptionReadyToPatient(patient, doctor, appointment, transcriptFileName);

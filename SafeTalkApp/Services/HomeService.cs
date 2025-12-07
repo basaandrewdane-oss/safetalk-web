@@ -10,9 +10,9 @@ namespace SafeTalkApp.Services
 {
     public class HomeService : IHomeService
     {
-        private readonly SafeTalkAppContext _db;
+        private readonly ISafeTalkAppContext _db;
 
-        public HomeService(SafeTalkAppContext db)
+        public HomeService(ISafeTalkAppContext db)
         {
             _db = db;
         }
@@ -44,6 +44,18 @@ namespace SafeTalkApp.Services
                                                          fee = ua.fee
                                                      }).ToList()
                                }).ToList();
+                foreach (var doc in doctors)
+                {
+                    if (!string.IsNullOrEmpty(doc.profilePictureUrl))
+                    {
+                        doc.profilePictureUrl =
+                            $"/Profile/GetProfilePicture?fileName={Uri.EscapeDataString(doc.profilePictureUrl)}";
+                    }
+                    else
+                    {
+                        doc.profilePictureUrl = "/Uploads/ProfilePictures/default-avatar.png";
+                    }
+                }
                 return ApiResponse<IEnumerable<DoctorDTO>>.Ok(doctors, "Verified doctors retrieved successfully.");
             }
             catch (Exception ex)

@@ -12,5 +12,7 @@ namespace SafeTalkApp.DTOs.Consultation
         public int senderID { get; set; }
         public string message { get; set; }
         public DateTime sentAt { get; set; }
+        public string senderName { get; set; }
+        public int currentUserId { get; set; }
     }
 }

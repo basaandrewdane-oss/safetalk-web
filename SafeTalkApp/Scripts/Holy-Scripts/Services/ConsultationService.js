@@ -2,7 +2,7 @@
 
     this.getChatMessages = function (appointmentID) {
         return ApiHelper.handleApiResponse(
-            $http.get("/Consultation/GetChatMessages", { params: { appointmentID: appointmentID } })
+            $http.get("/Consultation/GetChatMessages", { params: { appointmentID } })
         )
     }
 

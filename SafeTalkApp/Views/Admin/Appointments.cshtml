@@ -1,0 +1,72 @@
+﻿@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+
+@{
+    Layout = "~/Views/Shared/_DashboardLayout.cshtml";
+}
+<!-- For Doctor Appointments -->
+<main>
+    <div class="container" ng-init="getAppointmentsForAdmin()" ng-controller="AdminController">
+        <div>
+            <h4 class="pink-text text-lighten-2">Appointments</h4>
+        </div>
+        <div class="divider"></div>
+        <br />
+        <div ng-show="appointments.length > 0">
+            @*<div class="row">
+                <div class="input-field col s12 m3 l3">
+                    <select ng-model="appointmentFilter">
+                        <option value="all">Show All</option>
+                        <option selected value="active">Active Only</option>
+                        <option value="includeRejected">Include Rejected</option>
+                        <option value="includeCanceled">Include Canceled</option>
+                        <option value="includeMissed">Include Missed</option>
+                    </select>
+                    <label>Filter Appointments</label>
+                </div>
+            </div>*@
+            <table id="appointmentsTable" class="display responsive nowrap">
+                <thead>
+                    <tr>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        <th>Chief Complaint</th>
+                        <th>Date</th>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="appt in appointments">
+                        <td>{{appt.patientName}}</td>
+                        <td>{{appt.doctorName}}</td>
+                        <td>{{appt.chiefComplaint}}</td>
+                        <td>{{appt.date | dotNetDate | date: 'yyyy-MM-dd'}}</td>
+                        <td>{{appt.startTime | timespanToTime}}</td>
+                        <td>{{appt.endTime | timespanToTime}}</td>
+                        <td ng-switch="appt.status">
+                            <span ng-switch-when="0" class="orange-text">Pending Approval</span>
+                            <span ng-switch-when="1" class="blue-text">Approved - Awaiting Payment</span>
+                            <span ng-switch-when="2" class="orange-text">Payment Submitted</span>
+                            <span ng-switch-when="3" class="green-text">Paid</span>
+                            <span ng-switch-when="4" class="red-text">
+                                Rejected
+                                <br />
+                                <small><i>{{appt.rejectReason}}</i></small>
+                            </span>
+                            <span ng-switch-when="5" class="grey-text">Canceled</span>
+                            <span ng-switch-when="6" class="green-text">Completed</span>
+                            <span ng-switch-when="7" class="deep-orange-text">Missed</span>
+                            <span ng-switch-default class="grey-text">Unknown</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="center-align" ng-show="appointments.length === 0">
+            <p class="grey-text">No appointments available at this time.</p>
+        </div>
+    </div>
+</main>

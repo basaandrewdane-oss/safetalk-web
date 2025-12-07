@@ -3,6 +3,9 @@
 }
 
 <main class="grey lighten-5">
+    <a href="@Url.Action("Index", "Home")" class="btn-floating btn-large pink lighten-2" style="position: fixed; top: 20px; left: 20px;">
+        <i class="material-icons">arrow_back</i>
+    </a>
     <div ng-controller="AccountController">
         <div class="row">
             <!-- Left side caption -->
@@ -38,13 +41,16 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="input-field col s12">
-                                    <input id="password" name="password" type="password" ng-model="password" required>
+                                <div class="input-field col s12" style="margin: 0px">
+                                    <input id="password" name="password" type="password" ng-model="password" style="margin: 0px;" required>
                                     <label for="password">Password</label>
                                     <span class="helper-text left-align red-text text-lighten-2"
                                           ng-show="(loginForm.password.$touched || loginForm.$submitted) && loginForm.password.$error.required">
                                         Enter password
                                     </span>
+                                    <div class="right-align">
+                                        <p><a href="" ng-click="openForgotPassword()">Forgot Password?</a></p>
+                                    </div>
                                 </div>
                             </div>
                             <div class="row">
@@ -52,18 +58,13 @@
                                     <!-- ✅ Primary button -->
                                     <button class="waves-effect waves-light btn-large pink lighten-2 white-text" type="submit">Log In</button>
                                     <!-- ✅ Secondary cancel button -->
-                                    <a class="waves-effect btn-large teal lighten-2 white-text" style="margin-top:5px;"
-                                       ng-click="cancelLogIn()">Cancel</a>
                                 </div>
                             </div>
                             <div class="row">
                                 <p class="grey-text text-darken-2">
                                     Don't have an account?
-                                    <a href="#" class="deep-purple-text text-lighten-2" ng-click="getRoles()">Sign Up</a> <!-- ✅ Accent -->
+                                    <a href="@Url.Action("Signup", "Account")" class="deep-purple-text text-lighten-2">Sign Up</a> <!-- ✅ Accent -->
                                 </p>
-                            </div>
-                            <div class="row center-align">
-                                <p><a href="" ng-click="openForgotPassword()">Forgot Password?</a></p>
                             </div>
                         </form>
                     </div>

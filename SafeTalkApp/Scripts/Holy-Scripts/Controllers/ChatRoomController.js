@@ -221,13 +221,19 @@
         }
 
         $scope.loadMessages = function () {
-            ConsultationService.getChatMessages($scope.appointmentID).then(res => {
-                const currentUserId = res.data.currentUserId;
-                $scope.messages = res.data.messages.map(m => ({
-                    name: parseInt(m.senderID) === currentUserId ? 'You' : m.senderName,
-                    message: m.message
-                }));
-                scrollToBottom();
+            ConsultationService.getChatMessages($scope.appointmentID).then(function (result) {
+                console.log('Chat messages result:', result);
+                if (result.success && result.data) {
+                    const currentUserId = result.data.currentUserId;
+                    console.log('current user:', result.data.currentUserId);
+                    $scope.messages = result.data.messages.map(m => ({
+                        name: parseInt(m.senderID) === currentUserId ? 'You' : m.senderName,
+                        message: m.message
+                    }));
+                    scrollToBottom();
+                } else {
+                    Swal.fire('Error', result.message, 'error')
+                }
             });
         };
 
