@@ -38,11 +38,11 @@ through chat or video call.
 - AngularJS 1.8
 - JavaScript
 
-### Backend (if applicable)
+### Backend
 - .NET
 - C#
 
-### Database (if applicable)
+### Database
 - MySQL
 - EntityFramework
 
